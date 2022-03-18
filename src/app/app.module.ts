@@ -11,12 +11,14 @@ import { AppComponent } from './app.component';
 import { httpInterceptorProviders } from './interceptors/http-interceptors';
 import { IconsProviderModule } from './modules/antd/icons-provider.module';
 import { NgZorroAntdModule } from './modules/antd/ng-zorro-antd.module';
+import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 
 registerLocaleData(zh);
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    BreadcrumbComponent
   ],
   imports: [
     BrowserModule,
