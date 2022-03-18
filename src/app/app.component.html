@@ -6,29 +6,114 @@
             [(nzCollapsed)]="isCollapsed"
             [nzTrigger]="null">
     <div class="sidebar-logo">
-      <a href="https://ng.ant.design/" target="_blank">
-        <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
-        <h1>Ant Design Of Angular</h1>
+      <a href="/" target="_blank">
+        <img src="assets/images/logo.png" alt="logo">
+        <h1>{{(options$ | async)?.['site_name']}}</h1>
       </a>
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-      <li nz-submenu nzOpen nzTitle="Dashboard" nzIcon="dashboard">
+      <li nz-submenu
+          nzOpen
+          nzTitle="首页"
+          nzIcon="home"
+          [(nzOpen)]="openMap['home']"
+          (nzOpenChange)="openHandler('home')">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/welcome">Welcome</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a>Monitor</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a>Workplace</a>
+            <a routerLink="/welcome">仪表盘</a>
           </li>
         </ul>
       </li>
-      <li nz-submenu nzOpen nzTitle="Form" nzIcon="form">
+      <li nz-submenu
+          nzOpen
+          nzTitle="文章管理"
+          nzIcon="form"
+          [(nzOpen)]="openMap['post']"
+          (nzOpenChange)="openHandler('post')">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a>Basic Form</a>
+            <a routerLink="/post/list">文章列表</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/post/form">写文章</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/post/list">页面列表</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/post/form">创建新页面</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu
+          nzOpen
+          nzTitle="评论管理"
+          nzIcon="comment"
+          [(nzOpen)]="openMap['comment']"
+          (nzOpenChange)="openHandler('comment')">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/comment/list">评论列表</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu
+          nzOpen
+          nzTitle="类别管理"
+          nzIcon="tags"
+          [(nzOpen)]="openMap['taxonomy']"
+          (nzOpenChange)="openHandler('taxonomy')">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/taxonomy/list">文章分类管理</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/taxonomy/list">标签管理</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/taxonomy/list">链接分类管理</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu
+          nzOpen
+          nzTitle="素材管理"
+          nzIcon="picture"
+          [(nzOpen)]="openMap['material']"
+          (nzOpenChange)="openHandler('material')">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/resource/list">素材列表</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/resource/upload">文件上传</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu
+          nzOpen
+          nzTitle="网站设置"
+          nzIcon="setting"
+          [(nzOpen)]="openMap['setting']"
+          (nzOpenChange)="openHandler('setting')">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/setting">网站设置</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu
+          nzOpen
+          nzTitle="日志"
+          nzIcon="database"
+          [(nzOpen)]="openMap['log']"
+          (nzOpenChange)="openHandler('log')">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/log/access">访客日志</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/log/system">系统日志</a>
           </li>
         </ul>
       </li>

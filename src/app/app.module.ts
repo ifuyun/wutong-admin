@@ -6,12 +6,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NZ_I18N, zh_CN } from 'ng-zorro-antd/i18n';
-import { NzLayoutModule } from 'ng-zorro-antd/layout';
-import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { IconsProviderModule } from './icons-provider.module';
+import { IconsProviderModule } from './modules/antd/icons-provider.module';
 import { httpInterceptorProviders } from './interceptors/http-interceptors';
+import { NgZorroAntdModule } from './modules/antd/ng-zorro-antd.module';
 
 registerLocaleData(zh);
 
@@ -26,9 +25,8 @@ registerLocaleData(zh);
     ReactiveFormsModule,
     FormsModule,
     BrowserAnimationsModule,
-    IconsProviderModule,
-    NzLayoutModule,
-    NzMenuModule
+    NgZorroAntdModule,
+    IconsProviderModule
   ],
   providers: [
     httpInterceptorProviders,
