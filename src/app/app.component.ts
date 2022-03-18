@@ -15,8 +15,9 @@ export class AppComponent implements OnInit {
     post: false,
     comment: false,
     taxonomy: false,
+    link: false,
     setting: false,
-    material: false,
+    resource: false,
     log: false
   };
   options$!: Observable<OptionEntity>;

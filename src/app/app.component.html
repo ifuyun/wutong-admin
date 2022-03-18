@@ -31,17 +31,17 @@
           [(nzOpen)]="openMap['post']"
           (nzOpenChange)="openHandler('post')">
         <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/post/list">文章列表</a>
+          <li nz-menu-item nzMatchRouter nzMatchRouterExact>
+            <a routerLink="/post">文章列表</a>
           </li>
           <li nz-menu-item nzMatchRouter>
             <a routerLink="/post/form">写文章</a>
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/post/list">页面列表</a>
+            <a routerLink="/post/standalone">页面列表</a>
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/post/form">创建新页面</a>
+            <a routerLink="/post/form-standalone">创建新页面</a>
           </li>
         </ul>
       </li>
@@ -53,7 +53,7 @@
           (nzOpenChange)="openHandler('comment')">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/comment/list">评论列表</a>
+            <a routerLink="/comment">评论列表</a>
           </li>
         </ul>
       </li>
@@ -65,13 +65,13 @@
           (nzOpenChange)="openHandler('taxonomy')">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/taxonomy/list">文章分类管理</a>
+            <a routerLink="/taxonomy/post">文章分类管理</a>
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/taxonomy/list">标签管理</a>
+            <a routerLink="/taxonomy/tag">标签管理</a>
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/taxonomy/list">链接分类管理</a>
+            <a routerLink="/taxonomy/link">链接分类管理</a>
           </li>
         </ul>
       </li>
@@ -79,14 +79,26 @@
           nzOpen
           nzTitle="素材管理"
           nzIcon="picture"
-          [(nzOpen)]="openMap['material']"
-          (nzOpenChange)="openHandler('material')">
+          [(nzOpen)]="openMap['resource']"
+          (nzOpenChange)="openHandler('resource')">
         <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/resource/list">素材列表</a>
+          <li nz-menu-item nzMatchRouter nzMatchRouterExact>
+            <a routerLink="/resource">素材列表</a>
           </li>
           <li nz-menu-item nzMatchRouter>
             <a routerLink="/resource/upload">文件上传</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu
+          nzOpen
+          nzTitle="链接管理"
+          nzIcon="link"
+          [(nzOpen)]="openMap['link']"
+          (nzOpenChange)="openHandler('link')">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/link">链接列表</a>
           </li>
         </ul>
       </li>

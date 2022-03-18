@@ -8,8 +8,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NZ_I18N, zh_CN } from 'ng-zorro-antd/i18n';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { IconsProviderModule } from './modules/antd/icons-provider.module';
 import { httpInterceptorProviders } from './interceptors/http-interceptors';
+import { IconsProviderModule } from './modules/antd/icons-provider.module';
 import { NgZorroAntdModule } from './modules/antd/ng-zorro-antd.module';
 
 registerLocaleData(zh);
