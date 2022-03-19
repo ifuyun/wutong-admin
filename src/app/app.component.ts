@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OptionEntity } from './interfaces/options';
+import { UserEntity } from './interfaces/user.interface';
 import { OptionsService } from './services/options.service';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -21,15 +23,22 @@ export class AppComponent implements OnInit {
     log: false
   };
   options$!: Observable<OptionEntity>;
+  loginUser!: UserEntity;
+  isLoggedIn = false;
 
   constructor(
-    private optionsService: OptionsService
+    private optionsService: OptionsService,
+    private userService: UserService
   ) {
     this.options$ = optionsService.options$;
   }
 
   ngOnInit(): void {
     this.optionsService.getOptions().subscribe();
+    this.userService.user$.subscribe((user) => {
+      this.loginUser = user;
+      this.isLoggedIn = this.userService.isLoggedIn;
+    });
   }
 
   openHandler(value: string): void {

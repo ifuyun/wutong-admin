@@ -140,6 +140,7 @@
                [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
             ></i>
         </span>
+        <span class="header-user" *ngIf="isLoggedIn">欢迎，{{loginUser?.userName}}</span>
       </div>
     </nz-header>
     <nz-content>

@@ -5,4 +5,5 @@ export enum ApiUrl {
   GET_OPTIONS = '/options',
   SAVE_OPTIONS = '/options',
   GET_TAXONOMIES = '/taxonomies',
+  GET_LOGIN_USER = '/users/login-user',
 }
