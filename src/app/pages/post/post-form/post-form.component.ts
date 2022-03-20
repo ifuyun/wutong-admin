@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { BreadcrumbData, BreadcrumbEntity } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { BaseComponent } from '../../../core/base.component';
-import { OptionEntity } from '../../../interfaces/options';
+import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
 
 @Component({

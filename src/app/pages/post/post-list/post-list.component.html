@@ -1,1 +1,65 @@
-<p>post-list works!</p>
+<div class="table-operations">
+  <a nz-button nzType="primary" routerLink="./form">写文章</a>
+  <button nz-button nzType="default" [disabled]="false" [nzLoading]="false">编辑</button>
+  <button nz-button nzType="default" [disabled]="false" [nzLoading]="false">删除</button>
+</div>
+<nz-table
+  nzShowSizeChanger
+  nzSize="middle"
+  nzOuterBordered
+  nzPaginationType="default"
+  [nzScroll]="{x: '1600px'}"
+  [nzData]="postList.posts || []"
+  [nzFrontPagination]="false"
+  [nzTotal]="postList.total || 0"
+  [nzPageIndex]="page"
+>
+  <thead>
+  <tr>
+    <th nzWidth="40px" [nzChecked]="allChecked"></th>
+    <th nzWidth="220px" nzColumnKey="title">标题</th>
+    <th nzWidth="90px" nzColumnKey="postDate" [nzSortFn]="true">日期</th>
+    <th nzWidth="120px" nzColumnKey="category">分类</th>
+    <th nzColumnKey="tag">标签</th>
+    <th nzWidth="80px" nzColumnKey="views" [nzSortFn]="true">访问</th>
+    <th nzWidth="60px" nzColumnKey="comments" [nzSortFn]="true">评论</th>
+    <th nzWidth="80px" nzColumnKey="status">状态</th>
+    <th nzWidth="140px" nzColumnKey="modified">修改时间</th>
+    <th nzWidth="140px" nzColumnKey="created" [nzSortFn]="true">创建时间</th>
+    <th nzWidth="80px" nzColumnKey="author">作者</th>
+    <th nzWidth="60px" nzColumnKey="publisher">发布者</th>
+    <th nzWidth="160px" nzRight nzColumnKey="operator">操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of postList.posts">
+    <td [nzChecked]="checkedMap[data.post.postId] || false"></td>
+    <td nzEllipsis [title]="data.post.postTitle">{{ data.post.postTitle }}</td>
+    <td [title]="data.post.postDate | date: 'yyyy-MM-dd'">{{ data.post.postDate | date: 'yy-MM-dd' }}</td>
+    <td>
+      <a routerLink="./" [queryParams]="{category: cat.slug}" *ngFor="let cat of data.categories">
+        <nz-tag nzColor="blue">{{cat.name}}</nz-tag>
+      </a>
+    </td>
+    <td nzEllipsis>
+      <a routerLink="./" [queryParams]="{tag: tag.slug}" *ngFor="let tag of data.tags">
+        <nz-tag nzColor="blue">{{tag.name}}</nz-tag>
+      </a>
+    </td>
+    <td>{{ data.post.postViewCount }}</td>
+    <td>{{ data.post.commentCount || 0 }}</td>
+    <td>{{ data.post.postStatus | postStatus }}</td>
+    <td [title]="data.post.postModified | date:'yyyy-MM-dd HH:mm'">{{ data.post.postModified | date:'yy-MM-dd HH:mm' }}</td>
+    <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">{{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}</td>
+    <td nzEllipsis [title]="data.meta['postAuthor']">{{ data.meta['postAuthor'] }}</td>
+    <td nzEllipsis [title]="data.post.author.userNiceName">{{ data.post.author.userNiceName }}</td>
+    <td nzRight>
+      <a href="#">查看</a>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a href="#">编辑</a>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a href="#">删除</a>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>

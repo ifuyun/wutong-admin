@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OptionEntity } from './interfaces/options';
-import { UserEntity } from './interfaces/user.interface';
+import { OptionEntity } from './interfaces/option.interface';
+import { LoginUserEntity } from './interfaces/user.interface';
 import { OptionsService } from './services/options.service';
 import { UserService } from './services/user.service';
 
@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
     log: false
   };
   options$!: Observable<OptionEntity>;
-  loginUser!: UserEntity;
+  loginUser!: LoginUserEntity;
   isLoggedIn = false;
 
   constructor(
@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.optionsService.getOptions().subscribe();
-    this.userService.user$.subscribe((user) => {
+    this.userService.loginUser$.subscribe((user) => {
       this.loginUser = user;
       this.isLoggedIn = this.userService.isLoggedIn;
     });

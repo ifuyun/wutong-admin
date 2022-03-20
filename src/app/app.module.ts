@@ -13,6 +13,7 @@ import { httpInterceptorProviders } from './interceptors/http-interceptors';
 import { IconsProviderModule } from './modules/antd/icons-provider.module';
 import { NgZorroAntdModule } from './modules/antd/ng-zorro-antd.module';
 import { ErrorsModule } from './pages/errors/errors.module';
+import { PipesModule } from './pipes/pipes.module';
 
 registerLocaleData(zh);
 
@@ -30,7 +31,8 @@ registerLocaleData(zh);
     BrowserAnimationsModule,
     NgZorroAntdModule,
     IconsProviderModule,
-    ErrorsModule
+    ErrorsModule,
+    PipesModule
   ],
   providers: [
     httpInterceptorProviders,

@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ApiService } from '../core/api.service';
 import { ApiUrl } from '../enums/api-url';
-import { OptionEntity } from '../interfaces/options';
+import { OptionEntity } from '../interfaces/option.interface';
 
 @Injectable({
   providedIn: 'root'
