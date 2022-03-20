@@ -1,1 +1,8 @@
-<p>breadcrumb works!</p>
+<nz-breadcrumb *ngIf="breadcrumbData.visible || breadcrumbData.list.length < 1">
+  <ng-container *ngFor="let breadcrumb of breadcrumbData.list">
+    <nz-breadcrumb-item *ngIf="breadcrumb.url">
+      <a [routerLink]="[breadcrumb.url]" [title]="breadcrumb.tooltip">{{breadcrumb.label}}</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item *ngIf="!breadcrumb.url">{{breadcrumb.label}}</nz-breadcrumb-item>
+  </ng-container>
+</nz-breadcrumb>

@@ -1,14 +1,15 @@
 import { Title } from '@angular/platform-browser';
-import { BreadcrumbEntity } from '../components/breadcrumb/breadcrumb.interface';
+import { BreadcrumbData } from '../components/breadcrumb/breadcrumb.interface';
+import { BreadcrumbService } from '../components/breadcrumb/breadcrumb.service';
 
 export abstract class BaseComponent {
   protected abstract titles: string[];
   protected abstract title: Title;
 
-  abstract showBreadcrumb: boolean;
-  protected abstract breadcrumbs: BreadcrumbEntity[];
+  protected abstract breadcrumbData: BreadcrumbData;
+  protected abstract breadcrumbService: BreadcrumbService;
 
-  protected abstract updateBreadcrumb(): void;
+  protected abstract updateBreadcrumb(breadcrumbData?: BreadcrumbData): void;
 
   protected titleSeparator = ' - ';
 

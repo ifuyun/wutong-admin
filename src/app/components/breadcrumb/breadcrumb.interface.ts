@@ -3,3 +3,8 @@ export interface BreadcrumbEntity {
   url: string;
   tooltip: string;
 }
+
+export interface BreadcrumbData {
+  visible: boolean;
+  list: BreadcrumbEntity[];
+}

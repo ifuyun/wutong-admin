@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { BreadcrumbEntity } from '../../../components/breadcrumb/breadcrumb.interface';
+import { BreadcrumbData, BreadcrumbEntity } from '../../../components/breadcrumb/breadcrumb.interface';
+import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { BaseComponent } from '../../../core/base.component';
 import { OptionEntity } from '../../../interfaces/options';
 import { OptionsService } from '../../../services/options.service';
@@ -11,15 +12,17 @@ import { OptionsService } from '../../../services/options.service';
   styleUrls: ['./post-form.component.less']
 })
 export class PostFormComponent extends BaseComponent implements OnInit {
-  showBreadcrumb = true;
-
   protected titles: string[] = [];
-  protected breadcrumbs: BreadcrumbEntity[] = [];
+  protected breadcrumbData: BreadcrumbData = {
+    visible: true,
+    list: []
+  };
 
   private options: OptionEntity = {};
 
   constructor(
     protected title: Title,
+    protected breadcrumbService: BreadcrumbService,
     private optionsService: OptionsService
   ) {
     super();
