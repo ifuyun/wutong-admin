@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, Observable } from 'rxjs';
 import { OptionEntity } from './interfaces/option.interface';
 import { LoginUserEntity } from './interfaces/user.interface';
+import { MenuItem, MenusService } from './services/menus.service';
 import { OptionsService } from './services/options.service';
-import { UserService } from './services/user.service';
+import { UsersService } from './services/users.service';
 
 @Component({
   selector: 'app-root',
@@ -12,32 +14,40 @@ import { UserService } from './services/user.service';
 })
 export class AppComponent implements OnInit {
   isCollapsed = false;
-  openMap: Record<string, boolean> = {
-    home: true,
-    post: false,
-    comment: false,
-    taxonomy: false,
-    link: false,
-    setting: false,
-    resource: false,
-    log: false
-  };
+  menus: MenuItem[];
+  openMap: Record<string, boolean> = {};
+  selectedMap: Record<string, boolean> = {};
   options$!: Observable<OptionEntity>;
   loginUser!: LoginUserEntity;
   isLoggedIn = false;
 
   constructor(
     private optionsService: OptionsService,
-    private userService: UserService
+    private usersService: UsersService,
+    private menusService: MenusService,
+    private router: Router
   ) {
     this.options$ = optionsService.options$;
+    this.menus = this.menusService.menus;
+    this.menus.forEach((item) => {
+      this.openMap[item.key] = false;
+    });
   }
 
   ngOnInit(): void {
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd)
+    ).subscribe((event) => {
+      const curUrl = (event as NavigationEnd).url.split('?');
+      const checkedMenuKey = this.getMenuKeyByUrl(curUrl[0]);
+      this.resetMenuStatus();
+      checkedMenuKey.rootMenuKey && (this.openMap[checkedMenuKey.rootMenuKey] = true);
+      checkedMenuKey.childMenuKey && (this.selectedMap[checkedMenuKey.childMenuKey] = true);
+    });
     this.optionsService.getOptions().subscribe();
-    this.userService.loginUser$.subscribe((user) => {
+    this.usersService.loginUser$.subscribe((user) => {
       this.loginUser = user;
-      this.isLoggedIn = this.userService.isLoggedIn;
+      this.isLoggedIn = this.usersService.isLoggedIn;
     });
   }
 
@@ -47,5 +57,32 @@ export class AppComponent implements OnInit {
         this.openMap[key] = false;
       }
     }
+  }
+
+  private getMenuKeyByUrl(url: string): { childMenuKey: string, rootMenuKey: string } {
+    let childMenu: MenuItem | undefined;
+    const iterator = (menus: MenuItem[], cb: Function) => {
+      for (let menu of menus) {
+        if (menu.url === url) {
+          cb(menu);
+          break;
+        }
+        if (menu.children) {
+          iterator(menu.children, cb);
+        }
+      }
+    };
+    iterator(this.menus, (menu: MenuItem) => childMenu = menu);
+    const rootMenu: MenuItem | undefined = childMenu && this.menusService.getRootMenu(childMenu);
+
+    return {
+      childMenuKey: childMenu?.key || '',
+      rootMenuKey: rootMenu?.key || ''
+    };
+  }
+
+  private resetMenuStatus() {
+    this.openMap = {};
+    this.selectedMap = {};
   }
 }

@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ApiService } from '../core/api.service';
-import { ApiUrl } from '../enums/api-url';
+import { ApiUrl } from '../config/api-url';
 import { LoginUserEntity } from '../interfaces/user.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class UsersService {
   private loginUser: BehaviorSubject<LoginUserEntity> = new BehaviorSubject<LoginUserEntity>({});
   loginUser$: Observable<LoginUserEntity> = this.loginUser.asObservable();
   isLoggedIn = false;

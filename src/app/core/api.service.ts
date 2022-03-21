@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ApiUrl } from '../enums/api-url';
-import { Message } from '../enums/message.enum';
+import { ApiUrl } from '../config/api-url';
+import { Message } from '../config/message.enum';
 import { HttpResponseEntity } from '../interfaces/http-response';
 
 @Injectable({

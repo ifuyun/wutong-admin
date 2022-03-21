@@ -13,115 +13,32 @@
       </a>
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-      <li nz-submenu
-          nzTitle="首页"
-          nzIcon="home"
-          [(nzOpen)]="openMap['home']"
-          (nzOpenChange)="openHandler('home')">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/welcome">仪表盘</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu
-          nzTitle="文章管理"
-          nzIcon="form"
-          [(nzOpen)]="openMap['post']"
-          (nzOpenChange)="openHandler('post')">
-        <ul>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact>
-            <a routerLink="/post">文章列表</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/post/form">写文章</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/post/standalone">页面列表</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/post/form-standalone">创建新页面</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu
-          nzTitle="评论管理"
-          nzIcon="comment"
-          [(nzOpen)]="openMap['comment']"
-          (nzOpenChange)="openHandler('comment')">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/comment">评论列表</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu
-          nzTitle="类别管理"
-          nzIcon="tags"
-          [(nzOpen)]="openMap['taxonomy']"
-          (nzOpenChange)="openHandler('taxonomy')">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/taxonomy/post">文章分类管理</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/taxonomy/tag">标签管理</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/taxonomy/link">链接分类管理</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu
-          nzTitle="素材管理"
-          nzIcon="picture"
-          [(nzOpen)]="openMap['resource']"
-          (nzOpenChange)="openHandler('resource')">
-        <ul>
-          <li nz-menu-item nzMatchRouter nzMatchRouterExact>
-            <a routerLink="/resource">素材列表</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/resource/upload">文件上传</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu
-          nzTitle="链接管理"
-          nzIcon="link"
-          [(nzOpen)]="openMap['link']"
-          (nzOpenChange)="openHandler('link')">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/link">链接列表</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu
-          nzTitle="网站设置"
-          nzIcon="setting"
-          [(nzOpen)]="openMap['setting']"
-          (nzOpenChange)="openHandler('setting')">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/setting">网站设置</a>
-          </li>
-        </ul>
-      </li>
-      <li nz-submenu
-          nzTitle="日志"
-          nzIcon="database"
-          [(nzOpen)]="openMap['log']"
-          (nzOpenChange)="openHandler('log')">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/log/access">访客日志</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/log/system">系统日志</a>
-          </li>
-        </ul>
-      </li>
+      <ng-template #menuItemTpl let-menu>
+        <i *ngIf="menu.icon" nz-icon [nzType]="menu.icon"></i>
+        <span *ngIf="!menu.url">{{ menu.title }}</span>
+        <a *ngIf="menu.url" [routerLink]="menu.url">{{ menu.title }}</a>
+      </ng-template>
+      <ng-container *ngFor="let menu of menus">
+        <li *ngIf="menu.children"
+            nz-submenu
+            [nzTitle]="menu.title"
+            [nzIcon]="menu.icon || ''"
+            [(nzOpen)]="openMap[menu.key]"
+            (nzOpenChange)="openHandler(menu.key)">
+          <ul>
+            <li *ngFor="let subMenu of menu.children"
+                nz-menu-item
+                [nzSelected]="selectedMap[subMenu.key]">
+              <ng-container *ngTemplateOutlet="menuItemTpl; context: { $implicit: subMenu }"></ng-container>
+            </li>
+          </ul>
+        </li>
+        <li *ngIf="!menu.children"
+            nz-menu-item
+            [nzSelected]="selectedMap[menu.key]">
+          <ng-container *ngTemplateOutlet="menuItemTpl; context: { $implicit: menu }"></ng-container>
+        </li>
+      </ng-container>
     </ul>
   </nz-sider>
   <nz-layout>

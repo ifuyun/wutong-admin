@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BreadcrumbEntity } from '../components/breadcrumb/breadcrumb.interface';
 import { ApiService } from '../core/api.service';
-import { ApiUrl } from '../enums/api-url';
-import { PostType } from '../enums/common.enum';
+import { ApiUrl } from '../config/api-url';
+import { PostType } from '../config/common.enum';
 import { Post, PostArchiveDate, PostList, PostQueryParam } from '../interfaces/post.interface';
 
 @Injectable({

@@ -1,5 +1,5 @@
 import { BreadcrumbEntity } from '../components/breadcrumb/breadcrumb.interface';
-import { PostStatus } from '../enums/common.enum';
+import { PostStatus } from '../config/common.enum';
 import { TaxonomyEntity } from './taxonomy.interface';
 import { UserEntity } from './user.interface';
 
