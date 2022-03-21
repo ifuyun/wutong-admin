@@ -8,6 +8,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzI18nModule } from 'ng-zorro-antd/i18n';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -51,7 +52,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
     // NzEmptyModule,
     NzFormModule,
     // NzGridModule,
-    // NzIconModule,
+    NzIconModule,
     // NzImageModule,
     NzInputModule,
     // NzInputNumberModule,

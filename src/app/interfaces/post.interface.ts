@@ -1,4 +1,5 @@
 import { BreadcrumbEntity } from '../components/breadcrumb/breadcrumb.interface';
+import { PostStatus } from '../enums/common.enum';
 import { TaxonomyEntity } from './taxonomy.interface';
 import { UserEntity } from './user.interface';
 
@@ -63,9 +64,14 @@ export interface PostArchiveDateList {
 
 export interface PostQueryParam {
   page: number;
+  pageSize?: number;
+  from?: string;
   keyword?: string;
   category?: string;
   tag?: string;
   year?: string;
   month?: string;
+  status?: PostStatus;
+  author?: string;
+  orders?: string[][];
 }

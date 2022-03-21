@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     return this.userService.getLoginUser().pipe(map((user) => {
       const isLoggedIn = !!user.userName;
       if (!isLoggedIn) {
-        this.router.navigateByUrl('/user/login');
+        location.href = '/user/login';
         return false;
       }
       if (!user.isAdmin) {
