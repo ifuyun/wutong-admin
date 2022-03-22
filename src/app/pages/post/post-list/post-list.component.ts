@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -7,29 +7,24 @@ import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { PostStatus } from '../../../config/common.enum';
-import { BaseComponent } from '../../../core/base.component';
+import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
-import { PostList, PostQueryParam } from '../../../interfaces/post.interface';
 import { OptionsService } from '../../../services/options.service';
-import { PostsService } from '../../../services/posts.service';
+import { Post, PostQueryParam } from '../post.interface';
+import { PostService } from '../post.service';
 
 @Component({
   selector: 'app-post-list',
   templateUrl: './post-list.component.html',
   styleUrls: ['./post-list.component.less']
 })
-export class PostListComponent extends BaseComponent implements OnInit {
-  postList: PostList = {};
+export class PostListComponent extends ListComponent implements OnInit, OnDestroy {
+  postList: Post[] = [];
   page: number = 1;
   total: number = 0;
   pageSize = 10;
   loading = true;
   keyword: string = '';
-  category: string = '';
-  tag: string = '';
-  year: string = '';
-  month: string = '';
-  status!: PostStatus;
   allChecked = false;
   indeterminate = false;
   checkedMap: Record<string, boolean> = {};
@@ -40,9 +35,14 @@ export class PostListComponent extends BaseComponent implements OnInit {
     list: []
   };
 
+  private category: string = '';
+  private tag: string = '';
+  private year: string = '';
+  private month: string = '';
+  private status!: PostStatus;
   private orders: string[][] = [];
-  private options: OptionEntity = {};
   private lastParam: string = '';
+  private options: OptionEntity = {};
   private optionsListener!: Subscription;
   private paramListener!: Subscription;
 
@@ -50,7 +50,7 @@ export class PostListComponent extends BaseComponent implements OnInit {
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
     private optionsService: OptionsService,
-    private postsService: PostsService,
+    private postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
     private message: NzMessageService
@@ -96,7 +96,7 @@ export class PostListComponent extends BaseComponent implements OnInit {
   }
 
   onAllChecked(checked: boolean) {
-    this.postList.posts?.forEach((post) => {
+    this.postList.forEach((post) => {
       this.checkedMap[post.post.postId] = checked;
     });
     this.allChecked = checked;
@@ -119,17 +119,6 @@ export class PostListComponent extends BaseComponent implements OnInit {
     this.router.navigate(['./'], { queryParams: { keyword: this.keyword }, relativeTo: this.route });
   }
 
-  private refreshCheckedStatus() {
-    this.allChecked = this.postList.posts?.every((post) => this.checkedMap[post.post.postId]) || false;
-    this.indeterminate = this.postList.posts?.some((post) => this.checkedMap[post.post.postId]) && !this.allChecked || false;
-  }
-
-  private resetCheckedStatus() {
-    this.allChecked = false;
-    this.indeterminate = false;
-    this.checkedMap = {};
-  }
-
   protected updateBreadcrumb(): void {
     this.breadcrumbData.list = [{
       label: '文章管理',
@@ -141,6 +130,17 @@ export class PostListComponent extends BaseComponent implements OnInit {
       tooltip: '文章列表'
     }];
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
+  }
+
+  private refreshCheckedStatus() {
+    this.allChecked = this.postList.every((post) => this.checkedMap[post.post.postId]) || false;
+    this.indeterminate = this.postList.some((post) => this.checkedMap[post.post.postId]) && !this.allChecked || false;
+  }
+
+  private resetCheckedStatus() {
+    this.allChecked = false;
+    this.indeterminate = false;
+    this.checkedMap = {};
   }
 
   private fetchPosts() {
@@ -175,11 +175,11 @@ export class PostListComponent extends BaseComponent implements OnInit {
     this.loading = true;
     this.resetCheckedStatus();
     this.lastParam = latestParam;
-    this.postsService.getPosts(param).subscribe((res) => {
+    this.postService.getPosts(param).subscribe((res) => {
       this.loading = false;
-      this.postList = res.postList || {};
-      this.page = this.postList.page || 1;
-      this.total = this.postList.total || 0;
+      this.postList = res.postList.posts || [];
+      this.page = res.postList.page || 1;
+      this.total = res.postList.total || 0;
     });
   }
 }

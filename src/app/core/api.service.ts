@@ -1,8 +1,7 @@
-import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { EMPTY, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ApiUrl } from '../config/api-url';
 import { Message } from '../config/message.enum';
@@ -16,8 +15,7 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    private message: NzMessageService,
-    private router: Router
+    private message: NzMessageService
   ) {
   }
 
@@ -65,13 +63,9 @@ export class ApiService {
 
   private handleError<T>() {
     return (error: HttpErrorResponse): Observable<T> => {
-      if (error.status !== HttpStatusCode.NotFound) {
-        this.message.error(error.error?.message || error.message || Message.UNKNOWN_ERROR);
-        // Let the app keep running by returning an empty result.
-        return of(error.error as T);
-      }
-      this.router.navigate(['404']);
-      return EMPTY;
+      this.message.error(error.error?.message || error.message || Message.UNKNOWN_ERROR);
+      // Let the app keep running by returning an empty result.
+      return of(error.error as T);
     };
   }
 }

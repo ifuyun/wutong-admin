@@ -16,10 +16,10 @@
   nzSize="middle"
   nzOuterBordered
   nzPaginationType="default"
-  [nzData]="postList.posts || []"
+  [nzData]="postList || []"
   [nzFrontPagination]="false"
   [nzLoading]="loading"
-  [nzTotal]="postList.total || 0"
+  [nzTotal]="total || 0"
   [nzPageIndex]="page"
   [nzPageSize]="pageSize"
   (nzQueryParams)="onQueryParamsChange($event)"
@@ -44,7 +44,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let data of postList.posts">
+  <tr *ngFor="let data of postList">
     <td [nzChecked]="checkedMap[data.post.postId] || false" (nzCheckedChange)="onItemChecked(data.post.postId, $event)"></td>
     <td nzEllipsis [title]="data.post.postTitle">{{ data.post.postTitle }}</td>
     <td [title]="data.post.postDate | date: 'yyyy-MM-dd'">{{ data.post.postDate | date: 'yy-MM-dd' }}</td>
