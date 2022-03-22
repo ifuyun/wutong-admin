@@ -1,7 +1,7 @@
 import { CommentStatus } from '../../config/common.enum';
 import { PostModel } from '../post/post.interface';
 
-export interface CommentDto {
+export interface CommentEntity {
   postId: string;
   parentId?: string;
   commentAuthor: string;
@@ -10,24 +10,22 @@ export interface CommentDto {
   captchaCode?: string;
 }
 
-export interface CommentEntity extends CommentDto {
+export interface CommentModel extends CommentEntity {
   commentId: string;
   commentStatus: string;
   created: Date;
   modified: Date;
   commentVote: number;
-  post?: PostModel;
-}
-
-export interface CommentModel {
   commentAuthorLink: string;
   commentIp: string;
   commentAgent: string;
   parentId: string;
   userId: string;
+  post?: PostModel;
 }
+
 export interface CommentList {
-  comments?: CommentEntity[];
+  comments?: CommentModel[];
   page?: number;
   total?: number;
 }

@@ -4,10 +4,10 @@
   <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">删除</button>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
-      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="searchPosts($event)" placeholder="Search..." />
+      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..." />
     </nz-input-group>
     <ng-template #searchBtn>
-      <button nz-button nzType="primary" (click)="searchPosts()" nzSearch><i nz-icon nzType="search"></i></button>
+      <button nz-button nzType="primary" (click)="onSearch()" nzSearch><i nz-icon nzType="search"></i></button>
     </ng-template>
   </div>
 </div>

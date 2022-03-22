@@ -16,7 +16,7 @@
   nzOuterBordered
   nzPaginationType="default"
   nzTableLayout="fixed"
-  [nzData]="commentList || []"
+  [nzData]="taxonomyList || []"
   [nzFrontPagination]="false"
   [nzLoading]="loading"
   [nzTotal]="total || 0"
@@ -28,28 +28,28 @@
   <thead>
   <tr>
     <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
-    <th nzWidth="360px" nzColumnKey="content">评论内容</th>
-    <th nzWidth="200px" nzColumnKey="postTitle">文章</th>
-    <th nzWidth="70px" nzColumnKey="commentVote" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
-    <th nzWidth="120px" nzColumnKey="email">邮箱</th>
-    <th nzWidth="130px" nzColumnKey="created" [nzSortFn]="true" [nzSortPriority]="true">时间</th>
-    <th nzWidth="80px" nzColumnKey="status">状态</th>
+    <th nzWidth="160px" nzColumnKey="name">名称</th>
+    <th nzWidth="160px" nzColumnKey="slug">别名</th>
+    <th nzWidth="300px" nzColumnKey="description">描述</th>
+    <th nzWidth="80px" nzColumnKey="termOrder" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
+    <th nzWidth="100px" nzColumnKey="status">状态</th>
+    <th nzWidth="80px" nzColumnKey="count">总数</th>
     <th nzRight>操作</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let data of commentList">
-    <td [nzChecked]="checkedMap[data.commentId] || false" (nzCheckedChange)="onItemChecked(data.commentId, $event)"></td>
-    <td nzEllipsis [title]="data.commentContent">{{ data.commentContent }}</td>
-    <td nzEllipsis [title]="data.post?.postTitle">
-      <a [href]="data.post?.postGuid" target="_blank">{{ data.post?.postTitle }}</a>
+  <tr *ngFor="let data of taxonomyList">
+    <td [nzChecked]="checkedMap[data.taxonomyId] || false" (nzCheckedChange)="onItemChecked(data.taxonomyId, $event)"></td>
+    <td nzEllipsis [title]="data.name">{{ data.name }}</td>
+    <td nzEllipsis [title]="data.slug">
+      <a routerLink="/post" [queryParams]="{category: data.slug}">{{ data.slug }}</a>
     </td>
-    <td [title]="data.commentVote">{{ data.commentVote }}</td>
-    <td nzEllipsis [title]="data.commentAuthorEmail">{{ data.commentAuthorEmail }}</td>
-    <td nzEllipsis [title]="data.created | date:'yyyy-MM-dd HH:mm'">{{ data.created | date:'yy-MM-dd HH:mm' }}</td>
-    <td>
-      <a routerLink="./" [queryParams]="{status: data.commentStatus}">{{ data.commentStatus | commentStatus }}</a>
+    <td [title]="data.description">{{ data.description }}</td>
+    <td nzEllipsis [title]="data.termOrder">{{ data.termOrder }}</td>
+    <td nzEllipsis [title]="data.status">
+      <a routerLink="./" [queryParams]="{status: data.status}">{{ data.status | taxonomyStatus }}</a>
     </td>
+    <td>{{ data.count }}</td>
     <td nzRight>
       <a href="#">查看</a>
       <nz-divider nzType="vertical"></nz-divider>

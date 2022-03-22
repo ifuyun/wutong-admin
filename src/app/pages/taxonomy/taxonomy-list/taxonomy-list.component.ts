@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -6,20 +6,22 @@ import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
-import { CommentStatus } from '../../../config/common.enum';
+import { TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
-import { CommentModel, CommentQueryParam } from '../comment.interface';
-import { CommentService } from '../comment.service';
+import { TaxonomyModel, TaxonomyQueryParam } from '../taxonomy.interface';
+import { TaxonomyService } from '../taxonomy.service';
 
 @Component({
-  selector: 'app-comment-list',
-  templateUrl: './comment-list.component.html',
-  styleUrls: ['./comment-list.component.less']
+  selector: 'app-taxonomy-list',
+  templateUrl: './taxonomy-list.component.html',
+  styleUrls: ['./taxonomy-list.component.less']
 })
-export class CommentListComponent extends ListComponent implements OnInit, OnDestroy {
-  commentList: CommentModel[] = [];
+export class TaxonomyListComponent extends ListComponent implements OnInit, OnDestroy {
+  @Input() taxonomyType!: TaxonomyType;
+
+  taxonomyList: TaxonomyModel[] = [];
   page: number = 1;
   total: number = 0;
   pageSize: number = 10;
@@ -35,10 +37,16 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     list: []
   };
 
-  private status!: CommentStatus;
+  private status!: TaxonomyStatus | null;
   private orders: string[][] = [];
   private lastParam: string = '';
   private options: OptionEntity = {};
+  private titleMap = {
+    [TaxonomyType.POST]: '文章分类管理',
+    [TaxonomyType.TAG]: '标签管理',
+    [TaxonomyType.LINK]: '链接分类管理'
+  };
+
   private optionsListener!: Subscription;
   private paramListener!: Subscription;
 
@@ -46,7 +54,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
     private optionsService: OptionsService,
-    private commentService: CommentService,
+    private taxonomyService: TaxonomyService,
     private route: ActivatedRoute,
     private router: Router,
     private message: NzMessageService
@@ -58,13 +66,17 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.optionsListener = this.optionsService.options$.subscribe((options) => {
       this.options = options;
     });
-    this.titles = ['评论列表', '评论管理', this.options['site_name']];
+    this.titles = [this.titleMap[this.taxonomyType], '类别管理', this.options['site_name']];
     this.updateTitle();
     this.updateBreadcrumb();
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
       this.page = Number(queryParams.get('page')) || 1;
       this.keyword = queryParams.get('keyword')?.trim() || '';
-      this.status = <CommentStatus>(queryParams.get('status')?.trim() || '');
+      this.status = null;
+      const status = queryParams.get('status')?.trim();
+      if (status) {
+        this.status = <TaxonomyStatus>(parseInt(status, 10));
+      }
       this.fetchData();
     });
   }
@@ -88,8 +100,8 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   }
 
   onAllChecked(checked: boolean) {
-    this.commentList.forEach((item) => {
-      this.checkedMap[item.commentId] = checked;
+    this.taxonomyList.forEach((item) => {
+      this.checkedMap[item.taxonomyId] = checked;
     });
     this.allChecked = checked;
   }
@@ -109,25 +121,25 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
 
   protected updateBreadcrumb(breadcrumbData?: BreadcrumbData): void {
     this.breadcrumbData.list = [{
-      label: '评论管理',
-      url: 'comment',
-      tooltip: '评论管理'
+      label: '类别管理',
+      url: '',
+      tooltip: '类别管理'
     }, {
-      label: '评论列表',
-      url: 'comment',
-      tooltip: '评论列表'
+      label: this.titleMap[this.taxonomyType],
+      url: `taxonomy/${this.taxonomyType}`,
+      tooltip: this.titleMap[this.taxonomyType]
     }];
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
   }
 
   private fetchData() {
-    const param: CommentQueryParam = {
+    const param: TaxonomyQueryParam = {
+      type: this.taxonomyType,
       page: this.page,
       pageSize: this.pageSize,
-      orders: this.orders,
-      from: 'admin'
+      orders: this.orders
     };
-    if (this.status) {
+    if (this.status !== null && this.status !== undefined) {
       param.status = this.status;
     }
     if (this.keyword) {
@@ -140,17 +152,17 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.loading = true;
     this.resetCheckedStatus();
     this.lastParam = latestParam;
-    this.commentService.getComments(param).subscribe((res) => {
+    this.taxonomyService.getTaxonomies(param).subscribe((res) => {
       this.loading = false;
-      this.commentList = res.comments || [];
+      this.taxonomyList = res.taxonomies || [];
       this.page = res.page || 1;
       this.total = res.total || 0;
     });
   }
 
   private refreshCheckedStatus() {
-    this.allChecked = this.commentList.every((item) => this.checkedMap[item.commentId]) || false;
-    this.indeterminate = this.commentList.some((item) => this.checkedMap[item.commentId]) && !this.allChecked || false;
+    this.allChecked = this.taxonomyList.every((item) => this.checkedMap[item.taxonomyId]) || false;
+    this.indeterminate = this.taxonomyList.some((item) => this.checkedMap[item.taxonomyId]) && !this.allChecked || false;
   }
 
   private resetCheckedStatus() {

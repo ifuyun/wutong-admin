@@ -73,7 +73,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.month = queryParams.get('month')?.trim() || '';
       this.keyword = queryParams.get('keyword')?.trim() || '';
       this.status = <PostStatus>(queryParams.get('status')?.trim() || '');
-      this.fetchPosts();
+      this.fetchData();
     });
   }
 
@@ -92,30 +92,26 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         this.orders.push([item.key, item.value === 'descend' ? 'desc' : 'asc']);
       }
     });
-    this.fetchPosts();
+    this.fetchData();
   }
 
   onAllChecked(checked: boolean) {
-    this.postList.forEach((post) => {
-      this.checkedMap[post.post.postId] = checked;
+    this.postList.forEach((item) => {
+      this.checkedMap[item.post.postId] = checked;
     });
     this.allChecked = checked;
   }
 
-  onItemChecked(postId: string, checked: boolean) {
-    this.checkedMap[postId] = checked;
+  onItemChecked(checkedKey: string, checked: boolean) {
+    this.checkedMap[checkedKey] = checked;
     this.refreshCheckedStatus();
   }
 
-  searchPosts(event?: KeyboardEvent) {
+  onSearch(event?: KeyboardEvent) {
     if (event && event.key !== 'Enter') {
       return;
     }
     this.keyword = this.keyword.trim();
-    if (!this.keyword) {
-      this.message.error('请输入关键词');
-      return;
-    }
     this.router.navigate(['./'], { queryParams: { keyword: this.keyword }, relativeTo: this.route });
   }
 
@@ -132,18 +128,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
   }
 
-  private refreshCheckedStatus() {
-    this.allChecked = this.postList.every((post) => this.checkedMap[post.post.postId]) || false;
-    this.indeterminate = this.postList.some((post) => this.checkedMap[post.post.postId]) && !this.allChecked || false;
-  }
-
-  private resetCheckedStatus() {
-    this.allChecked = false;
-    this.indeterminate = false;
-    this.checkedMap = {};
-  }
-
-  private fetchPosts() {
+  private fetchData() {
     const param: PostQueryParam = {
       page: this.page,
       pageSize: this.pageSize,
@@ -181,5 +166,16 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.page = res.postList.page || 1;
       this.total = res.postList.total || 0;
     });
+  }
+
+  private refreshCheckedStatus() {
+    this.allChecked = this.postList.every((item) => this.checkedMap[item.post.postId]) || false;
+    this.indeterminate = this.postList.some((item) => this.checkedMap[item.post.postId]) && !this.allChecked || false;
+  }
+
+  private resetCheckedStatus() {
+    this.allChecked = false;
+    this.indeterminate = false;
+    this.checkedMap = {};
   }
 }

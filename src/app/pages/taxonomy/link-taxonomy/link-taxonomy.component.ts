@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { TaxonomyType } from '../../../config/common.enum';
 
 @Component({
   selector: 'app-link-taxonomy',
-  templateUrl: './link-taxonomy.component.html',
-  styleUrls: ['./link-taxonomy.component.less']
+  template: `
+    <app-taxonomy-list [taxonomyType]="taxonomyType"></app-taxonomy-list>
+  `
 })
-export class LinkTaxonomyComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class LinkTaxonomyComponent {
+  taxonomyType = TaxonomyType.LINK;
 }

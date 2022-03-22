@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { TaxonomyType } from '../../../config/common.enum';
 
 @Component({
   selector: 'app-post-taxonomy',
-  templateUrl: './post-taxonomy.component.html',
-  styleUrls: ['./post-taxonomy.component.less']
+  template: `
+    <app-taxonomy-list [taxonomyType]="taxonomyType"></app-taxonomy-list>
+  `
 })
-export class PostTaxonomyComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class PostTaxonomyComponent {
+  taxonomyType = TaxonomyType.POST;
 }
