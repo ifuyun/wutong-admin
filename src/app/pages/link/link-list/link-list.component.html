@@ -1,1 +1,63 @@
-<p>link-list works!</p>
+<div class="table-operations">
+  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
+  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">删除</button>
+  <div class="table-search">
+    <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
+      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..." />
+    </nz-input-group>
+    <ng-template #searchBtn>
+      <button nz-button nzType="primary" (click)="onSearch()" nzSearch><i nz-icon nzType="search"></i></button>
+    </ng-template>
+  </div>
+</div>
+<nz-table
+  nzShowSizeChanger
+  nzSize="middle"
+  nzOuterBordered
+  nzPaginationType="default"
+  nzTableLayout="fixed"
+  [nzData]="linkList || []"
+  [nzFrontPagination]="false"
+  [nzLoading]="loading"
+  [nzTotal]="total || 0"
+  [nzPageIndex]="page"
+  [nzPageSize]="pageSize"
+  (nzQueryParams)="onQueryParamsChange($event)"
+  [nzShowTotal]="rangeTemplate"
+>
+  <thead>
+  <tr>
+    <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+    <th nzWidth="120px" nzColumnKey="name">名称</th>
+    <th nzWidth="240px" nzColumnKey="url">URL</th>
+    <th nzWidth="200px" nzColumnKey="description">描述</th>
+    <th nzWidth="100px" nzColumnKey="visible">可见性</th>
+    <th nzWidth="90px" nzColumnKey="target">打开方式</th>
+    <th nzWidth="70px" nzColumnKey="linkOrder" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
+    <th nzWidth="130px" nzColumnKey="created" [nzSortFn]="true" [nzSortPriority]="true">添加时间</th>
+    <th nzRight>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of linkList">
+    <td [nzChecked]="checkedMap[data.linkId] || false" (nzCheckedChange)="onItemChecked(data.linkId, $event)"></td>
+    <td nzEllipsis [title]="data.linkName">{{ data.linkName }}</td>
+    <td nzEllipsis [title]="data.linkUrl">{{ data.linkUrl }}</td>
+    <td nzEllipsis [title]="data.linkDescription">{{ data.linkDescription }}</td>
+    <td [title]="data.linkVisible | linkVisible">{{ data.linkVisible | linkVisible }}</td>
+    <td [title]="data.linkTarget | linkTarget">{{ data.linkTarget | linkTarget }}</td>
+    <td [title]="data.linkOrder">{{ data.linkOrder }}</td>
+    <td nzEllipsis [title]="data.created | date:'yyyy-MM-dd HH:mm'">{{ data.created | date:'yy-MM-dd HH:mm' }}</td>
+    <td nzRight>
+      <a href="#">查看</a>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a href="#">编辑</a>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a href="#">删除</a>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>
+<ng-template #rangeTemplate let-range="range" let-total>
+  当前：第 <span style="color: red">{{ range[0] }}-{{ range[1] }}</span> 条，共：<span style="color: red">{{ total }}</span> 条
+</ng-template>

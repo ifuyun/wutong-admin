@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NgZorroAntdModule } from '../../modules/antd/ng-zorro-antd.module';
+import { PipesModule } from '../../pipes/pipes.module';
 import { LinkListComponent } from './link-list/link-list.component';
 import { LinkRoutingModule } from './link-routing.module';
 
@@ -9,7 +12,10 @@ import { LinkRoutingModule } from './link-routing.module';
   ],
   imports: [
     CommonModule,
-    LinkRoutingModule
+    LinkRoutingModule,
+    NgZorroAntdModule,
+    PipesModule,
+    FormsModule
   ]
 })
 export class LinkModule {

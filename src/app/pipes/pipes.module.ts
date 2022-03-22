@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommentStatusPipe } from './comment-status.pipe';
+import { LinkTargetPipe } from './link-target.pipe';
+import { LinkVisiblePipe } from './link-visible.pipe';
 import { PostStatusPipe } from './post-status.pipe';
 import { TaxonomyStatusPipe } from './taxonomy-status.pipe';
 
@@ -7,13 +9,17 @@ import { TaxonomyStatusPipe } from './taxonomy-status.pipe';
   declarations: [
     PostStatusPipe,
     CommentStatusPipe,
-    TaxonomyStatusPipe
+    TaxonomyStatusPipe,
+    LinkVisiblePipe,
+    LinkTargetPipe
   ],
   imports: [],
   exports: [
     PostStatusPipe,
     CommentStatusPipe,
-    TaxonomyStatusPipe
+    TaxonomyStatusPipe,
+    LinkVisiblePipe,
+    LinkTargetPipe
   ]
 })
 export class PipesModule {
