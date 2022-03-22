@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -6,7 +6,7 @@ import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
-import { PostStatus } from '../../../config/common.enum';
+import { PostStatus, PostType } from '../../../config/common.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
@@ -19,6 +19,8 @@ import { PostService } from '../post.service';
   styleUrls: ['./post-list.component.less']
 })
 export class PostListComponent extends ListComponent implements OnInit, OnDestroy {
+  @Input() postType!: PostType;
+
   postList: Post[] = [];
   page: number = 1;
   total: number = 0;
@@ -28,6 +30,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   allChecked = false;
   indeterminate = false;
   checkedMap: Record<string, boolean> = {};
+  tableWidth!: string;
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -62,7 +65,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.optionsListener = this.optionsService.options$.subscribe((options) => {
       this.options = options;
     });
-    this.titles = ['文章列表', '文章管理', this.options['site_name']];
+    this.initPageInfo();
     this.updateTitle();
     this.updateBreadcrumb();
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
@@ -116,20 +119,12 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   }
 
   protected updateBreadcrumb(): void {
-    this.breadcrumbData.list = [{
-      label: '文章管理',
-      url: 'post',
-      tooltip: '文章管理'
-    }, {
-      label: '文章列表',
-      url: 'post',
-      tooltip: '文章列表'
-    }];
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
   }
 
   private fetchData() {
     const param: PostQueryParam = {
+      type: this.postType,
       page: this.page,
       pageSize: this.pageSize,
       orders: this.orders,
@@ -166,6 +161,55 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.page = res.postList.page || 1;
       this.total = res.postList.total || 0;
     });
+  }
+
+  private initPageInfo() {
+    this.titles = [this.options['site_name']];
+    let pageTitle = '';
+    switch (this.postType) {
+      case PostType.PAGE:
+        this.tableWidth = '1480px';
+        pageTitle = '页面列表';
+        this.titles.unshift('文章管理');
+        this.breadcrumbData.list = [{
+          label: '文章管理',
+          url: 'post',
+          tooltip: '文章管理'
+        }, {
+          label: pageTitle,
+          url: 'post',
+          tooltip: pageTitle
+        }];
+        break;
+      case PostType.ATTACHMENT:
+        this.tableWidth = '1000px';
+        pageTitle = '素材列表';
+        this.titles.unshift('素材管理');
+        this.breadcrumbData.list = [{
+          label: '素材管理',
+          url: 'resource',
+          tooltip: '素材管理'
+        }, {
+          label: pageTitle,
+          url: 'resource',
+          tooltip: pageTitle
+        }];
+        break;
+      default:
+        this.tableWidth = '1600px';
+        pageTitle = '文章列表';
+        this.titles.unshift('文章管理');
+        this.breadcrumbData.list = [{
+          label: '文章管理',
+          url: 'post',
+          tooltip: '文章管理'
+        }, {
+          label: pageTitle,
+          url: 'post',
+          tooltip: pageTitle
+        }];
+    }
+    this.titles.unshift(pageTitle);
   }
 
   private refreshCheckedStatus() {

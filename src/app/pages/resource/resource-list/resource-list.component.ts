@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { PostType } from '../../../config/common.enum';
 
 @Component({
   selector: 'app-resource-list',
-  templateUrl: './resource-list.component.html',
-  styleUrls: ['./resource-list.component.less']
+  template: `
+    <app-post-list [postType]="postType"></app-post-list>
+  `
 })
-export class ResourceListComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class ResourceListComponent {
+  postType = PostType.ATTACHMENT;
 }
