@@ -8,5 +8,6 @@
  */
 export enum Message {
   // todo: internationalize
+  SUCCESS = '操作成功',
   UNKNOWN_ERROR = 'Unknown error'
 }

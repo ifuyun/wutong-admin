@@ -1,6 +1,8 @@
 <div class="table-operations">
-  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
-  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">删除</button>
+  <button nz-button nzType="default" [disabled]="!pendingEnabled" (click)="confirmOperation('normal')">批准</button>
+  <button nz-button nzType="default" [disabled]="!pendingEnabled" (click)="confirmOperation('reject')">驳回</button>
+  <button nz-button nzType="default" [disabled]="!pendingEnabled" (click)="confirmOperation('spam')">垃圾评论</button>
+  <button nz-button nzType="default" [disabled]="!trashEnabled" (click)="confirmOperation('trash')">删除</button>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
       <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..." />
@@ -28,10 +30,10 @@
   <thead>
   <tr>
     <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
-    <th nzWidth="340px" nzColumnKey="content">评论内容</th>
-    <th nzWidth="200px" nzColumnKey="postTitle">文章</th>
-    <th nzWidth="70px" nzColumnKey="commentVote" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
-    <th nzWidth="160px" nzColumnKey="email">邮箱</th>
+    <th nzWidth="260px" nzColumnKey="content">评论内容</th>
+    <th nzWidth="180px" nzColumnKey="postTitle">文章</th>
+    <th nzWidth="60px" nzColumnKey="commentVote" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
+    <th nzWidth="140px" nzColumnKey="email">邮箱</th>
     <th nzWidth="130px" nzColumnKey="created" [nzSortFn]="true" [nzSortPriority]="true">时间</th>
     <th nzWidth="80px" [nzFilters]="statusFilter" [nzFilterFn]="true" nzColumnKey="status">状态</th>
     <th nzRight>操作</th>
@@ -51,15 +53,37 @@
       <a [ngClass]="'status-' + data.commentStatus" routerLink="./" [queryParams]="{status: data.commentStatus}">{{ data.commentStatus | commentStatus }}</a>
     </td>
     <td nzRight>
-      <a href="#">查看</a>
+      <ng-container *ngIf="data.commentStatus === 'pending'">
+        <a class="op-btn-normal" (click)="confirmOperation('normal', [data.commentId])">批准</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a class="op-btn-reject" (click)="confirmOperation('reject', [data.commentId])">驳回</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a class="op-btn-spam" (click)="confirmOperation('spam', [data.commentId])">垃圾评论</a>
+        <nz-divider nzType="vertical"></nz-divider>
+      </ng-container>
+      <a href="#">回复</a>
       <nz-divider nzType="vertical"></nz-divider>
       <a href="#">编辑</a>
-      <nz-divider nzType="vertical"></nz-divider>
-      <a href="#">删除</a>
+      <ng-container *ngIf="data.commentStatus !== 'trash'">
+        <nz-divider nzType="vertical"></nz-divider>
+        <a (click)="confirmOperation('trash', [data.commentId])">删除</a>
+      </ng-container>
     </td>
   </tr>
   </tbody>
 </nz-table>
 <ng-template #rangeTemplate let-range="range" let-total>
   当前：第 <span style="color: red">{{ range[0] }}-{{ range[1] }}</span> 条，共：<span style="color: red">{{ total }}</span> 条
+</ng-template>
+<ng-template #confirmModalContent>
+  <div *ngIf="operation === 'spam'">
+    <span>确定将 <span class="warning">{{checkedLength}}</span> 条评论标记为垃圾评论吗？</span>
+  </div>
+  <div *ngIf="operation !== 'spam'">
+    <ng-container [ngSwitch]="operation">
+      <span *ngSwitchCase="'normal'">确定批准 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
+      <span *ngSwitchCase="'reject'">确定驳回 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
+      <span *ngSwitchCase="'trash'">确定删除 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
+    </ng-container>
+  </div>
 </ng-template>

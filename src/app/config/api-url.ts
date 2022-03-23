@@ -9,5 +9,6 @@ export enum ApiUrl {
   GET_LINKS = '/links',
   GET_COMMENTS = '/comments',
   SAVE_COMMENTS = '/comments',
+  AUDIT_COMMENTS = '/comments/audit',
   GET_LOGIN_USER = '/users/login-user',
 }

@@ -39,3 +39,8 @@ export interface CommentQueryParam {
   status?: CommentStatus[];
   orders?: string[][];
 }
+
+export interface CommentAuditParam {
+  commentIds: string[];
+  action: CommentStatus;
+}

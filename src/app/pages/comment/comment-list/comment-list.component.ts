@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
 import { Subscription } from 'rxjs';
@@ -9,6 +10,8 @@ import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interf
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentStatus } from '../../../config/common.enum';
 import { COMMENT_STATUS } from '../../../config/constants';
+import { Message } from '../../../config/message.enum';
+import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
@@ -21,6 +24,8 @@ import { CommentService } from '../comment.service';
   styleUrls: ['./comment-list.component.less']
 })
 export class CommentListComponent extends ListComponent implements OnInit, OnDestroy {
+  @ViewChild('confirmModalContent') confirmModalContent!: TemplateRef<any>;
+
   commentList: CommentModel[] = [];
   page: number = 1;
   total: number = 0;
@@ -30,7 +35,12 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   allChecked = false;
   indeterminate = false;
   checkedMap: Record<string, boolean> = {};
+  checkedLength = 0;
   statusFilter: NzTableFilterList = [];
+  operation!: CommentStatus | null;
+
+  pendingEnabled = false;
+  trashEnabled = false;
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -38,6 +48,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     list: []
   };
 
+  private checkedCommentIds: string[] = [];
   private status!: CommentStatus[];
   private orders: string[][] = [];
   /* antd初始化和重置filter时都会触发nzQueryParams，因此设置状态限制请求数 */
@@ -54,7 +65,8 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     private commentService: CommentService,
     private route: ActivatedRoute,
     private router: Router,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private modal: NzModalService
   ) {
     super();
   }
@@ -105,11 +117,14 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       this.checkedMap[item.commentId] = checked;
     });
     this.allChecked = checked;
+    this.indeterminate = false;
+    this.refreshBtnStatus();
   }
 
   onItemChecked(checkedKey: string, checked: boolean) {
     this.checkedMap[checkedKey] = checked;
     this.refreshCheckedStatus();
+    this.refreshBtnStatus();
   }
 
   onSearch(event?: KeyboardEvent) {
@@ -118,6 +133,40 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     }
     this.keyword = this.keyword.trim();
     this.router.navigate(['./'], { queryParams: { keyword: this.keyword }, relativeTo: this.route });
+  }
+
+  confirmOperation(action: string, commentIds?: string[]) {
+    this.checkedCommentIds = commentIds || Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
+    if (this.checkedCommentIds.length < 1) {
+      this.message.error('请先选择至少一条评论');
+      return;
+    }
+    this.operation = <CommentStatus>action;
+    this.checkedLength = this.checkedCommentIds.length;
+    this.modal.confirm({
+      nzContent: this.confirmModalContent,
+      nzClassName: 'confirm-with-no-title',
+      nzOkDanger: this.operation === CommentStatus.TRASH,
+      nzOnOk: () => this.auditComments(),
+      nzOnCancel: () => {
+        this.operation = null;
+      }
+    });
+  }
+
+  auditComments() {
+    this.commentService.auditComments({
+      commentIds: this.checkedCommentIds,
+      action: <CommentStatus>this.operation
+    }).subscribe((res) => {
+      this.operation = null;
+      if (res.code !== ResponseCode.SUCCESS) {
+        this.message.error(res.message || Message.UNKNOWN_ERROR);
+      } else {
+        this.message.success(Message.SUCCESS);
+        this.fetchData(true);
+      }
+    });
   }
 
   protected updateBreadcrumb(breadcrumbData?: BreadcrumbData): void {
@@ -133,7 +182,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
   }
 
-  private fetchData() {
+  private fetchData(force = false) {
     const param: CommentQueryParam = {
       page: this.page,
       pageSize: this.pageSize,
@@ -147,7 +196,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       param.keyword = this.keyword;
     }
     const latestParam = JSON.stringify(param);
-    if (latestParam === this.lastParam) {
+    if (latestParam === this.lastParam && !force) {
       return;
     }
     this.loading = true;
@@ -177,6 +226,21 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   private resetCheckedStatus() {
     this.allChecked = false;
     this.indeterminate = false;
+    this.pendingEnabled = false;
+    this.trashEnabled = false;
     this.checkedMap = {};
+  }
+
+  private refreshBtnStatus() {
+    const checkedList = this.commentList.filter((item) => this.checkedMap[item.commentId]);
+    if (checkedList.length > 0) {
+      this.pendingEnabled = checkedList.every(
+        (item) => this.checkedMap[item.commentId] && item.commentStatus === CommentStatus.PENDING);
+      this.trashEnabled = checkedList.every(
+        (item) => this.checkedMap[item.commentId] && item.commentStatus !== CommentStatus.TRASH);
+    } else {
+      this.pendingEnabled = false;
+      this.trashEnabled = false;
+    }
   }
 }
