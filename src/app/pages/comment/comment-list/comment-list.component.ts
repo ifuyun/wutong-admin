@@ -3,10 +3,12 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
+import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
 import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentStatus } from '../../../config/common.enum';
+import { COMMENT_STATUS } from '../../../config/constants';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
@@ -28,6 +30,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   allChecked = false;
   indeterminate = false;
   checkedMap: Record<string, boolean> = {};
+  statusFilter: NzTableFilterList = [];
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -35,8 +38,10 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     list: []
   };
 
-  private status!: CommentStatus;
+  private status!: CommentStatus[];
   private orders: string[][] = [];
+  /* antd初始化和重置filter时都会触发nzQueryParams，因此设置状态限制请求数 */
+  private initialized = false;
   private lastParam: string = '';
   private options: OptionEntity = {};
   private optionsListener!: Subscription;
@@ -64,7 +69,9 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
       this.page = Number(queryParams.get('page')) || 1;
       this.keyword = queryParams.get('keyword')?.trim() || '';
-      this.status = <CommentStatus>(queryParams.get('status')?.trim() || '');
+      this.status = <CommentStatus[]>(queryParams.getAll('status') || []);
+      this.initialized = false;
+      this.initFilter();
       this.fetchData();
     });
   }
@@ -75,6 +82,10 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   }
 
   onQueryParamsChange(params: NzTableQueryParams) {
+    if (!this.initialized) {
+      this.initialized = true;
+      return;
+    }
     const { pageSize, pageIndex, sort, filter } = params;
     this.pageSize = pageSize;
     this.page = pageIndex;
@@ -84,6 +95,8 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
         this.orders.push([item.key, item.value === 'descend' ? 'desc' : 'asc']);
       }
     });
+    const currentFilter = filter.filter((item) => item.key === 'status' && item.value.length > 0);
+    this.status = currentFilter.length > 0 ? currentFilter[0].value : [];
     this.fetchData();
   }
 
@@ -127,7 +140,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       orders: this.orders,
       from: 'admin'
     };
-    if (this.status) {
+    if (this.status && this.status.length > 0) {
       param.status = this.status;
     }
     if (this.keyword) {
@@ -146,6 +159,14 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       this.page = res.page || 1;
       this.total = res.total || 0;
     });
+  }
+
+  private initFilter() {
+    this.statusFilter = Object.keys(COMMENT_STATUS).map((key) => ({
+      text: COMMENT_STATUS[key],
+      value: key,
+      byDefault: this.status.includes(<CommentStatus>key)
+    }));
   }
 
   private refreshCheckedStatus() {

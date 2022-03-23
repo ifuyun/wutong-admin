@@ -1,15 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { LINK_TARGET } from '../config/constants';
 
 @Pipe({
   name: 'linkTarget'
 })
 export class LinkTargetPipe implements PipeTransform {
   transform(value: string): string {
-    const statusMap: Record<string, string> = {
-      _blank: '新页面',
-      _top: '父页面',
-      _self: '当前页'
-    }
-    return statusMap[value] || value;
+    return LINK_TARGET[value] || value;
   }
 }

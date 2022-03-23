@@ -1,15 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { LINK_VISIBLE } from '../config/constants';
 
 @Pipe({
   name: 'linkVisible'
 })
 export class LinkVisiblePipe implements PipeTransform {
   transform(value: string): string {
-    const statusMap: Record<string, string> = {
-      site: '全站',
-      homepage: '首页',
-      invisible: '不可见'
-    }
-    return statusMap[value] || value;
+    return LINK_VISIBLE[value] || value;
   }
 }

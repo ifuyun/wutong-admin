@@ -28,12 +28,12 @@
   <thead>
   <tr>
     <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
-    <th nzWidth="360px" nzColumnKey="content">评论内容</th>
+    <th nzWidth="340px" nzColumnKey="content">评论内容</th>
     <th nzWidth="200px" nzColumnKey="postTitle">文章</th>
     <th nzWidth="70px" nzColumnKey="commentVote" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
-    <th nzWidth="120px" nzColumnKey="email">邮箱</th>
+    <th nzWidth="160px" nzColumnKey="email">邮箱</th>
     <th nzWidth="130px" nzColumnKey="created" [nzSortFn]="true" [nzSortPriority]="true">时间</th>
-    <th nzWidth="80px" nzColumnKey="status">状态</th>
+    <th nzWidth="80px" [nzFilters]="statusFilter" [nzFilterFn]="true" nzColumnKey="status">状态</th>
     <th nzRight>操作</th>
   </tr>
   </thead>
@@ -48,7 +48,7 @@
     <td nzEllipsis [title]="data.commentAuthorEmail">{{ data.commentAuthorEmail }}</td>
     <td nzEllipsis [title]="data.created | date:'yyyy-MM-dd HH:mm'">{{ data.created | date:'yy-MM-dd HH:mm' }}</td>
     <td>
-      <a routerLink="./" [queryParams]="{status: data.commentStatus}">{{ data.commentStatus | commentStatus }}</a>
+      <a [ngClass]="'status-' + data.commentStatus" routerLink="./" [queryParams]="{status: data.commentStatus}">{{ data.commentStatus | commentStatus }}</a>
     </td>
     <td nzRight>
       <a href="#">查看</a>
