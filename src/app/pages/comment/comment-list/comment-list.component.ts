@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -8,14 +9,16 @@ import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
 import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
-import { CommentStatus } from '../../../config/common.enum';
-import { COMMENT_STATUS } from '../../../config/constants';
+import { CommentAuditAction, CommentOperation, CommentStatus } from '../../../config/common.enum';
+import { COMMENT_LENGTH, COMMENT_STATUS, COMMENT_STATUS_LIST } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
+import { LoginUserEntity } from '../../../interfaces/user.interface';
 import { OptionsService } from '../../../services/options.service';
-import { CommentModel, CommentQueryParam } from '../comment.interface';
+import { UserService } from '../../../services/user.service';
+import { CommentModel, CommentQueryParam, CommentSaveParam } from '../comment.interface';
 import { CommentService } from '../comment.service';
 
 @Component({
@@ -25,6 +28,7 @@ import { CommentService } from '../comment.service';
 })
 export class CommentListComponent extends ListComponent implements OnInit, OnDestroy {
   @ViewChild('confirmModalContent') confirmModalContent!: TemplateRef<any>;
+  readonly commentMaxLength = COMMENT_LENGTH;
 
   commentList: CommentModel[] = [];
   page: number = 1;
@@ -37,10 +41,18 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   checkedMap: Record<string, boolean> = {};
   checkedLength = 0;
   statusFilter: NzTableFilterList = [];
-  operation!: CommentStatus | null;
-
+  auditAction!: CommentAuditAction | null;
   pendingEnabled = false;
   trashEnabled = false;
+  commentModalVisible = false;
+  commentOperation!: CommentOperation | null;
+  saveLoading = false;
+  currentComment!: CommentModel;
+  commentForm: FormGroup = this.fb.group({
+    commentContent: ['', [Validators.required, Validators.maxLength(this.commentMaxLength)]],
+    commentStatus: ['']
+  });
+  commentStatusList = COMMENT_STATUS_LIST;
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -55,18 +67,22 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   private initialized = false;
   private lastParam: string = '';
   private options: OptionEntity = {};
+  private user!: LoginUserEntity;
   private optionsListener!: Subscription;
   private paramListener!: Subscription;
+  private userListener!: Subscription;
 
   constructor(
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
     private optionsService: OptionsService,
     private commentService: CommentService,
+    private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
     private message: NzMessageService,
-    private modal: NzModalService
+    private modal: NzModalService,
+    private fb: FormBuilder
   ) {
     super();
   }
@@ -74,6 +90,9 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   ngOnInit(): void {
     this.optionsListener = this.optionsService.options$.subscribe((options) => {
       this.options = options;
+    });
+    this.userListener = this.userService.loginUser$.subscribe((user) => {
+      this.user = user;
     });
     this.titles = ['评论列表', '评论管理', this.options['site_name']];
     this.updateTitle();
@@ -135,21 +154,21 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.router.navigate(['./'], { queryParams: { keyword: this.keyword }, relativeTo: this.route });
   }
 
-  confirmOperation(action: string, commentIds?: string[]) {
+  confirmAuditOperation(action: string, commentIds?: string[]) {
     this.checkedCommentIds = commentIds || Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
     if (this.checkedCommentIds.length < 1) {
       this.message.error('请先选择至少一条评论');
       return;
     }
-    this.operation = <CommentStatus>action;
+    this.auditAction = <CommentAuditAction>action;
     this.checkedLength = this.checkedCommentIds.length;
     this.modal.confirm({
       nzContent: this.confirmModalContent,
       nzClassName: 'confirm-with-no-title',
-      nzOkDanger: this.operation === CommentStatus.TRASH,
+      nzOkDanger: this.auditAction === CommentAuditAction.TRASH,
       nzOnOk: () => this.auditComments(),
       nzOnCancel: () => {
-        this.operation = null;
+        this.auditAction = null;
       }
     });
   }
@@ -157,9 +176,68 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   auditComments() {
     this.commentService.auditComments({
       commentIds: this.checkedCommentIds,
-      action: <CommentStatus>this.operation
+      action: <CommentAuditAction>this.auditAction
     }).subscribe((res) => {
-      this.operation = null;
+      this.auditAction = null;
+      if (res.code !== ResponseCode.SUCCESS) {
+        this.message.error(res.message || Message.UNKNOWN_ERROR);
+      } else {
+        this.message.success(Message.SUCCESS);
+        this.fetchData(true);
+      }
+    });
+  }
+
+  showCommentModal(action: string, comment: CommentModel) {
+    this.commentOperation = <CommentOperation>action;
+    this.currentComment = comment;
+    if (action === CommentOperation.EDIT) {
+      this.commentForm.get('commentContent')?.setValue(comment.commentContent);
+      this.commentForm.get('commentStatus')?.setValue(comment.commentStatus);
+    } else if (action === CommentOperation.REPLY) {
+      this.commentForm.get('commentContent')?.setValue('');
+    }
+    this.resetFormStatus(this.commentForm);
+    this.commentModalVisible = true;
+  }
+
+  closeCommentModal() {
+    this.commentModalVisible = false;
+  }
+
+  saveComment() {
+    if (this.commentOperation === CommentOperation.DETAIL) {
+      this.closeCommentModal();
+      return;
+    }
+    const { value, valid } = this.validateForm(this.commentForm);
+    if (!valid) {
+      return;
+    }
+    this.saveLoading = true;
+    let commentData: CommentSaveParam;
+    if (this.commentOperation === CommentOperation.EDIT) {
+      commentData = {
+        commentId: this.currentComment.commentId,
+        postId: this.currentComment.post.postId,
+        commentContent: value.commentContent,
+        commentStatus: value.commentStatus,
+        commentAuthor: this.user.userName || '',
+        commentAuthorEmail: this.user.userEmail || ''
+      };
+    } else {
+      commentData = {
+        parentId: this.currentComment.commentId,
+        postId: this.currentComment.post.postId,
+        commentContent: value.commentContent,
+        commentStatus: CommentStatus.NORMAL,
+        commentAuthor: this.user.userName || '',
+        commentAuthorEmail: this.user.userEmail || ''
+      };
+    }
+    this.commentService.saveComment(commentData).subscribe((res) => {
+      this.saveLoading = false;
+      this.closeCommentModal();
       if (res.code !== ResponseCode.SUCCESS) {
         this.message.error(res.message || Message.UNKNOWN_ERROR);
       } else {

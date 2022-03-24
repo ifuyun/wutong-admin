@@ -5,7 +5,7 @@ import { OptionEntity } from './interfaces/option.interface';
 import { LoginUserEntity } from './interfaces/user.interface';
 import { MenuItem, MenusService } from './services/menus.service';
 import { OptionsService } from './services/options.service';
-import { UsersService } from './services/users.service';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private optionsService: OptionsService,
-    private usersService: UsersService,
+    private userService: UserService,
     private menusService: MenusService,
     private router: Router
   ) {
@@ -45,9 +45,9 @@ export class AppComponent implements OnInit {
       checkedMenuKey.childMenuKey && (this.selectedMap[checkedMenuKey.childMenuKey] = true);
     });
     this.optionsService.getOptions().subscribe();
-    this.usersService.loginUser$.subscribe((user) => {
+    this.userService.loginUser$.subscribe((user) => {
       this.loginUser = user;
-      this.isLoggedIn = this.usersService.isLoggedIn;
+      this.isLoggedIn = this.userService.isLoggedIn;
     });
   }
 

@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { ApiUrl } from '../../config/api-url';
 import { ApiService } from '../../core/api.service';
 import { HttpResponseEntity } from '../../interfaces/http-response';
-import { CommentAuditParam, CommentList, CommentQueryParam } from './comment.interface';
+import { CommentAuditParam, CommentList, CommentQueryParam, CommentSaveParam } from './comment.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -21,5 +21,9 @@ export class CommentService {
 
   auditComments(param: CommentAuditParam): Observable<HttpResponseEntity> {
     return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.AUDIT_COMMENTS), param);
+  }
+
+  saveComment(param: CommentSaveParam): Observable<HttpResponseEntity> {
+    return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_COMMENTS), param);
   }
 }

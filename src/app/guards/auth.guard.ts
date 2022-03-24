@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UsersService } from '../services/users.service';
+import { UserService } from '../services/user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   constructor(
-    private usersService: UsersService,
+    private userService: UserService,
     private router: Router
   ) {
   }
@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
   checkLogin(url?: string): Observable<boolean | UrlTree> {
     // todo: check auth by url & role
-    return this.usersService.getLoginUser().pipe(map((user) => {
+    return this.userService.getLoginUser().pipe(map((user) => {
       const isLoggedIn = !!user.userName;
       if (!isLoggedIn) {
         location.href = '/user/login';

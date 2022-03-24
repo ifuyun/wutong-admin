@@ -72,6 +72,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
     NzSelectModule,
     // NzSkeletonModule,
     // NzSliderModule,
+    // NzSpaceModule,
     // NzSpinModule,
     // NzStatisticModule,
     // NzStepsModule,

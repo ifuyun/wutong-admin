@@ -46,6 +46,19 @@ export enum CommentStatus {
   TRASH = 'trash'
 }
 
+export enum CommentOperation {
+  EDIT = 'edit',
+  REPLY = 'reply',
+  DETAIL = 'detail'
+}
+
+export enum CommentAuditAction {
+  RESOLVE = 'normal',
+  REJECT = 'reject',
+  SPAM = 'spam',
+  TRASH = 'trash'
+}
+
 export enum TaxonomyType {
   POST = 'post',
   LINK = 'link',

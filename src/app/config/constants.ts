@@ -1,3 +1,5 @@
+export const COMMENT_LENGTH = 800;
+
 export const POST_STATUS: Record<string, string> = Object.freeze({
   publish: '公开',
   password: '加密',
@@ -14,6 +16,11 @@ export const COMMENT_STATUS: Record<string, string> = Object.freeze({
   spam: '垃圾评论',
   trash: '已删除'
 });
+
+export const COMMENT_STATUS_LIST = Object.freeze(Object.keys(COMMENT_STATUS).map((item) => ({
+  key: item,
+  label: COMMENT_STATUS[item]
+})));
 
 export const TAXONOMY_STATUS: Record<number, string> = Object.freeze({
   0: '不公开',

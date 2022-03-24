@@ -1,4 +1,4 @@
-import { CommentStatus } from '../../config/common.enum';
+import { CommentAuditAction, CommentStatus } from '../../config/common.enum';
 import { PostModel } from '../post/post.interface';
 
 export interface CommentEntity {
@@ -21,7 +21,7 @@ export interface CommentModel extends CommentEntity {
   commentAgent: string;
   parentId: string;
   userId: string;
-  post?: PostModel;
+  post: PostModel;
 }
 
 export interface CommentList {
@@ -42,5 +42,15 @@ export interface CommentQueryParam {
 
 export interface CommentAuditParam {
   commentIds: string[];
-  action: CommentStatus;
+  action: CommentAuditAction;
+}
+
+export interface CommentSaveParam {
+  commentId?: string;
+  postId: string;
+  parentId?: string;
+  commentContent: string;
+  commentStatus?: CommentStatus;
+  commentAuthor: string;
+  commentAuthorEmail: string;
 }

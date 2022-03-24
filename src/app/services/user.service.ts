@@ -8,7 +8,7 @@ import { LoginUserEntity } from '../interfaces/user.interface';
 @Injectable({
   providedIn: 'root'
 })
-export class UsersService {
+export class UserService {
   private loginUser: BehaviorSubject<LoginUserEntity> = new BehaviorSubject<LoginUserEntity>({});
   loginUser$: Observable<LoginUserEntity> = this.loginUser.asObservable();
   isLoggedIn = false;

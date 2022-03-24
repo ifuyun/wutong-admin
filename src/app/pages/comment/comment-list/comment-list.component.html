@@ -1,11 +1,11 @@
 <div class="table-operations">
-  <button nz-button nzType="default" [disabled]="!pendingEnabled" (click)="confirmOperation('normal')">批准</button>
-  <button nz-button nzType="default" [disabled]="!pendingEnabled" (click)="confirmOperation('reject')">驳回</button>
-  <button nz-button nzType="default" [disabled]="!pendingEnabled" (click)="confirmOperation('spam')">垃圾评论</button>
-  <button nz-button nzType="default" [disabled]="!trashEnabled" (click)="confirmOperation('trash')">删除</button>
+  <button nz-button [disabled]="!pendingEnabled" (click)="confirmAuditOperation('normal')">批准</button>
+  <button nz-button [disabled]="!pendingEnabled" (click)="confirmAuditOperation('reject')">驳回</button>
+  <button nz-button [disabled]="!pendingEnabled" (click)="confirmAuditOperation('spam')">垃圾评论</button>
+  <button nz-button [disabled]="!trashEnabled" (click)="confirmAuditOperation('trash')">删除</button>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
-      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..." />
+      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..."/>
     </nz-input-group>
     <ng-template #searchBtn>
       <button nz-button nzType="primary" (click)="onSearch()" nzSearch><i nz-icon nzType="search"></i></button>
@@ -26,47 +26,52 @@
   [nzPageSize]="pageSize"
   (nzQueryParams)="onQueryParamsChange($event)"
   [nzShowTotal]="rangeTemplate"
+  [nzScroll]="{x: '1300px'}"
 >
   <thead>
   <tr>
     <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
     <th nzWidth="260px" nzColumnKey="content">评论内容</th>
     <th nzWidth="180px" nzColumnKey="postTitle">文章</th>
-    <th nzWidth="60px" nzColumnKey="commentVote" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
-    <th nzWidth="140px" nzColumnKey="email">邮箱</th>
     <th nzWidth="130px" nzColumnKey="created" [nzSortFn]="true" [nzSortPriority]="true">时间</th>
     <th nzWidth="80px" [nzFilters]="statusFilter" [nzFilterFn]="true" nzColumnKey="status">状态</th>
+    <th nzWidth="60px" nzColumnKey="commentVote" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
+    <th nzWidth="100px" nzColumnKey="commentUser">评论用户</th>
+    <th nzWidth="140px" nzColumnKey="email">评论邮箱</th>
     <th nzRight>操作</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let data of commentList">
     <td [nzChecked]="checkedMap[data.commentId] || false" (nzCheckedChange)="onItemChecked(data.commentId, $event)"></td>
-    <td nzEllipsis [title]="data.commentContent">{{ data.commentContent }}</td>
+    <td nzEllipsis [title]="data.commentContent">
+      <a (click)="showCommentModal('detail', data)">{{ data.commentContent }}</a>
+    </td>
     <td nzEllipsis [title]="data.post?.postTitle">
       <a [href]="data.post?.postGuid" target="_blank">{{ data.post?.postTitle }}</a>
     </td>
-    <td [title]="data.commentVote">{{ data.commentVote }}</td>
-    <td nzEllipsis [title]="data.commentAuthorEmail">{{ data.commentAuthorEmail }}</td>
     <td nzEllipsis [title]="data.created | date:'yyyy-MM-dd HH:mm'">{{ data.created | date:'yy-MM-dd HH:mm' }}</td>
     <td>
       <a [ngClass]="'status-' + data.commentStatus" routerLink="./" [queryParams]="{status: data.commentStatus}">{{ data.commentStatus | commentStatus }}</a>
     </td>
+    <td [title]="data.commentVote">{{ data.commentVote }}</td>
+    <td nzEllipsis [title]="data.commentAuthor">{{ data.commentAuthor }}</td>
+    <td nzEllipsis [title]="data.commentAuthorEmail">{{ data.commentAuthorEmail }}</td>
     <td nzRight>
       <ng-container *ngIf="data.commentStatus === 'pending'">
-        <a class="op-btn-normal" (click)="confirmOperation('normal', [data.commentId])">批准</a>
+        <a class="op-btn-normal" (click)="confirmAuditOperation('normal', [data.commentId])">批准</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a class="op-btn-reject" (click)="confirmOperation('reject', [data.commentId])">驳回</a>
+        <a class="op-btn-reject" (click)="confirmAuditOperation('reject', [data.commentId])">驳回</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a class="op-btn-spam" (click)="confirmOperation('spam', [data.commentId])">垃圾评论</a>
+        <a class="op-btn-spam" (click)="confirmAuditOperation('spam', [data.commentId])">垃圾评论</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>
-      <a href="#">回复</a>
+      <a (click)="showCommentModal('reply', data)">回复</a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a href="#">编辑</a>
+      <a (click)="showCommentModal('edit', data)">编辑</a>
       <ng-container *ngIf="data.commentStatus !== 'trash'">
         <nz-divider nzType="vertical"></nz-divider>
-        <a (click)="confirmOperation('trash', [data.commentId])">删除</a>
+        <a (click)="confirmAuditOperation('trash', [data.commentId])">删除</a>
       </ng-container>
     </td>
   </tr>
@@ -76,14 +81,131 @@
   当前：第 <span style="color: red">{{ range[0] }}-{{ range[1] }}</span> 条，共：<span style="color: red">{{ total }}</span> 条
 </ng-template>
 <ng-template #confirmModalContent>
-  <div *ngIf="operation === 'spam'">
+  <div *ngIf="auditAction === 'spam'">
     <span>确定将 <span class="warning">{{checkedLength}}</span> 条评论标记为垃圾评论吗？</span>
   </div>
-  <div *ngIf="operation !== 'spam'">
-    <ng-container [ngSwitch]="operation">
+  <div *ngIf="auditAction !== 'spam'">
+    <ng-container [ngSwitch]="auditAction">
       <span *ngSwitchCase="'normal'">确定批准 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
       <span *ngSwitchCase="'reject'">确定驳回 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
       <span *ngSwitchCase="'trash'">确定删除 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
     </ng-container>
   </div>
 </ng-template>
+<nz-modal
+  [(nzVisible)]="commentModalVisible"
+  [nzTitle]="commentModalTitle"
+  [nzContent]="commentModalContent"
+  [nzFooter]="modalFooter"
+  (nzOnCancel)="closeCommentModal()"
+  [nzMaskClosable]="commentOperation === 'detail'"
+>
+  <ng-template #commentModalTitle>
+    <ng-container [ngSwitch]="commentOperation">
+      <ng-container *ngSwitchCase="'detail'">查看评论</ng-container>
+      <ng-container *ngSwitchCase="'edit'">修改评论</ng-container>
+      <ng-container *ngSwitchCase="'reply'">回复评论</ng-container>
+    </ng-container>
+  </ng-template>
+  <ng-template #commentModalContent>
+    <form nz-form [formGroup]="commentForm">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5">评论文章</nz-form-label>
+        <nz-form-control>
+          <nz-form-text>
+            <a [href]="currentComment.post?.postGuid" target="_blank">{{ currentComment.post?.postTitle }}</a>
+          </nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+      <ng-container [ngSwitch]="commentOperation">
+        <ng-container *ngSwitchCase="'detail'">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5">评论内容</nz-form-label>
+            <nz-form-control>
+              <nz-form-text>{{ currentComment.commentContent }}</nz-form-text>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5">评论时间</nz-form-label>
+            <nz-form-control>
+              <nz-form-text>{{ currentComment.created | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5">点赞数</nz-form-label>
+            <nz-form-control>
+              <nz-form-text>{{ currentComment.commentVote }}</nz-form-text>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5">评论状态</nz-form-label>
+            <nz-form-control>
+              <nz-form-text [ngClass]="'status-' + currentComment.commentStatus">{{ currentComment.commentStatus | commentStatus }}</nz-form-text>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5">评论用户</nz-form-label>
+            <nz-form-control>
+              <nz-form-text>{{ currentComment.commentAuthor }}</nz-form-text>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5">评论邮箱</nz-form-label>
+            <nz-form-control>
+              <nz-form-text>{{ currentComment.commentAuthorEmail }}</nz-form-text>
+            </nz-form-control>
+          </nz-form-item>
+        </ng-container>
+        <ng-container *ngSwitchCase="'edit'">
+          <nz-form-item>
+            <nz-form-label nzRequired [nzSpan]="5">评论内容</nz-form-label>
+            <nz-form-control [nzErrorTip]="contentErrorTpl">
+              <nz-textarea-count [nzMaxCharacterCount]="commentMaxLength">
+                <textarea nz-input rows="6" formControlName="commentContent" placeholder="请输入评论内容"></textarea>
+              </nz-textarea-count>
+              <ng-template #contentErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">请输入评论内容</ng-container>
+                <ng-container *ngIf="control.hasError('maxlength')">评论内容最大长度为{{commentMaxLength}}字符</ng-container>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired [nzSpan]="5">评论状态</nz-form-label>
+            <nz-form-control [nzErrorTip]="statusErrorTpl">
+              <nz-select formControlName="commentStatus" nzPlaceHolder="请选择评论状态">
+                <nz-option *ngFor="let status of commentStatusList" [nzValue]="status.key" [nzLabel]="status.label"></nz-option>
+              </nz-select>
+              <ng-template #statusErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">请选择评论状态</ng-container>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+        </ng-container>
+        <ng-container *ngSwitchCase="'reply'">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5">评论内容</nz-form-label>
+            <nz-form-control>
+              <nz-form-text>{{ currentComment.commentContent }}</nz-form-text>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired [nzSpan]="5">回复内容</nz-form-label>
+            <nz-form-control [nzErrorTip]="replyErrorTpl">
+              <nz-textarea-count [nzMaxCharacterCount]="commentMaxLength">
+                <textarea nz-input rows="6" formControlName="commentContent" placeholder="请输入回复内容"></textarea>
+              </nz-textarea-count>
+              <ng-template #replyErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">请输入回复内容</ng-container>
+                <ng-container *ngIf="control.hasError('maxlength')">回复内容最大长度为{{commentMaxLength}}字符</ng-container>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+        </ng-container>
+      </ng-container>
+    </form>
+  </ng-template>
+  <ng-template #modalFooter>
+    <button nz-button nzType="default" (click)="closeCommentModal()" *ngIf="commentOperation !== 'detail'">取消</button>
+    <button nz-button nzType="primary" (click)="saveComment()" [nzLoading]="saveLoading">确定</button>
+  </ng-template>
+</nz-modal>
