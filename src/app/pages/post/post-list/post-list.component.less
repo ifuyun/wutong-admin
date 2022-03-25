@@ -6,3 +6,39 @@ nz-tag:hover {
   color: @tag-active-color;
   border-color: @tag-active-bg;
 }
+
+.comment-flag {
+  &-open {
+    color: var(--status-normal-color);
+  }
+
+  &-verify {
+    color: var(--status-pending-color);
+  }
+
+  &-close {
+    color: var(--status-disabled-color);
+  }
+}
+
+.status {
+  &-publish {
+    color: var(--status-normal-color);
+  }
+
+  &-password {
+    color: var(--status-password-color);
+  }
+
+  &-private {
+    color: var(--status-private-color);
+  }
+
+  &-draft, &-auto-draft {
+    color: var(--status-pending-color);
+  }
+
+  &-trash {
+    color: var(--status-disabled-color);
+  }
+}

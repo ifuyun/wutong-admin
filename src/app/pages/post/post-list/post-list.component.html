@@ -46,6 +46,7 @@
       <th nzWidth="80px" nzColumnKey="postViewCount" [nzSortFn]="true" [nzSortPriority]="true">访问</th>
       <th nzWidth="60px" nzColumnKey="commentCount" [nzSortFn]="true" [nzSortPriority]="true">评论</th>
       <th nzWidth="80px" nzColumnKey="postStatus">状态</th>
+      <th nzWidth="80px" nzColumnKey="commentFlag">评论状态</th>
       <th nzWidth="140px" nzColumnKey="postModified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true">创建时间</th>
       <th nzWidth="80px" nzColumnKey="author">作者</th>
@@ -80,8 +81,10 @@
       <td>{{ data.post.postViewCount }}</td>
       <td>{{ data.post.commentCount || 0 }}</td>
       <td>
-        <a routerLink="./" [queryParams]="{status: data.post.postStatus}">{{ data.post.postStatus | postStatus }}</a>
+        <a [ngClass]="'status-' + data.post.postStatus"
+           routerLink="./" [queryParams]="{status: data.post.postStatus}">{{ data.post.postStatus | postStatus }}</a>
       </td>
+      <td [ngClass]="'comment-flag-' + data.post.commentFlag">{{ data.post.commentFlag | commentFlag }}</td>
       <td [title]="data.post.postModified | date:'yyyy-MM-dd HH:mm'">{{ data.post.postModified | date:'yy-MM-dd HH:mm' }}</td>
       <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">{{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}</td>
       <td nzEllipsis [title]="data.meta['postAuthor']">{{ data.meta['postAuthor'] }}</td>

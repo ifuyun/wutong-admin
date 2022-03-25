@@ -110,6 +110,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   ngOnDestroy(): void {
     this.optionsListener.unsubscribe();
     this.paramListener.unsubscribe();
+    this.userListener.unsubscribe();
   }
 
   onQueryParamsChange(params: NzTableQueryParams) {

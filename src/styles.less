@@ -1,11 +1,18 @@
-// Custom Theming for NG-ZORRO
 // For more information: https://ng.ant.design/docs/customize-theme/en
 @import "../node_modules/ng-zorro-antd/ng-zorro-antd.less";
 
 // Override less variables to here
 // View all variables: https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/components/style/themes/default.less
-
 // @primary-color: #1890ff;
+:root {
+  --status-normal-color: #389e0d;
+  --status-pending-color: #ff4d4f;
+  --status-disabled-color: #666;
+  --status-reject-color: #faad14;
+  --status-spam-color: #531dab;
+  --status-private-color: #faad14;
+  --status-password-color: #d4380d;
+}
 
 .table-operations {
   margin-bottom: 16px;

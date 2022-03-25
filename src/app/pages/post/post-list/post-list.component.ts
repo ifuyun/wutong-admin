@@ -168,7 +168,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     let pageTitle = '';
     switch (this.postType) {
       case PostType.PAGE:
-        this.tableWidth = '1480px';
+        this.tableWidth = '1560px';
         pageTitle = '页面列表';
         this.titles.unshift('文章管理');
         this.breadcrumbData.list = [{
@@ -196,7 +196,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }];
         break;
       default:
-        this.tableWidth = '1600px';
+        this.tableWidth = '1680px';
         pageTitle = '文章列表';
         this.titles.unshift('文章管理');
         this.breadcrumbData.list = [{

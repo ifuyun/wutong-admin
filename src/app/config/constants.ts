@@ -9,6 +9,12 @@ export const POST_STATUS: Record<string, string> = Object.freeze({
   trash: '已删除'
 });
 
+export const COMMENT_FLAG: Record<string, string> = Object.freeze({
+  open: '允许',
+  verify: '审核',
+  close: '禁止'
+});
+
 export const COMMENT_STATUS: Record<string, string> = Object.freeze({
   normal: '正常',
   pending: '待审',
