@@ -104,6 +104,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
       this.checkedMap[item.taxonomyId] = checked;
     });
     this.allChecked = checked;
+    this.indeterminate = false;
   }
 
   onItemChecked(checkedKey: string, checked: boolean) {

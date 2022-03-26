@@ -42,3 +42,22 @@ nz-tag:hover {
     color: var(--status-disabled-color);
   }
 }
+.filter-box {
+  @space-width: 8px;
+  padding: @space-width;
+  nz-select {
+    width: 100px;
+    + nz-select {
+      margin-left: @space-width;
+    }
+  }
+  .filter-btns {
+    margin-top: @space-width;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+    text-align: center;
+    [nz-button] + [nz-button] {
+      margin-left: @space-width;
+    }
+  }
+}

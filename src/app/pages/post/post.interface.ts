@@ -1,5 +1,5 @@
 import { BreadcrumbEntity } from '../../components/breadcrumb/breadcrumb.interface';
-import { PostStatus, PostType } from '../../config/common.enum';
+import { CommentFlag, PostStatus, PostType } from '../../config/common.enum';
 import { TaxonomyEntity } from '../taxonomy/taxonomy.interface';
 import { UserEntity } from '../../interfaces/user.interface';
 
@@ -50,18 +50,6 @@ export interface PostArchiveDate {
   count?: number;
 }
 
-export interface PostArchiveDateMap {
-  [year: string]: {
-    list: PostArchiveDate[];
-    countByYear: number;
-  };
-}
-
-export interface PostArchiveDateList {
-  dateList: PostArchiveDateMap;
-  yearList: string[];
-}
-
 export interface PostQueryParam {
   type: PostType;
   page: number;
@@ -72,7 +60,16 @@ export interface PostQueryParam {
   tag?: string;
   year?: string;
   month?: string;
-  status?: PostStatus;
+  status?: PostStatus[];
+  commentFlag?: CommentFlag[];
   author?: string;
   orders?: string[][];
+}
+
+export interface PostArchiveDatesQueryParam {
+  postType?: PostType;
+  status?: PostStatus[];
+  showCount: boolean;
+  limit?: number;
+  from?: string;
 }

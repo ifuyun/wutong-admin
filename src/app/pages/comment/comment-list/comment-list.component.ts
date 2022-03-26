@@ -61,7 +61,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   };
 
   private checkedCommentIds: string[] = [];
-  private status!: CommentStatus[];
+  private statuses!: CommentStatus[];
   private orders: string[][] = [];
   /* antd初始化和重置filter时都会触发nzQueryParams，因此设置状态限制请求数 */
   private initialized = false;
@@ -100,7 +100,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
       this.page = Number(queryParams.get('page')) || 1;
       this.keyword = queryParams.get('keyword')?.trim() || '';
-      this.status = <CommentStatus[]>(queryParams.getAll('status') || []);
+      this.statuses = <CommentStatus[]>(queryParams.getAll('status') || []);
       this.initialized = false;
       this.initFilter();
       this.fetchData();
@@ -128,7 +128,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       }
     });
     const currentFilter = filter.filter((item) => item.key === 'status' && item.value.length > 0);
-    this.status = currentFilter.length > 0 ? currentFilter[0].value : [];
+    this.statuses = currentFilter.length > 0 ? currentFilter[0].value : [];
     this.fetchData();
   }
 
@@ -268,8 +268,8 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       orders: this.orders,
       from: 'admin'
     };
-    if (this.status && this.status.length > 0) {
-      param.status = this.status;
+    if (this.statuses && this.statuses.length > 0) {
+      param.status = this.statuses;
     }
     if (this.keyword) {
       param.keyword = this.keyword;
@@ -293,7 +293,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.statusFilter = Object.keys(COMMENT_STATUS).map((key) => ({
       text: COMMENT_STATUS[key],
       value: key,
-      byDefault: this.status.includes(<CommentStatus>key)
+      byDefault: this.statuses.includes(<CommentStatus>key)
     }));
   }
 

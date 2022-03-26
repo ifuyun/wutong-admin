@@ -92,6 +92,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
       this.checkedMap[item.linkId] = checked;
     });
     this.allChecked = checked;
+    this.indeterminate = false;
   }
 
   onItemChecked(checkedKey: string, checked: boolean) {
