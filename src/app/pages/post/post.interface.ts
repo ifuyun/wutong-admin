@@ -14,6 +14,7 @@ export interface PostEntity {
   postStatus: string;
   commentFlag: string;
   postOriginal: number;
+  postPassword: string;
   postModified: Date;
   postCreated: Date;
   postParent: string;
@@ -24,7 +25,6 @@ export interface PostEntity {
 }
 
 export interface PostModel extends PostEntity {
-  postPassword: string;
   postName: string;
   postMimeType: string;
 }
@@ -41,7 +41,6 @@ export interface PostList {
   posts?: Post[];
   page?: number;
   total?: number;
-  postIds?: string[];
 }
 
 export interface PostArchiveDate {

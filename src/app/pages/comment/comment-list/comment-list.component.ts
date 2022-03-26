@@ -18,6 +18,8 @@ import { OptionEntity } from '../../../interfaces/option.interface';
 import { LoginUserEntity } from '../../../interfaces/user.interface';
 import { OptionsService } from '../../../services/options.service';
 import { UserService } from '../../../services/user.service';
+import { PostModel } from '../../post/post.interface';
+import { PostService } from '../../post/post.service';
 import { CommentModel, CommentQueryParam, CommentSaveParam } from '../comment.interface';
 import { CommentService } from '../comment.service';
 
@@ -31,6 +33,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   readonly commentMaxLength = COMMENT_LENGTH;
 
   commentList: CommentModel[] = [];
+  post!: PostModel | null;
   page: number = 1;
   total: number = 0;
   pageSize: number = 10;
@@ -60,6 +63,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     list: []
   };
 
+  private postId!: string;
   private checkedCommentIds: string[] = [];
   private statuses!: CommentStatus[];
   private orders: string[][] = [];
@@ -78,6 +82,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     private optionsService: OptionsService,
     private commentService: CommentService,
     private userService: UserService,
+    private postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
     private message: NzMessageService,
@@ -98,6 +103,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.updateTitle();
     this.updateBreadcrumb();
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
+      this.postId = queryParams.get('postId')?.trim() || '';
       this.page = Number(queryParams.get('page')) || 1;
       this.keyword = queryParams.get('keyword')?.trim() || '';
       this.statuses = <CommentStatus[]>(queryParams.getAll('status') || []);
@@ -248,7 +254,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     });
   }
 
-  protected updateBreadcrumb(breadcrumbData?: BreadcrumbData): void {
+  protected updateBreadcrumb(): void {
     this.breadcrumbData.list = [{
       label: '评论管理',
       url: 'comment',
@@ -258,6 +264,13 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       url: 'comment',
       tooltip: '评论列表'
     }];
+    if (this.post) {
+      this.breadcrumbData.list.push({
+        label: this.post.postTitle,
+        url: '',
+        tooltip: this.post.postTitle
+      });
+    }
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
   }
 
@@ -268,6 +281,9 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       orders: this.orders,
       from: 'admin'
     };
+    if (this.postId) {
+      param.postId = this.postId;
+    }
     if (this.statuses && this.statuses.length > 0) {
       param.status = this.statuses;
     }
@@ -279,8 +295,16 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       return;
     }
     this.loading = true;
-    this.resetCheckedStatus();
     this.lastParam = latestParam;
+    this.resetCheckedStatus();
+    if (this.postId) {
+      this.postService.getPostById(this.postId).subscribe((post) => {
+        this.post = post.post;
+        this.updateBreadcrumb();
+      });
+    } else {
+      this.post = null;
+    }
     this.commentService.getComments(param).subscribe((res) => {
       this.loading = false;
       this.commentList = res.comments || [];

@@ -22,10 +22,8 @@ export class PostService {
     );
   }
 
-  getPostById(postId: string, referer?: string): Observable<Post> {
-    return this.apiService.httpGet(this.apiService.getApiUrlWithParam(ApiUrl.GET_POST, postId), {
-      from: referer
-    }).pipe(
+  getPostById(postId: string): Observable<Post> {
+    return this.apiService.httpGet(this.apiService.getApiUrlWithParam(ApiUrl.GET_POST, postId)).pipe(
       map((res) => res?.data || {})
     );
   }

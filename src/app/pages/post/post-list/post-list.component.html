@@ -96,7 +96,9 @@
         </a>
       </td>
       <td>{{ data.post.postViewCount }}</td>
-      <td>{{ data.post.commentCount || 0 }}</td>
+      <td>
+        <a routerLink="/comment" [queryParams]="{postId: data.post.postId}">{{ data.post.commentCount || 0 }}</a>
+      </td>
       <td>
         <a [ngClass]="'status-' + data.post.postStatus"
            routerLink="./" [queryParams]="{status: data.post.postStatus}">{{ data.post.postStatus | postStatus }}</a>
