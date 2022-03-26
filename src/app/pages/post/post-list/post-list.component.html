@@ -65,8 +65,16 @@
       <th nzWidth="240px">标题</th>
       <th nzWidth="300px">文件路径</th>
       <th nzWidth="80px">状态</th>
-      <th nzWidth="140px" nzColumnKey="postModified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
-      <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true">创建时间</th>
+      <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true" nzCustomFilter>
+        上传时间
+        <nz-filter-trigger
+          [(nzVisible)]="postDateFilterVisible"
+          (nzVisibleChange)="onPostDateFilterVisibleChange($event)"
+          [nzActive]="!!postDateYear"
+          [nzDropdownMenu]="dateList">
+          <i nz-icon nzType="filter" nzTheme="fill"></i>
+        </nz-filter-trigger>
+      </th>
     </ng-container>
     <th nzWidth="160px" nzRight>操作</th>
   </tr>
@@ -104,11 +112,12 @@
     </ng-container>
     <ng-container *ngIf="postType === 'attachment'">
       <td nzEllipsis [title]="data.post.postTitle">{{ data.post.postTitle }}</td>
-      <td nzEllipsis [title]="data.post.postGuid">{{ data.post.postGuid }}</td>
+      <td nzEllipsis [title]="data.post.postGuid">
+        <a (click)="previewImage(data.post.postGuid)">{{ data.post.postGuid }}</a>
+      </td>
       <td>
         <a routerLink="./" [queryParams]="{status: data.post.postStatus}">{{ data.post.postStatus | postStatus }}</a>
       </td>
-      <td [title]="data.post.postModified | date:'yyyy-MM-dd HH:mm'">{{ data.post.postModified | date:'yy-MM-dd HH:mm' }}</td>
       <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">{{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}</td>
     </ng-container>
     <td nzRight>

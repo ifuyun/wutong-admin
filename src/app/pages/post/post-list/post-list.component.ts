@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { uniq } from 'lodash';
+import { NzImage, NzImageService } from 'ng-zorro-antd/image';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
@@ -71,6 +72,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     private postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
+    private imageService: NzImageService,
     private message: NzMessageService
   ) {
     super();
@@ -173,6 +175,13 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     if (!visible) {
       this.onPostDateFilterChange();
     }
+  }
+
+  previewImage(url: string) {
+    const images: NzImage[] = [{
+      src: this.options['static_host'] + url
+    }];
+    this.imageService.preview(images);
   }
 
   protected updateBreadcrumb(): void {
