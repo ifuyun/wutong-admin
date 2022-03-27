@@ -96,7 +96,7 @@
   [(nzVisible)]="commentModalVisible"
   [nzTitle]="commentModalTitle"
   [nzContent]="commentModalContent"
-  [nzFooter]="modalFooter"
+  [nzFooter]="commentModalFooter"
   (nzOnCancel)="closeCommentModal()"
   [nzMaskClosable]="commentOperation === 'detail'"
 >
@@ -113,7 +113,7 @@
         <nz-form-label [nzSpan]="5">评论文章</nz-form-label>
         <nz-form-control>
           <nz-form-text>
-            <a [href]="currentComment.post?.postGuid" target="_blank">{{ currentComment.post?.postTitle }}</a>
+            <a [href]="activeComment.post?.postGuid" target="_blank">{{ activeComment.post?.postTitle }}</a>
           </nz-form-text>
         </nz-form-control>
       </nz-form-item>
@@ -122,37 +122,37 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5">评论内容</nz-form-label>
             <nz-form-control>
-              <nz-form-text>{{ currentComment.commentContent }}</nz-form-text>
+              <nz-form-text>{{ activeComment.commentContent }}</nz-form-text>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
             <nz-form-label [nzSpan]="5">评论时间</nz-form-label>
             <nz-form-control>
-              <nz-form-text>{{ currentComment.created | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+              <nz-form-text>{{ activeComment.created | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
             <nz-form-label [nzSpan]="5">点赞数</nz-form-label>
             <nz-form-control>
-              <nz-form-text>{{ currentComment.commentVote }}</nz-form-text>
+              <nz-form-text>{{ activeComment.commentVote }}</nz-form-text>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
             <nz-form-label [nzSpan]="5">评论状态</nz-form-label>
             <nz-form-control>
-              <nz-form-text [ngClass]="'status-' + currentComment.commentStatus">{{ currentComment.commentStatus | commentStatus }}</nz-form-text>
+              <nz-form-text [ngClass]="'status-' + activeComment.commentStatus">{{ activeComment.commentStatus | commentStatus }}</nz-form-text>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
             <nz-form-label [nzSpan]="5">评论用户</nz-form-label>
             <nz-form-control>
-              <nz-form-text>{{ currentComment.commentAuthor }}</nz-form-text>
+              <nz-form-text>{{ activeComment.commentAuthor }}</nz-form-text>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
             <nz-form-label [nzSpan]="5">评论邮箱</nz-form-label>
             <nz-form-control>
-              <nz-form-text>{{ currentComment.commentAuthorEmail }}</nz-form-text>
+              <nz-form-text>{{ activeComment.commentAuthorEmail }}</nz-form-text>
             </nz-form-control>
           </nz-form-item>
         </ng-container>
@@ -185,7 +185,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5">评论内容</nz-form-label>
             <nz-form-control>
-              <nz-form-text>{{ currentComment.commentContent }}</nz-form-text>
+              <nz-form-text>{{ activeComment.commentContent }}</nz-form-text>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
@@ -204,7 +204,7 @@
       </ng-container>
     </form>
   </ng-template>
-  <ng-template #modalFooter>
+  <ng-template #commentModalFooter>
     <button nz-button nzType="default" (click)="closeCommentModal()" *ngIf="commentOperation !== 'detail'">取消</button>
     <button nz-button nzType="primary" (click)="saveComment()" [nzLoading]="saveLoading">确定</button>
   </ng-template>

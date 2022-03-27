@@ -44,7 +44,7 @@ export class MenusService {
     }, {
       key: 'postForm',
       title: '写文章',
-      url: '/post/form',
+      url: '/post/edit',
       level: 2,
       order: 2
     }, {
@@ -56,7 +56,7 @@ export class MenusService {
     }, {
       key: 'postFormStandalone',
       title: '创建新页面',
-      url: '/post/form-standalone',
+      url: '/post/edit-standalone',
       level: 2,
       order: 4
     }]

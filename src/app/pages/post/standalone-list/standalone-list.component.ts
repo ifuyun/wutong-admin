@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { PostType } from '../../../config/common.enum';
 
 @Component({
-  selector: 'app-post-standalone',
+  selector: 'app-standalone-list',
   template: `
     <app-post-list [postType]="postType"></app-post-list>
   `
 })
-export class PostStandaloneComponent {
+export class StandaloneListComponent {
   postType = PostType.PAGE;
 }

@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { uniq } from 'lodash';
@@ -7,17 +8,18 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
 import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentFlag, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
-import { COMMENT_FLAG, POST_STATUS, TREE_ROOT_NODE_KEY } from '../../../config/constants';
+import { COMMENT_FLAG, MAX_POST_CATEGORY_NUMBER, MAX_POST_TAG_NUMBER, POST_STATUS, TREE_ROOT_NODE_KEY } from '../../../config/constants';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
-import { TaxonomyModel, TaxonomyNode } from '../../taxonomy/taxonomy.interface';
+import { TaxonomyModel } from '../../taxonomy/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomy/taxonomy.service';
-import { Post, PostArchiveDate, PostQueryParam } from '../post.interface';
+import { Post, PostArchiveDate, PostModel, PostQueryParam } from '../post.interface';
 import { PostService } from '../post.service';
 
 @Component({
@@ -55,6 +57,32 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     children: []
   }];
   postCategoryExpanded: string[] = [];
+  postModalVisible = false;
+  activePost!: PostModel;
+  saveLoading = false;
+  postFormRowGutter = 16;
+  maxExcerptLength = 140;
+  maxCategoryNumber = MAX_POST_CATEGORY_NUMBER;
+  maxTagNumber = MAX_POST_TAG_NUMBER;
+  tagList: string[] = [];
+  tagListLoading = false;
+  tagSearchChange$ = new BehaviorSubject('');
+  postForm: FormGroup = this.fb.group({
+    title: ['', [Validators.required]],
+    postDate: [''],
+    category: [''],
+    tag: [[]],
+    status: [''],
+    password: [''],
+    commentFlag: [''],
+    original: [''],
+    source: [''],
+    author: [''],
+    copyrightType: [''],
+    wechatCardFlag: [''],
+    modifiedFlag: [''],
+    excerpt: ['']
+  });
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -88,6 +116,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     private route: ActivatedRoute,
     private router: Router,
     private imageService: NzImageService,
+    private fb: FormBuilder,
     private message: NzMessageService
   ) {
     super();
@@ -115,6 +144,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.fetchCategories();
       this.fetchData();
     });
+    this.initTagSearch();
   }
 
   ngOnDestroy() {
@@ -159,7 +189,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.refreshBtnStatus();
   }
 
-  onSearch(event?: KeyboardEvent) {
+  onPostSearch(event?: KeyboardEvent) {
     if (event && event.key !== 'Enter') {
       return;
     }
@@ -216,6 +246,29 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       src: this.options['static_host'] + url
     }];
     this.imageService.preview(images);
+  }
+
+  showPostModal(post: PostModel) {
+    this.activePost = post;
+    this.resetFormStatus(this.postForm);
+    this.postModalVisible = true;
+  }
+
+  closePostModal() {
+    this.postModalVisible = false;
+  }
+
+  onTagSearch(keyword: string) {
+    if (!keyword.trim()) {
+      this.tagList = [];
+      return;
+    }
+    this.tagListLoading = true;
+    this.tagSearchChange$.next(keyword);
+  }
+
+  savePost() {
+
   }
 
   protected updateBreadcrumb(): void {
@@ -360,12 +413,24 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.fetchData();
   }
 
+  private initTagSearch() {
+    const getTagList = (keyword: string): Observable<string[]> => this.taxonomyService.searchTags(keyword);
+    const tagList$: Observable<string[]> = this.tagSearchChange$
+      .asObservable()
+      .pipe(debounceTime(500))
+      .pipe(switchMap(getTagList));
+    tagList$.subscribe((data) => {
+      this.tagList = data;
+      this.tagListLoading = false;
+    });
+  }
+
   private initPageInfo() {
     this.titles = [this.options['site_name']];
     let pageTitle = '';
     switch (this.postType) {
       case PostType.PAGE:
-        this.tableWidth = '1560px';
+        this.tableWidth = '1570px';
         pageTitle = '页面列表';
         this.titles.unshift('文章管理');
         this.breadcrumbData.list = [{
@@ -393,7 +458,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }];
         break;
       default:
-        this.tableWidth = '1680px';
+        this.tableWidth = '1690px';
         pageTitle = '文章列表';
         this.titles.unshift('文章管理');
         this.breadcrumbData.list = [{

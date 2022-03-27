@@ -50,7 +50,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   commentModalVisible = false;
   commentOperation!: CommentOperation | null;
   saveLoading = false;
-  currentComment!: CommentModel;
+  activeComment!: CommentModel;
   commentForm: FormGroup = this.fb.group({
     commentContent: ['', [Validators.required, Validators.maxLength(this.commentMaxLength)]],
     commentStatus: ['']
@@ -85,9 +85,9 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     private postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
-    private message: NzMessageService,
+    private fb: FormBuilder,
     private modal: NzModalService,
-    private fb: FormBuilder
+    private message: NzMessageService
   ) {
     super();
   }
@@ -197,7 +197,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
 
   showCommentModal(action: string, comment: CommentModel) {
     this.commentOperation = <CommentOperation>action;
-    this.currentComment = comment;
+    this.activeComment = comment;
     if (action === CommentOperation.EDIT) {
       this.commentForm.get('commentContent')?.setValue(comment.commentContent);
       this.commentForm.get('commentStatus')?.setValue(comment.commentStatus);
@@ -225,8 +225,8 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     let commentData: CommentSaveParam;
     if (this.commentOperation === CommentOperation.EDIT) {
       commentData = {
-        commentId: this.currentComment.commentId,
-        postId: this.currentComment.post.postId,
+        commentId: this.activeComment.commentId,
+        postId: this.activeComment.post.postId,
         commentContent: value.commentContent,
         commentStatus: value.commentStatus,
         commentAuthor: this.user.userName || '',
@@ -234,8 +234,8 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       };
     } else {
       commentData = {
-        parentId: this.currentComment.commentId,
-        postId: this.currentComment.post.postId,
+        parentId: this.activeComment.commentId,
+        postId: this.activeComment.post.postId,
         commentContent: value.commentContent,
         commentStatus: CommentStatus.NORMAL,
         commentAuthor: this.user.userName || '',

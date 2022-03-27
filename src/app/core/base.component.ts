@@ -19,6 +19,9 @@ export abstract class BaseComponent {
   }
 
   protected resetFormStatus(form: FormGroup): void {
+    if (!form) {
+      return;
+    }
     form.markAsPristine();
     form.markAsUntouched();
     form.updateValueAndValidity();
