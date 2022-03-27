@@ -50,7 +50,16 @@
           <i nz-icon nzType="filter" nzTheme="fill"></i>
         </nz-filter-trigger>
       </th>
-      <th nzWidth="120px" nzColumnKey="category" *ngIf="postType === 'post'">分类</th>
+      <th nzWidth="120px" nzColumnKey="category" *ngIf="postType === 'post'" nzCustomFilter>
+        分类
+        <nz-filter-trigger
+          [(nzVisible)]="categoryFilterVisible"
+          (nzVisibleChange)="onCategoryFilterVisibleChange($event)"
+          [nzActive]="!!postCategory"
+          [nzDropdownMenu]="categoryList">
+          <i nz-icon nzType="filter" nzTheme="fill"></i>
+        </nz-filter-trigger>
+      </th>
       <th nzColumnKey="tag">标签</th>
       <th nzWidth="80px" nzColumnKey="postViewCount" [nzSortFn]="true" [nzSortPriority]="true">访问</th>
       <th nzWidth="60px" nzColumnKey="commentCount" [nzSortFn]="true" [nzSortPriority]="true">评论</th>
@@ -147,6 +156,24 @@
       <div class="filter-btns">
         <button nz-button nzSize="small" nzType="link" (click)="onPostDateFilterReset()" [disabled]="!postDateYear">重置</button>
         <button nz-button nzSize="small" nzType="primary" (click)="onPostDateFilterOk()" class="search-button">确定</button>
+      </div>
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-dropdown-menu #categoryList>
+  <div class="ant-table-filter-dropdown">
+    <div class="filter-box">
+      <nz-tree-select
+        nzShowSearch
+        nzPlaceHolder="请选择分类"
+        [nzDropdownStyle]="{'max-height': '320px'}"
+        [nzExpandedKeys]="postCategoryExpanded"
+        [nzNodes]="postCategoryList"
+        [(ngModel)]="postCategory"
+      ></nz-tree-select>
+      <div class="filter-btns">
+        <button nz-button nzSize="small" nzType="link" (click)="onCategoryFilterReset()" [disabled]="!postCategory">重置</button>
+        <button nz-button nzSize="small" nzType="primary" (click)="onCategoryFilterOk()" class="search-button">确定</button>
       </div>
     </div>
   </div>

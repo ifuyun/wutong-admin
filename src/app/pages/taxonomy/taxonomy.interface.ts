@@ -5,23 +5,23 @@ export interface TaxonomyEntity {
   description?: string;
   slug: string;
   taxonomyId: string;
-  parentId?: string;
+  parentId: string;
   status: number;
+  termOrder: number;
   count?: number;
 }
 
 export interface TaxonomyModel extends TaxonomyEntity {
   type: string;
-  termOrder: number;
   termGroup: number;
   created: Date;
   modified: Date;
 }
 
-export interface TaxonomyNode extends TaxonomyEntity {
-  level?: number;
+export interface TaxonomyNode extends TaxonomyModel {
   children?: TaxonomyNode[];
-  hasChildren?: boolean;
+  isLeaf?: boolean;
+  level?: number;
   isChecked?: boolean;
 }
 
@@ -33,9 +33,9 @@ export interface TaxonomyList {
 
 export interface TaxonomyQueryParam {
   type: string;
+  status?: TaxonomyStatus | TaxonomyStatus[];
   page: number;
   pageSize?: number;
-  status?: TaxonomyStatus;
   keyword?: string;
   orders?: string[][];
 }

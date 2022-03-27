@@ -53,7 +53,7 @@ export interface PostQueryParam {
   type: PostType;
   page: number;
   pageSize?: number;
-  from?: string;
+  fa?: 0 | 1;
   keyword?: string;
   category?: string;
   tag?: string;
@@ -70,5 +70,5 @@ export interface PostArchiveDatesQueryParam {
   status?: PostStatus[];
   showCount: boolean;
   limit?: number;
-  from?: string;
+  fa?: 0 | 1;
 }

@@ -1,4 +1,5 @@
 export const COMMENT_LENGTH = 800;
+export const TREE_ROOT_NODE_KEY = 'root';
 
 export const POST_STATUS: Record<string, string> = Object.freeze({
   publish: '公开',

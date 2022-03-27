@@ -10,7 +10,7 @@ import { TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
-import { TaxonomyModel, TaxonomyQueryParam } from '../taxonomy.interface';
+import { TaxonomyNode, TaxonomyQueryParam } from '../taxonomy.interface';
 import { TaxonomyService } from '../taxonomy.service';
 
 @Component({
@@ -21,7 +21,7 @@ import { TaxonomyService } from '../taxonomy.service';
 export class TaxonomyListComponent extends ListComponent implements OnInit, OnDestroy {
   @Input() taxonomyType!: TaxonomyType;
 
-  taxonomyList: TaxonomyModel[] = [];
+  taxonomyList: TaxonomyNode[] = [];
   page: number = 1;
   total: number = 0;
   pageSize: number = 10;

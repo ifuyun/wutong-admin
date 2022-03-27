@@ -279,7 +279,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       page: this.page,
       pageSize: this.pageSize,
       orders: this.orders,
-      from: 'admin'
+      fa: 1
     };
     if (this.postId) {
       param.postId = this.postId;

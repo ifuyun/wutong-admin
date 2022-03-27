@@ -21,6 +21,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
 
 @NgModule({
   exports: [
@@ -87,7 +88,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
     // NzTransferModule,
     // NzTreeModule,
     // NzTreeViewModule,
-    // NzTreeSelectModule,
+    NzTreeSelectModule,
     // NzTypographyModule,
     // NzUploadModule,
     // NzWaveModule,

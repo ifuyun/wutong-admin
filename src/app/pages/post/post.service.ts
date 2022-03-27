@@ -29,7 +29,7 @@ export class PostService {
   }
 
   getPostArchiveDates(param: PostArchiveDatesQueryParam): Observable<PostArchiveDate[]> {
-    const {showCount, status, from} = param;
+    const {showCount, status, fa} = param;
     let { postType, limit } = param;
     if (limit === null || limit === undefined) {
       limit = 10;
@@ -39,7 +39,7 @@ export class PostService {
       postType,
       showCount: showCount ? 1 : 0,
       limit,
-      from
+      fa
     };
     if (status && status.length > 0) {
       reqParam.status = status;

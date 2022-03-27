@@ -6,14 +6,17 @@ import { NzImage, NzImageService } from 'ng-zorro-antd/image';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
+import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
 import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
-import { CommentFlag, PostStatus, PostType } from '../../../config/common.enum';
-import { COMMENT_FLAG, POST_STATUS } from '../../../config/constants';
+import { CommentFlag, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
+import { COMMENT_FLAG, POST_STATUS, TREE_ROOT_NODE_KEY } from '../../../config/constants';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
+import { TaxonomyModel, TaxonomyNode } from '../../taxonomy/taxonomy.interface';
+import { TaxonomyService } from '../../taxonomy/taxonomy.service';
 import { Post, PostArchiveDate, PostQueryParam } from '../post.interface';
 import { PostService } from '../post.service';
 
@@ -44,6 +47,14 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   postDateMonth!: string;
   postDateYearList: { label: string, value: string }[] = [];
   postDateMonthList: { label: string, value: string }[] = [];
+  categoryFilterVisible = false;
+  postCategory!: string;
+  postCategoryList: NzTreeNodeOptions[] = [{
+    title: '全部',
+    key: TREE_ROOT_NODE_KEY,
+    children: []
+  }];
+  postCategoryExpanded: string[] = [];
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -58,18 +69,22 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   private statuses!: PostStatus[];
   private commentFlags!: CommentFlag[];
   private postDateList!: PostArchiveDate[];
+  private taxonomies!: TaxonomyModel[];
+  private taxonomyNodes!: NzTreeNodeOptions[];
   private orders: string[][] = [];
   private lastParam: string = '';
   private options: OptionEntity = {};
   private optionsListener!: Subscription;
   private paramListener!: Subscription;
   private archiveListener!: Subscription;
+  private taxonomyListener!: Subscription;
 
   constructor(
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
     private optionsService: OptionsService,
     private postService: PostService,
+    private taxonomyService: TaxonomyService,
     private route: ActivatedRoute,
     private router: Router,
     private imageService: NzImageService,
@@ -97,6 +112,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.commentFlags = <CommentFlag[]>(queryParams.getAll('commentFlag') || []);
       this.initFilter();
       this.fetchArchiveDates();
+      this.fetchCategories();
       this.fetchData();
     });
   }
@@ -105,6 +121,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.optionsListener.unsubscribe();
     this.paramListener.unsubscribe();
     this.archiveListener.unsubscribe();
+    this.taxonomyListener.unsubscribe();
   }
 
   onQueryParamsChange(params: NzTableQueryParams) {
@@ -154,7 +171,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.postDateMonth = month || '';
     this.postDateMonthList = this.postDateList.filter((item) => item.dateText.split('/')[0] === year)
       .map((item) => item.dateText.split('/')[1])
-      .sort((a, b) => a > b ? 1 : -1)
+      .sort((a, b) => a < b ? 1 : -1)
       .map((item) => ({ label: `${item}月`, value: item }));
   }
 
@@ -177,6 +194,23 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     }
   }
 
+  onCategoryFilterReset() {
+    this.postCategory = '';
+    this.categoryFilterVisible = false;
+    this.onCategoryFilterChange();
+  }
+
+  onCategoryFilterOk() {
+    this.categoryFilterVisible = false;
+    this.onCategoryFilterChange();
+  }
+
+  onCategoryFilterVisibleChange(visible: boolean) {
+    if (!visible) {
+      this.onCategoryFilterChange();
+    }
+  }
+
   previewImage(url: string) {
     const images: NzImage[] = [{
       src: this.options['static_host'] + url
@@ -194,12 +228,12 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       page: this.page,
       pageSize: this.pageSize,
       orders: this.orders,
-      from: 'admin'
+      fa: 1
     };
     if (this.keyword) {
       param.keyword = this.keyword;
     }
-    if (this.category) {
+    if (this.category && this.category !== TREE_ROOT_NODE_KEY) {
       param.category = this.category;
     }
     if (this.tag) {
@@ -226,6 +260,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.lastParam = latestParam;
     this.postService.getPosts(param).subscribe((res) => {
       this.loading = false;
+      res.postList = res.postList || {};
       this.postList = res.postList.posts || [];
       this.page = res.postList.page || 1;
       this.total = res.postList.total || 0;
@@ -241,16 +276,88 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       showCount: false,
       limit: 0,
       postType: this.postType,
-      from: 'admin'
+      fa: 1
     }).subscribe((res) => {
       this.postDateList = res;
       this.postDateYearList = uniq(
         this.postDateList.map((item) => item.dateText.split('/')[0])
       )
-        .sort((a, b) => a > b ? 1 : -1)
+        .sort((a, b) => a < b ? 1 : -1)
         .map((item) => ({ label: `${item}年`, value: item }));
       this.initPostDateFilter();
     });
+  }
+
+  private fetchCategories() {
+    if (this.taxonomies) {
+      this.initCategoryFilter();
+      return;
+    }
+    this.taxonomyListener = this.taxonomyService.getTaxonomies({
+      type: TaxonomyType.POST,
+      status: [TaxonomyStatus.OPEN, TaxonomyStatus.CLOSED],
+      page: 1,
+      pageSize: 0
+    }).subscribe((res) => {
+      this.taxonomies = res.taxonomies || [];
+      this.taxonomyNodes = this.taxonomyService.generateTaxonomyTree(this.taxonomies);
+      this.postCategoryList[0].children = this.taxonomyNodes;
+      this.initCategoryFilter();
+    });
+  }
+
+  private initFilter() {
+    this.statusFilter = Object.keys(POST_STATUS).map((key) => ({
+      text: POST_STATUS[key],
+      value: key,
+      byDefault: this.statuses.includes(<PostStatus>key)
+    }));
+    this.commentFlagFilter = Object.keys(COMMENT_FLAG).map((key) => ({
+      text: COMMENT_FLAG[key],
+      value: key,
+      byDefault: this.commentFlags.includes(<CommentFlag>key)
+    }));
+  }
+
+  private initPostDateFilter() {
+    this.postDateYear = this.year;
+    this.onPostDateYearChange(this.year, this.month);
+  }
+
+  private initCategoryFilter() {
+    this.resetCategoryFilterStatus();
+    this.postCategory = this.category;
+    this.postCategoryExpanded = [TREE_ROOT_NODE_KEY];
+    if (this.postCategory) {
+      const curId = this.taxonomyService.getTaxonomyIdBySlug(this.taxonomies, this.postCategory);
+      const parents = this.taxonomyService.getParentTaxonomies(this.taxonomies, curId)
+        .map((item) => item.slug);
+      this.postCategoryExpanded = this.postCategoryExpanded.concat(parents);
+    }
+  }
+
+  private onPostDateFilterChange() {
+    this.year = this.postDateYear;
+    this.month = this.postDateMonth;
+    this.fetchData();
+  }
+
+  private resetCategoryFilterStatus() {
+    const iterator = (nodes: NzTreeNodeOptions[]) => {
+      for (const node of nodes) {
+        node.selected = false;
+        node.expanded = false;
+        if (node.children && node.children.length > 0) {
+          iterator(node.children);
+        }
+      }
+    };
+    iterator(this.taxonomyNodes);
+  }
+
+  private onCategoryFilterChange() {
+    this.category = this.postCategory;
+    this.fetchData();
   }
 
   private initPageInfo() {
@@ -302,24 +409,6 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.titles.unshift(pageTitle);
   }
 
-  private initFilter() {
-    this.statusFilter = Object.keys(POST_STATUS).map((key) => ({
-      text: POST_STATUS[key],
-      value: key,
-      byDefault: this.statuses.includes(<PostStatus>key)
-    }));
-    this.commentFlagFilter = Object.keys(COMMENT_FLAG).map((key) => ({
-      text: COMMENT_FLAG[key],
-      value: key,
-      byDefault: this.commentFlags.includes(<CommentFlag>key)
-    }));
-  }
-
-  private initPostDateFilter() {
-    this.postDateYear = this.year;
-    this.onPostDateYearChange(this.year, this.month);
-  }
-
   private refreshCheckedStatus() {
     this.allChecked = this.postList.every((item) => this.checkedMap[item.post.postId]) || false;
     this.indeterminate = this.postList.some((item) => this.checkedMap[item.post.postId]) && !this.allChecked || false;
@@ -340,11 +429,5 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     } else {
       this.trashEnabled = false;
     }
-  }
-
-  private onPostDateFilterChange() {
-    this.year = this.postDateYear;
-    this.month = this.postDateMonth;
-    this.fetchData();
   }
 }

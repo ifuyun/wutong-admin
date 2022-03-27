@@ -33,7 +33,7 @@ export interface CommentList {
 export interface CommentQueryParam {
   page: number;
   pageSize?: number;
-  from?: string;
+  fa?: 0 | 1;
   postId?: string;
   keyword?: string;
   status?: CommentStatus[];
