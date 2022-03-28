@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { uniq } from 'lodash';
@@ -13,13 +13,13 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentFlag, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
-import { COMMENT_FLAG, MAX_POST_CATEGORY_NUMBER, MAX_POST_TAG_NUMBER, POST_STATUS, TREE_ROOT_NODE_KEY } from '../../../config/constants';
+import { COMMENT_FLAG, POST_EXCERPT_LENGTH, POST_STATUS, POST_TAG_LIMIT, POST_TAXONOMY_LIMIT, TREE_ROOT_NODE_KEY } from '../../../config/constants';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
 import { TaxonomyModel } from '../../taxonomy/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomy/taxonomy.service';
-import { Post, PostArchiveDate, PostModel, PostQueryParam } from '../post.interface';
+import { Post, PostArchiveDate, PostQueryParam } from '../post.interface';
 import { PostService } from '../post.service';
 
 @Component({
@@ -29,6 +29,7 @@ import { PostService } from '../post.service';
 })
 export class PostListComponent extends ListComponent implements OnInit, OnDestroy {
   @Input() postType!: PostType;
+  // @ViewChild('categoryFilterTree', { static: false }) categoryFilterTree!: NzTreeComponent;
 
   postList: Post[] = [];
   page: number = 1;
@@ -50,38 +51,89 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   postDateYearList: { label: string, value: string }[] = [];
   postDateMonthList: { label: string, value: string }[] = [];
   categoryFilterVisible = false;
-  postCategory!: string;
-  postCategoryList: NzTreeNodeOptions[] = [{
+  activeCategory!: string;
+  categoryFilterList: NzTreeNodeOptions[] = [{
     title: '全部',
     key: TREE_ROOT_NODE_KEY,
     children: []
   }];
   postCategoryExpanded: string[] = [];
   postModalVisible = false;
-  activePost!: PostModel;
+  activePost!: Post;
   saveLoading = false;
   postFormRowGutter = 16;
-  maxExcerptLength = 140;
-  maxCategoryNumber = MAX_POST_CATEGORY_NUMBER;
-  maxTagNumber = MAX_POST_TAG_NUMBER;
+  maxExcerptLength = POST_EXCERPT_LENGTH;
+  maxTaxonomyNumber = POST_TAXONOMY_LIMIT;
+  maxTagNumber = POST_TAG_LIMIT;
   tagList: string[] = [];
   tagListLoading = false;
   tagSearchChange$ = new BehaviorSubject('');
+  postCategoryList: NzTreeNodeOptions[] = [];
+  disabledDate = (current: Date): boolean => current.getTime() > Date.now();
   postForm: FormGroup = this.fb.group({
     title: ['', [Validators.required]],
-    postDate: [''],
-    category: [''],
+    postDate: ['', [Validators.required]],
+    category: ['', [
+      Validators.required,
+      (control: AbstractControl): ValidationErrors | null => {
+        const checkedIds = control.value;
+        let allIds: string[] = [];
+        if (checkedIds) {
+          allIds = this.taxonomyService.getAllChildren(this.postCategoryList, checkedIds);
+        }
+        return allIds.length > this.maxTaxonomyNumber ? { maxsize: true } : null;
+      }
+    ]],
     tag: [[]],
-    status: [''],
+    status: ['', [Validators.required]],
     password: [''],
-    commentFlag: [''],
-    original: [''],
+    commentFlag: ['', [Validators.required]],
+    original: [1, [Validators.required]],
     source: [''],
     author: [''],
-    copyrightType: [''],
-    wechatCardFlag: [''],
-    modifiedFlag: [''],
-    excerpt: ['']
+    copyrightType: [0, [Validators.required]],
+    wechatCardFlag: [0, [Validators.required]],
+    updateFlag: [0, [Validators.required]],
+    excerpt: ['', [
+      (control: AbstractControl): ValidationErrors | null => {
+        const excerpt = control.value.trim();
+        if (this.postType !== PostType.ATTACHMENT) {
+          return null;
+        }
+        const result: ValidationErrors = {};
+        if (!excerpt) {
+          result['required'] = true;
+        }
+        if (excerpt.length > this.maxExcerptLength) {
+          result['maxlength'] = true;
+        }
+        return result;
+      }
+    ]]
+  }, {
+    validators: [
+      (control: AbstractControl): ValidationErrors | null => {
+        const original = control.get('original')?.value;
+        const source = control.get('source')?.value.trim();
+        const author = control.get('author')?.value.trim();
+        const result: ValidationErrors = {};
+        if (original !== 0 || source && author) {
+          return null;
+        }
+        if (!source) {
+          result['source'] = true;
+        }
+        if (!author) {
+          result['author'] = true;
+        }
+        return result;
+      },
+      (control: AbstractControl): ValidationErrors | null => {
+        const status = control.get('status')?.value;
+        const password = control.get('password')?.value.trim();
+        return status === PostStatus.PASSWORD && !password ? { password: true } : null;
+      }
+    ]
   });
 
   protected titles: string[] = [];
@@ -98,7 +150,6 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   private commentFlags!: CommentFlag[];
   private postDateList!: PostArchiveDate[];
   private taxonomies!: TaxonomyModel[];
-  private taxonomyNodes!: NzTreeNodeOptions[];
   private orders: string[][] = [];
   private lastParam: string = '';
   private options: OptionEntity = {};
@@ -225,7 +276,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   }
 
   onCategoryFilterReset() {
-    this.postCategory = '';
+    this.activeCategory = '';
     this.categoryFilterVisible = false;
     this.onCategoryFilterChange();
   }
@@ -248,8 +299,24 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.imageService.preview(images);
   }
 
-  showPostModal(post: PostModel) {
+  showPostModal(post: Post) {
     this.activePost = post;
+    this.postForm.setValue({
+      title: post.post.postTitle,
+      postDate: new Date(post.post.postDate),
+      category: post.categories.map((item) => item.taxonomyId),
+      tag: post.tags.map((item) => item.name),
+      status: post.post.postStatus,
+      password: post.post.postPassword || '',
+      commentFlag: post.post.commentFlag,
+      original: post.post.postOriginal,
+      source: post.meta['post_source'] || '',
+      author: post.meta['post_author'] || '',
+      copyrightType: Number(post.meta['copyright_type']),
+      wechatCardFlag: Number(post.meta['show_wechat_card']) || 0,
+      updateFlag: 0,
+      excerpt: post.post.postExcerpt
+    });
     this.resetFormStatus(this.postForm);
     this.postModalVisible = true;
   }
@@ -268,7 +335,11 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   }
 
   savePost() {
-
+    const { value, valid } = this.validateForm(this.postForm);
+    if (!valid) {
+      return;
+    }
+    this.saveLoading = true;
   }
 
   protected updateBreadcrumb(): void {
@@ -353,8 +424,8 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       pageSize: 0
     }).subscribe((res) => {
       this.taxonomies = res.taxonomies || [];
-      this.taxonomyNodes = this.taxonomyService.generateTaxonomyTree(this.taxonomies);
-      this.postCategoryList[0].children = this.taxonomyNodes;
+      this.categoryFilterList[0].children = this.taxonomyService.generateTaxonomyTree(this.taxonomies, true);
+      this.postCategoryList = this.taxonomyService.generateTaxonomyTree(this.taxonomies);
       this.initCategoryFilter();
     });
   }
@@ -379,10 +450,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
 
   private initCategoryFilter() {
     this.resetCategoryFilterStatus();
-    this.postCategory = this.category;
+    this.activeCategory = this.category;
     this.postCategoryExpanded = [TREE_ROOT_NODE_KEY];
-    if (this.postCategory) {
-      const curId = this.taxonomyService.getTaxonomyIdBySlug(this.taxonomies, this.postCategory);
+    if (this.activeCategory) {
+      const curId = this.taxonomyService.getTaxonomyIdBySlug(this.taxonomies, this.activeCategory);
       const parents = this.taxonomyService.getParentTaxonomies(this.taxonomies, curId)
         .map((item) => item.slug);
       this.postCategoryExpanded = this.postCategoryExpanded.concat(parents);
@@ -405,11 +476,11 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }
       }
     };
-    iterator(this.taxonomyNodes);
+    iterator(this.categoryFilterList);
   }
 
   private onCategoryFilterChange() {
-    this.category = this.postCategory;
+    this.category = this.activeCategory;
     this.fetchData();
   }
 

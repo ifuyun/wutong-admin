@@ -18,13 +18,6 @@ export interface TaxonomyModel extends TaxonomyEntity {
   modified: Date;
 }
 
-export interface TaxonomyNode extends TaxonomyModel {
-  children?: TaxonomyNode[];
-  isLeaf?: boolean;
-  level?: number;
-  isChecked?: boolean;
-}
-
 export interface TaxonomyList {
   taxonomies?: TaxonomyModel[];
   page?: number;

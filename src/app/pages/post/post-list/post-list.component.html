@@ -55,7 +55,7 @@
         <nz-filter-trigger
           [(nzVisible)]="categoryFilterVisible"
           (nzVisibleChange)="onCategoryFilterVisibleChange($event)"
-          [nzActive]="!!postCategory"
+          [nzActive]="!!activeCategory"
           [nzDropdownMenu]="categoryList">
           <i nz-icon nzType="filter" nzTheme="fill"></i>
         </nz-filter-trigger>
@@ -119,7 +119,9 @@
       </td>
       <td [title]="data.post.postModified | date:'yyyy-MM-dd HH:mm'">{{ data.post.postModified | date:'yy-MM-dd HH:mm' }}</td>
       <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">{{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}</td>
-      <td nzEllipsis [title]="data.meta['postAuthor']">{{ data.meta['postAuthor'] }}</td>
+      <td nzEllipsis [title]="data.meta['post_author'] || data.post.author.userNiceName">
+        {{ data.meta['post_author'] || data.post.author.userNiceName }}
+      </td>
       <td nzEllipsis [title]="data.post.author.userNiceName">{{ data.post.author.userNiceName }}</td>
     </ng-container>
     <ng-container *ngIf="postType === 'attachment'">
@@ -133,7 +135,7 @@
       <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">{{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}</td>
     </ng-container>
     <td nzRight>
-      <a (click)="showPostModal(data.post)">快速编辑</a>
+      <a (click)="showPostModal(data)">快速编辑</a>
       <nz-divider nzType="vertical"></nz-divider>
       <ng-container *ngIf="postType !== 'attachment'">
         <a [routerLink]="postType === 'post' ? './edit' : './edit-standalone'" [queryParams]="{postId: data.post.postId}">编辑</a>
@@ -171,11 +173,11 @@
         nzPlaceHolder="请选择分类"
         [nzDropdownStyle]="{'max-height': '320px'}"
         [nzExpandedKeys]="postCategoryExpanded"
-        [nzNodes]="postCategoryList"
-        [(ngModel)]="postCategory"
+        [nzNodes]="categoryFilterList"
+        [(ngModel)]="activeCategory"
       ></nz-tree-select>
       <div class="filter-btns">
-        <button nz-button nzSize="small" nzType="link" (click)="onCategoryFilterReset()" [disabled]="!postCategory">重置</button>
+        <button nz-button nzSize="small" nzType="link" (click)="onCategoryFilterReset()" [disabled]="!activeCategory">重置</button>
         <button nz-button nzSize="small" nzType="primary" (click)="onCategoryFilterOk()" class="search-button">确定</button>
       </div>
     </div>
@@ -219,7 +221,11 @@
             <nz-form-item>
               <nz-form-label nzRequired>发布时间</nz-form-label>
               <nz-form-control [nzErrorTip]="postDateErrorTpl">
-                <input nz-input type="text" formControlName="postDate" placeholder="请选择发布时间"/>
+                <nz-date-picker
+                  formControlName="postDate"
+                  nzPlaceHolder="请选择发布时间"
+                  [nzDisabledDate]="disabledDate"
+                ></nz-date-picker>
                 <ng-template #postDateErrorTpl let-control>
                   <ng-container *ngIf="control.hasError('required')">请选择发布时间</ng-container>
                 </ng-template>
@@ -239,11 +245,11 @@
                   formControlName="category"
                   nzPlaceHolder="请选择分类"
                   [nzDropdownStyle]="{'max-height': '400px'}"
-                  [nzMaxTagCount]="maxCategoryNumber"
                   [nzNodes]="postCategoryList"
                 ></nz-tree-select>
                 <ng-template #categoryErrorTpl let-control>
                   <ng-container *ngIf="control.hasError('required')">请选择分类</ng-container>
+                  <ng-container *ngIf="control.hasError('maxsize')">分类最多选择{{maxTaxonomyNumber}}个</ng-container>
                 </ng-template>
               </nz-form-control>
             </nz-form-item>
@@ -254,12 +260,12 @@
         <div nz-col [nzSpan]="24">
           <nz-form-item>
             <nz-form-label>标签</nz-form-label>
-            <nz-form-control [nzErrorTip]="tagErrorTpl">
+            <nz-form-control>
               <nz-select
                 nzMode="tags"
-                nzAllowClear
                 nzShowSearch
                 nzServerSearch
+                nzAllowClear
                 formControlName="tag"
                 nzPlaceHolder="请选择标签"
                 [nzMaxTagCount]="maxTagNumber"
@@ -276,9 +282,6 @@
                   </div>
                 </nz-option>
               </nz-select>
-              <ng-template #tagErrorTpl let-control>
-                <ng-container *ngIf="control.hasError('required')">请选择标签</ng-container>
-              </ng-template>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -290,8 +293,8 @@
             <nz-form-control>
               <nz-radio-group formControlName="status" nzName="postStatus">
                 <label nz-radio nzValue="publish">公开</label>
-                <label nz-radio nzValue="password" *ngIf="postType !== 'attachment'">密码保护</label>
-                <label nz-radio nzValue="private" *ngIf="postType !== 'attachment'">私密</label>
+                <label nz-radio nzValue="password" *ngIf="postType !== 'attachment'">加密</label>
+                <label nz-radio nzValue="private" *ngIf="postType !== 'attachment'">隐藏</label>
                 <label nz-radio nzValue="trash">删除</label>
               </nz-radio-group>
             </nz-form-control>
@@ -303,10 +306,13 @@
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label nzRequired>密码</nz-form-label>
-            <nz-form-control [nzErrorTip]="passwordErrorTpl">
+            <nz-form-control
+              [nzValidateStatus]="postForm.get('password')?.dirty && postForm.errors?.['password'] ? 'error' : 'success'"
+              [nzErrorTip]="passwordErrorTpl"
+            >
               <input nz-input type="text" formControlName="password" placeholder="请输入密码"/>
-              <ng-template #passwordErrorTpl let-control>
-                <ng-container *ngIf="control.hasError('required')">请输入密码</ng-container>
+              <ng-template #passwordErrorTpl>
+                <ng-container *ngIf="postForm.errors?.['password']">请输入密码</ng-container>
               </ng-template>
             </nz-form-control>
           </nz-form-item>
@@ -334,22 +340,25 @@
             <nz-form-label nzRequired>是否原创</nz-form-label>
             <nz-form-control>
               <nz-radio-group formControlName="original" nzName="original">
-                <label nz-radio nzValue="1">原创</label>
-                <label nz-radio nzValue="0">转载</label>
+                <label nz-radio [nzValue]="1">原创</label>
+                <label nz-radio [nzValue]="0">转载</label>
               </nz-radio-group>
             </nz-form-control>
           </nz-form-item>
         </div>
       </div>
       <div nz-row [nzGutter]="postFormRowGutter"
-           *ngIf="postForm.get('original')?.value === '0'">
+           *ngIf="postForm.get('original')?.value === 0">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label nzRequired>来源</nz-form-label>
-            <nz-form-control [nzErrorTip]="sourceErrorTpl">
+            <nz-form-control
+              [nzValidateStatus]="postForm.get('source')?.dirty && postForm.errors?.['source'] ? 'error' : 'success'"
+              [nzErrorTip]="sourceErrorTpl"
+            >
               <input nz-input type="text" formControlName="source" placeholder="请输入来源"/>
-              <ng-template #sourceErrorTpl let-control>
-                <ng-container *ngIf="control.hasError('required')">请输入来源</ng-container>
+              <ng-template #sourceErrorTpl>
+                <ng-container *ngIf="postForm.errors?.['source']">请输入来源</ng-container>
               </ng-template>
             </nz-form-control>
           </nz-form-item>
@@ -357,10 +366,13 @@
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label nzRequired>作者</nz-form-label>
-            <nz-form-control [nzErrorTip]="authorErrorTpl">
+            <nz-form-control
+              [nzValidateStatus]="postForm.get('author')?.dirty && postForm.errors?.['author'] ? 'error' : 'success'"
+              [nzErrorTip]="authorErrorTpl"
+            >
               <input nz-input type="text" formControlName="author" placeholder="请输入作者"/>
-              <ng-template #authorErrorTpl let-control>
-                <ng-container *ngIf="control.hasError('required')">请输入作者</ng-container>
+              <ng-template #authorErrorTpl>
+                <ng-container *ngIf="postForm.errors?.['author']">请输入作者</ng-container>
               </ng-template>
             </nz-form-control>
           </nz-form-item>
@@ -373,9 +385,9 @@
               <nz-form-label nzRequired>版权类型</nz-form-label>
               <nz-form-control>
                 <nz-radio-group formControlName="copyrightType" nzName="copyrightType">
-                  <label nz-radio nzValue="0">禁止转载</label>
-                  <label nz-radio nzValue="1">转载需授权</label>
-                  <label nz-radio nzValue="2">CC-BY-NC-ND</label>
+                  <label nz-radio [nzValue]="0">禁止转载</label>
+                  <label nz-radio [nzValue]="1">转载需授权</label>
+                  <label nz-radio [nzValue]="2">CC-BY-NC-ND</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>
@@ -387,9 +399,9 @@
               <nz-form-label nzRequired>插入名片</nz-form-label>
               <nz-form-control>
                 <nz-radio-group formControlName="wechatCardFlag" nzName="wechatCardFlag">
-                  <label nz-radio nzValue="1">带分隔线</label>
-                  <label nz-radio nzValue="2">仅名片</label>
-                  <label nz-radio nzValue="0">否</label>
+                  <label nz-radio [nzValue]="1">带分隔线</label>
+                  <label nz-radio [nzValue]="2">仅名片</label>
+                  <label nz-radio [nzValue]="0">否</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>
@@ -400,9 +412,9 @@
             <nz-form-item>
               <nz-form-label nzRequired>更新时间</nz-form-label>
               <nz-form-control>
-                <nz-radio-group formControlName="modifiedFlag" nzName="modifiedFlag">
-                  <label nz-radio nzValue="1">是</label>
-                  <label nz-radio nzValue="0">否</label>
+                <nz-radio-group formControlName="updateFlag" nzName="updateFlag">
+                  <label nz-radio [nzValue]="1">是</label>
+                  <label nz-radio [nzValue]="0">否</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>

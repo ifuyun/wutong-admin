@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiUrl } from '../../config/api-url';
 import { ApiService } from '../../core/api.service';
-import { TaxonomyList, TaxonomyModel, TaxonomyNode, TaxonomyQueryParam } from './taxonomy.interface';
+import { TaxonomyList, TaxonomyModel, TaxonomyQueryParam } from './taxonomy.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +19,9 @@ export class TaxonomyService {
     );
   }
 
-  generateTaxonomyTree(taxonomies: TaxonomyNode[]) {
+  generateTaxonomyTree(taxonomies: TaxonomyModel[], bySlug = false) {
     const nodes: NzTreeNodeOptions[] = taxonomies.map((item) => ({
-      key: item.slug,
+      key: bySlug ? item.slug : item.taxonomyId,
       title: item.name,
       taxonomyId: item.taxonomyId,
       parentId: item.parentId
@@ -34,7 +34,7 @@ export class TaxonomyService {
     });
   }
 
-  getTaxonomyIdBySlug(taxonomies: TaxonomyNode[], slug: string): string {
+  getTaxonomyIdBySlug(taxonomies: TaxonomyModel[], slug: string): string {
     const result = taxonomies.filter((item) => item.slug === slug);
     if (result.length > 0) {
       return result[0].taxonomyId;
@@ -42,13 +42,13 @@ export class TaxonomyService {
     return '';
   }
 
-  getParentTaxonomies(nodes: TaxonomyModel[], nodeId: string): TaxonomyModel[] {
+  getParentTaxonomies(taxonomyList: TaxonomyModel[], taxonomyId: string): TaxonomyModel[] {
     const parentNodes: TaxonomyModel[] = [];
-    if (!nodeId) {
+    if (!taxonomyId) {
       return [];
     }
     const iterator = (parentId: string) => {
-      nodes.forEach((item) => {
+      taxonomyList.forEach((item) => {
         if (item.taxonomyId === parentId) {
           parentNodes.push(item);
           if (item.parentId) {
@@ -57,7 +57,7 @@ export class TaxonomyService {
         }
       });
     };
-    iterator(nodeId);
+    iterator(taxonomyId);
     return parentNodes;
   }
 
@@ -70,5 +70,30 @@ export class TaxonomyService {
     }).pipe(
       map((res) => res?.data || [])
     );
+  }
+
+  getAllChildren(taxonomies: NzTreeNodeOptions[], taxonomyIds: string[]) {
+    const result: string[] = [];
+    const findChildren = (nodes: NzTreeNodeOptions[]) => {
+      nodes.forEach((node) => {
+        result.push(node['taxonomyId']);
+        if (node.children && node.children.length > 0) {
+          findChildren(node.children);
+        }
+      })
+    }
+    const findNode = (nodes: NzTreeNodeOptions[], id: string) => {
+      nodes.forEach((node) => {
+        if (node['taxonomyId'] === id) {
+          findChildren([node]);
+        } else {
+          if (node.children && node.children.length > 0) {
+            findNode(node.children, id);
+          }
+        }
+      });
+    };
+    taxonomyIds.forEach((id) => findNode(taxonomies, id));
+    return result;
   }
 }

@@ -1,7 +1,12 @@
 export const COMMENT_LENGTH = 800;
 export const TREE_ROOT_NODE_KEY = 'root';
-export const MAX_POST_CATEGORY_NUMBER = 5;
-export const MAX_POST_TAG_NUMBER = 20;
+
+export const POST_TITLE_LENGTH = 100;
+export const POST_EXCERPT_LENGTH = 140;
+export const POST_TAXONOMY_LIMIT = 5;
+export const POST_TAG_LIMIT = 15;
+export const POST_SOURCE_LENGTH = 100;
+export const POST_AUTHOR_LENGTH = 50;
 
 export const POST_STATUS: Record<string, string> = Object.freeze({
   publish: '公开',

@@ -1,30 +1,30 @@
 import { BreadcrumbEntity } from '../../components/breadcrumb/breadcrumb.interface';
-import { CommentFlag, PostStatus, PostType } from '../../config/common.enum';
-import { TaxonomyEntity } from '../taxonomy/taxonomy.interface';
+import { CommentFlag, PostOriginal, PostStatus, PostType } from '../../config/common.enum';
 import { UserEntity } from '../../interfaces/user.interface';
+import { TaxonomyEntity } from '../taxonomy/taxonomy.interface';
 
 export interface PostEntity {
   postId: string;
   postTitle: string;
-  postGuid: string;
-  postAuthor: string;
-  postDate: Date;
   postContent: string;
   postExcerpt: string;
+  postDate: Date;
+  postGuid: string;
   postStatus: string;
   commentFlag: string;
+  postAuthor: string;
   postOriginal: number;
   postPassword: string;
-  postModified: Date;
-  postCreated: Date;
-  postParent: string;
-  postType: string;
-  commentCount: number;
-  postViewCount: number;
-  author: UserEntity;
+  postParent?: string;
+  postType?: string;
 }
 
 export interface PostModel extends PostEntity {
+  postCreated: Date;
+  postModified: Date;
+  postViewCount: number;
+  commentCount: number;
+  author: UserEntity;
   postName: string;
   postMimeType: string;
 }
@@ -71,4 +71,21 @@ export interface PostArchiveDatesQueryParam {
   showCount: boolean;
   limit?: number;
   fa?: 0 | 1;
+}
+
+export interface PostSaveParam extends PostEntity {
+  postSource: string;
+  postTaxonomies: string[];
+  postTags?: string[];
+  showWechatCard: 0 | 1 | 2;
+  copyrightType: 0 | 1 | 2;
+}
+
+export interface FileSaveParam {
+  postId: string;
+  postTitle: string;
+  postExcerpt: string;
+  postStatus: PostStatus;
+  postOriginal: PostOriginal;
+  postTags: string[];
 }
