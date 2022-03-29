@@ -31,7 +31,7 @@ export class MenusService {
     }]
   }, {
     key: 'post',
-    title: '文章管理',
+    title: '内容管理',
     icon: 'form',
     level: 1,
     order: 2,

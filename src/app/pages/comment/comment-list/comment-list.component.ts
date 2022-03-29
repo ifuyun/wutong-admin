@@ -100,8 +100,6 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       this.user = user;
     });
     this.titles = ['评论列表', '评论管理', this.options['site_name']];
-    this.updateTitle();
-    this.updateBreadcrumb();
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
       this.postId = queryParams.get('postId')?.trim() || '';
       this.page = Number(queryParams.get('page')) || 1;
@@ -300,10 +298,11 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     if (this.postId) {
       this.postService.getPostById(this.postId).subscribe((post) => {
         this.post = post.post;
-        this.updateBreadcrumb();
+        this.updatePageInfo();
       });
     } else {
       this.post = null;
+      this.updatePageInfo();
     }
     this.commentService.getComments(param).subscribe((res) => {
       this.loading = false;
@@ -319,6 +318,11 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       value: key,
       byDefault: this.statuses.includes(<CommentStatus>key)
     }));
+  }
+
+  private updatePageInfo() {
+    this.updateTitle();
+    this.updateBreadcrumb();
   }
 
   private refreshCheckedStatus() {

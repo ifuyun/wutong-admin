@@ -5,7 +5,8 @@ import { BreadcrumbEntity } from '../../components/breadcrumb/breadcrumb.interfa
 import { ApiUrl } from '../../config/api-url';
 import { PostType } from '../../config/common.enum';
 import { ApiService } from '../../core/api.service';
-import { Post, PostArchiveDate, PostArchiveDatesQueryParam, PostList, PostQueryParam } from './post.interface';
+import { HttpResponseEntity } from '../../interfaces/http-response';
+import { Post, PostArchiveDate, PostArchiveDatesQueryParam, PostList, PostQueryParam, PostSaveParam } from './post.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -47,5 +48,9 @@ export class PostService {
     return this.apiService.httpGet(this.apiService.getApiUrl(ApiUrl.GET_POST_ARCHIVE_DATES), reqParam).pipe(
       map((res) => res?.data || [])
     );
+  }
+
+  savePost(param: PostSaveParam): Observable<HttpResponseEntity> {
+    return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_POSTS), param);
   }
 }

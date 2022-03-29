@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { PostType } from '../../../config/common.enum';
 
 @Component({
   selector: 'app-standalone-edit',
-  templateUrl: './standalone-edit.component.html',
-  styleUrls: ['./standalone-edit.component.less']
+  template: `
+    <app-post-form [postType]="postType"></app-post-form>
+  `
 })
-export class StandaloneEditComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class StandaloneEditComponent {
+  postType = PostType.PAGE;
 }

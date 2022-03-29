@@ -12,21 +12,21 @@ export interface PostEntity {
   postGuid: string;
   postStatus: string;
   commentFlag: string;
-  postAuthor: string;
+  postAuthor?: string;
   postOriginal: number;
-  postPassword: string;
+  postPassword?: string;
   postParent?: string;
   postType?: string;
 }
 
 export interface PostModel extends PostEntity {
-  postCreated: Date;
-  postModified: Date;
-  postViewCount: number;
-  commentCount: number;
-  author: UserEntity;
-  postName: string;
-  postMimeType: string;
+  postCreated?: Date;
+  postModified?: Date;
+  postViewCount?: number;
+  commentCount?: number;
+  author?: UserEntity;
+  postName?: string;
+  postMimeType?: string;
 }
 
 export interface Post {
@@ -79,6 +79,7 @@ export interface PostSaveParam extends PostEntity {
   postTags?: string[];
   showWechatCard: 0 | 1 | 2;
   copyrightType: 0 | 1 | 2;
+  updateModified: 0 | 1;
 }
 
 export interface FileSaveParam {

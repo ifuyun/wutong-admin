@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { PostType } from '../../../config/common.enum';
 
 @Component({
   selector: 'app-article-edit',
-  templateUrl: './article-edit.component.html',
-  styleUrls: ['./article-edit.component.less']
+  template: `
+    <app-post-form [postType]="postType"></app-post-form>
+  `
 })
-export class ArticleEditComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class ArticleEditComponent {
+  postType = PostType.POST;
 }

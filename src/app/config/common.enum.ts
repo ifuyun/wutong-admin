@@ -9,21 +9,12 @@ export enum PostType {
   ATTACHMENT = 'attachment'
 }
 
-export enum PostTypeDesc {
-  POST = '文章',
-  PAGE = '独立页面',
-  REVISION = '修订稿',
-  ATTACHMENT = '素材'
-}
-
 export enum PostStatus {
   PUBLISH = 'publish',
   PASSWORD = 'password',
   PRIVATE = 'private',
-  // PENDING = 'pending',
   DRAFT = 'draft',
   AUTO_DRAFT = 'auto-draft',
-  // INHERIT = 'inherit',
   TRASH = 'trash'
 }
 

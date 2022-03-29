@@ -4,6 +4,10 @@
 // Override less variables to here
 // View all variables: https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/components/style/themes/default.less
 // @primary-color: #1890ff;
+.ant-picker {
+  width: 100%;
+}
+
 :root {
   --status-normal-color: #389e0d;
   --status-pending-color: #ff4d4f;
@@ -30,5 +34,13 @@
 .confirm-with-no-title {
   .ant-modal-confirm-content {
     margin-top: 0;
+  }
+}
+
+.select-loading {
+  text-align: center;
+
+  [nz-icon] {
+    margin-right: 8px;
   }
 }

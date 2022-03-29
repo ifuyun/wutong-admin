@@ -1,0 +1,70 @@
+.form {
+  display: flex;
+  flex: auto;
+  flex-direction: row;
+
+  .form-left {
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+    margin-right: 24px;
+  }
+
+  .form-right {
+    @form-right-width: 290px;
+    flex: 0 0 @form-right-width;
+    width: @form-right-width;
+
+    nz-form-label {
+      width: 80px;
+    }
+  }
+
+  .form-label {
+    > label {
+      color: rgba(0, 0, 0, 0.85);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+
+      &::after {
+        content: ':';
+        position: relative;
+        top: -0.5px;
+        margin: 0 8px 0 2px;
+      }
+
+      &.required::before {
+        margin-right: 4px;
+        color: #ff4d4f;
+        font-size: 14px;
+        font-family: SimSun, sans-serif;
+        line-height: 1;
+        content: '*';
+      }
+    }
+  }
+
+  nz-form-item.vertical {
+    flex-direction: column;
+
+    .form-label {
+      padding-bottom: 8px;
+
+      > label {
+        height: auto;
+      }
+    }
+
+    nz-form-control {
+      flex: auto;
+    }
+  }
+
+  nz-radio-group.vertical {
+    [nz-radio] {
+      display: block;
+    }
+  }
+}

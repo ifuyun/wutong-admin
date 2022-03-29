@@ -119,10 +119,10 @@
       </td>
       <td [title]="data.post.postModified | date:'yyyy-MM-dd HH:mm'">{{ data.post.postModified | date:'yy-MM-dd HH:mm' }}</td>
       <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">{{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}</td>
-      <td nzEllipsis [title]="data.meta['post_author'] || data.post.author.userNiceName">
-        {{ data.meta['post_author'] || data.post.author.userNiceName }}
+      <td nzEllipsis [title]="data.meta['post_author'] || data.post.author?.userNiceName">
+        {{ data.meta['post_author'] || data.post.author?.userNiceName }}
       </td>
-      <td nzEllipsis [title]="data.post.author.userNiceName">{{ data.post.author.userNiceName }}</td>
+      <td nzEllipsis [title]="data.post.author?.userNiceName">{{ data.post.author?.userNiceName }}</td>
     </ng-container>
     <ng-container *ngIf="postType === 'attachment'">
       <td nzEllipsis [title]="data.post.postTitle">{{ data.post.postTitle }}</td>
@@ -138,7 +138,7 @@
       <a (click)="showPostModal(data)">快速编辑</a>
       <nz-divider nzType="vertical"></nz-divider>
       <ng-container *ngIf="postType !== 'attachment'">
-        <a [routerLink]="postType === 'post' ? './edit' : './edit-standalone'" [queryParams]="{postId: data.post.postId}">编辑</a>
+        <a [routerLink]="postType === 'post' ? './edit' : '/post/edit-standalone'" [queryParams]="{postId: data.post.postId}">编辑</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>
       <a href="#">删除</a>
@@ -219,15 +219,15 @@
         <div nz-row [nzGutter]="postFormRowGutter">
           <div nz-col [nzSpan]="12">
             <nz-form-item>
-              <nz-form-label nzRequired>发布时间</nz-form-label>
+              <nz-form-label nzRequired>发布日期</nz-form-label>
               <nz-form-control [nzErrorTip]="postDateErrorTpl">
                 <nz-date-picker
                   formControlName="postDate"
-                  nzPlaceHolder="请选择发布时间"
+                  nzPlaceHolder="请选择发布日期"
                   [nzDisabledDate]="disabledDate"
                 ></nz-date-picker>
                 <ng-template #postDateErrorTpl let-control>
-                  <ng-container *ngIf="control.hasError('required')">请选择发布时间</ng-container>
+                  <ng-container *ngIf="control.hasError('required')">请选择发布日期</ng-container>
                 </ng-template>
               </nz-form-control>
             </nz-form-item>
@@ -267,7 +267,7 @@
                 nzServerSearch
                 nzAllowClear
                 formControlName="tag"
-                nzPlaceHolder="请选择标签"
+                nzPlaceHolder="请输入标签（{{maxTagNumber}}个以内）"
                 [nzMaxTagCount]="maxTagNumber"
                 [nzMaxMultipleCount]="maxTagNumber"
                 (nzOnSearch)="onTagSearch($event)"

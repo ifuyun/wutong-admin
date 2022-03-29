@@ -14,12 +14,14 @@ import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interf
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentFlag, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
 import { COMMENT_FLAG, POST_EXCERPT_LENGTH, POST_STATUS, POST_TAG_LIMIT, POST_TAXONOMY_LIMIT, TREE_ROOT_NODE_KEY } from '../../../config/constants';
+import { Message } from '../../../config/message.enum';
+import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
 import { TaxonomyModel } from '../../taxonomy/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomy/taxonomy.service';
-import { Post, PostArchiveDate, PostQueryParam } from '../post.interface';
+import { Post, PostArchiveDate, PostQueryParam, PostSaveParam } from '../post.interface';
 import { PostService } from '../post.service';
 
 @Component({
@@ -29,7 +31,6 @@ import { PostService } from '../post.service';
 })
 export class PostListComponent extends ListComponent implements OnInit, OnDestroy {
   @Input() postType!: PostType;
-  // @ViewChild('categoryFilterTree', { static: false }) categoryFilterTree!: NzTreeComponent;
 
   postList: Post[] = [];
   page: number = 1;
@@ -155,8 +156,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   private options: OptionEntity = {};
   private optionsListener!: Subscription;
   private paramListener!: Subscription;
+  private postsListener!: Subscription;
   private archiveListener!: Subscription;
   private taxonomyListener!: Subscription;
+  private tagListener!: Subscription;
 
   constructor(
     protected title: Title,
@@ -177,9 +180,6 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.optionsListener = this.optionsService.options$.subscribe((options) => {
       this.options = options;
     });
-    this.initPageInfo();
-    this.updateTitle();
-    this.updateBreadcrumb();
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
       this.page = Number(queryParams.get('page')) || 1;
       this.category = queryParams.get('category')?.trim() || '';
@@ -190,6 +190,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.keyword = queryParams.get('keyword')?.trim() || '';
       this.statuses = <PostStatus[]>(queryParams.getAll('status') || []);
       this.commentFlags = <CommentFlag[]>(queryParams.getAll('commentFlag') || []);
+      this.updatePageInfo();
       this.initFilter();
       this.fetchArchiveDates();
       this.fetchCategories();
@@ -201,8 +202,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   ngOnDestroy() {
     this.optionsListener.unsubscribe();
     this.paramListener.unsubscribe();
+    this.postsListener.unsubscribe();
     this.archiveListener.unsubscribe();
     this.taxonomyListener.unsubscribe();
+    this.tagListener?.unsubscribe();
   }
 
   onQueryParamsChange(params: NzTableQueryParams) {
@@ -312,7 +315,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       original: post.post.postOriginal,
       source: post.meta['post_source'] || '',
       author: post.meta['post_author'] || '',
-      copyrightType: Number(post.meta['copyright_type']),
+      copyrightType: Number(post.meta['copyright_type']) || 0,
       wechatCardFlag: Number(post.meta['show_wechat_card']) || 0,
       updateFlag: 0,
       excerpt: post.post.postExcerpt
@@ -340,13 +343,44 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       return;
     }
     this.saveLoading = true;
+    const postData: PostSaveParam = {
+      postId: this.activePost.post.postId,
+      postTitle: value.title,
+      postContent: this.activePost.post.postContent,
+      postExcerpt: value.excerpt,
+      postDate: value.postDate,
+      postGuid: this.activePost.post.postGuid,
+      postStatus: value.status,
+      commentFlag: value.commentFlag,
+      postAuthor: value.author,
+      postOriginal: value.original,
+      postPassword: value.password,
+      postParent: this.activePost.post.postParent,
+      postType: this.postType,
+      postSource: value.source,
+      postTaxonomies: value.category,
+      postTags: value.tag,
+      showWechatCard: value.wechatCardFlag,
+      copyrightType: value.copyrightType,
+      updateModified: value.updateFlag,
+    };
+    this.postService.savePost(postData).subscribe((res) => {
+      this.saveLoading = false;
+      this.closePostModal();
+      if (res.code !== ResponseCode.SUCCESS) {
+        this.message.error(res.message || Message.UNKNOWN_ERROR);
+      } else {
+        this.message.success(Message.SUCCESS);
+        this.fetchData(true);
+      }
+    });
   }
 
   protected updateBreadcrumb(): void {
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
   }
 
-  private fetchData() {
+  private fetchData(force = false) {
     const param: PostQueryParam = {
       type: this.postType,
       page: this.page,
@@ -376,13 +410,13 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       param.commentFlag = this.commentFlags;
     }
     const latestParam = JSON.stringify(param);
-    if (latestParam === this.lastParam) {
+    if (latestParam === this.lastParam && !force) {
       return;
     }
     this.loading = true;
     this.resetCheckedStatus();
     this.lastParam = latestParam;
-    this.postService.getPosts(param).subscribe((res) => {
+    this.postsListener = this.postService.getPosts(param).subscribe((res) => {
       this.loading = false;
       res.postList = res.postList || {};
       this.postList = res.postList.posts || [];
@@ -490,34 +524,34 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       .asObservable()
       .pipe(debounceTime(500))
       .pipe(switchMap(getTagList));
-    tagList$.subscribe((data) => {
+    this.tagListener = tagList$.subscribe((data) => {
       this.tagList = data;
       this.tagListLoading = false;
     });
   }
 
-  private initPageInfo() {
+  private updatePageInfo() {
     this.titles = [this.options['site_name']];
     let pageTitle = '';
     switch (this.postType) {
       case PostType.PAGE:
         this.tableWidth = '1570px';
+        this.titles.unshift('内容管理');
         pageTitle = '页面列表';
-        this.titles.unshift('文章管理');
         this.breadcrumbData.list = [{
-          label: '文章管理',
+          label: '内容管理',
           url: 'post',
-          tooltip: '文章管理'
+          tooltip: '内容管理'
         }, {
           label: pageTitle,
-          url: 'post',
+          url: 'post/standalone',
           tooltip: pageTitle
         }];
         break;
       case PostType.ATTACHMENT:
         this.tableWidth = '1000px';
-        pageTitle = '素材列表';
         this.titles.unshift('素材管理');
+        pageTitle = '素材列表';
         this.breadcrumbData.list = [{
           label: '素材管理',
           url: 'resource',
@@ -530,12 +564,12 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         break;
       default:
         this.tableWidth = '1690px';
+        this.titles.unshift('内容管理');
         pageTitle = '文章列表';
-        this.titles.unshift('文章管理');
         this.breadcrumbData.list = [{
-          label: '文章管理',
+          label: '内容管理',
           url: 'post',
-          tooltip: '文章管理'
+          tooltip: '内容管理'
         }, {
           label: pageTitle,
           url: 'post',
@@ -543,6 +577,8 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }];
     }
     this.titles.unshift(pageTitle);
+    this.updateTitle();
+    this.updateBreadcrumb();
   }
 
   private refreshCheckedStatus() {
