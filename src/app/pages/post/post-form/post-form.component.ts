@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
@@ -9,14 +9,21 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentFlag, PostOriginal, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
-import { POST_EXCERPT_LENGTH, POST_TAG_LIMIT, POST_TAXONOMY_LIMIT } from '../../../config/constants';
+import { POST_AUTHOR_LENGTH, POST_EXCERPT_LENGTH, POST_SOURCE_LENGTH, POST_TAG_LIMIT, POST_TAXONOMY_LIMIT, POST_TITLE_LENGTH } from '../../../config/constants';
+import { Message } from '../../../config/message.enum';
+import { ResponseCode } from '../../../config/response-code.enum';
 import { BaseComponent } from '../../../core/base.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
 import { TaxonomyModel } from '../../taxonomy/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomy/taxonomy.service';
-import { Post } from '../post.interface';
+import { Post, PostSaveParam } from '../post.interface';
 import { PostService } from '../post.service';
+
+declare type ToolbarMode = 'floating' | 'sliding' | 'scrolling' | 'wrap';
+const EDITOR_PATH = '/admin/assets/editor';
+const USE_DARK_MODE = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const EDITOR_THEME = USE_DARK_MODE ? 'dark' : 'default';
 
 @Component({
   selector: 'app-post-form',
@@ -26,9 +33,14 @@ import { PostService } from '../post.service';
 export class PostFormComponent extends BaseComponent implements OnInit, OnDestroy {
   @Input() postType!: PostType;
 
+  postId = '';
   activePost!: Post;
+  saveLoading = false;
+  maxTitleLength = POST_TITLE_LENGTH;
   maxExcerptLength = POST_EXCERPT_LENGTH;
   maxTaxonomyNumber = POST_TAXONOMY_LIMIT;
+  maxPostSourceLength = POST_SOURCE_LENGTH;
+  maxPostAuthorLength = POST_AUTHOR_LENGTH;
   maxTagNumber = POST_TAG_LIMIT;
   tagList: string[] = [];
   tagListLoading = false;
@@ -36,7 +48,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
   postCategoryList: NzTreeNodeOptions[] = [];
   disabledDate = (current: Date): boolean => current.getTime() > Date.now();
   postForm: FormGroup = this.fb.group({
-    title: ['', [Validators.required]],
+    title: ['', [Validators.required, Validators.maxLength(this.maxTitleLength)]],
     content: ['', [Validators.required]],
     postDate: ['', [Validators.required]],
     category: ['', [
@@ -60,8 +72,11 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     author: [''],
     copyrightType: [0, [Validators.required]],
     wechatCardFlag: [0, [Validators.required]],
-    updateFlag: [0, [Validators.required]],
-    excerpt: ['', [Validators.required, Validators.maxLength(this.maxExcerptLength)]]
+    updateFlag: [0, [
+      (control: AbstractControl): ValidationErrors | null =>
+        this.postId && ![0, 1].includes(control.value) ? { required: true } : null
+    ]],
+    excerpt: ['', [Validators.maxLength(this.maxExcerptLength)]]
   }, {
     validators: [
       (control: AbstractControl): ValidationErrors | null => {
@@ -73,20 +88,51 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
           return null;
         }
         if (!source) {
-          result['source'] = true;
+          result['source'] = { required: true };
+        }
+        if (source.length > this.maxPostSourceLength) {
+          result['source'].maxlength = true;
         }
         if (!author) {
-          result['author'] = true;
+          result['author'] = { required: true };
+        }
+        if (author.length > this.maxPostAuthorLength) {
+          result['author'].maxlength = true;
         }
         return result;
       },
       (control: AbstractControl): ValidationErrors | null => {
         const status = control.get('status')?.value;
         const password = control.get('password')?.value.trim();
-        return status === PostStatus.PASSWORD && !password ? { password: true } : null;
+        return status === PostStatus.PASSWORD && !password ? { password: { required: true } } : null;
       }
     ]
   });
+  editorOptions = {
+    height: 600,
+    skin_url: `${EDITOR_PATH}/ui/${EDITOR_THEME}`,
+    content_css: `${EDITOR_PATH}/content/${EDITOR_THEME}/content.min.css`,
+    content_style: 'body { font-size: 14px; }',
+    fontsize_formats: '12px 13px 14px 16px 18px 24px 32px 36px',
+    language: 'zh_CN',
+    language_url: `${EDITOR_PATH}/langs/zh_CN.js`,
+    image_advtab: true,
+    image_caption: true,
+    menubar: false,
+    // todo: image
+    contextmenu: 'link table',
+    toolbar_sticky: true,
+    toolbar_mode: <ToolbarMode>'sliding',
+    toolbar: 'undo redo | fontsizeselect formatselect | forecolor backcolor removeformat | ' +
+      'codesample blockquote code pastetext | fullscreen preview print | fontselect | ' +
+      'bold italic underline strikethrough | numlist bullist | alignleft aligncenter alignright alignjustify | ' +
+      'outdent indent | superscript subscript charmap | hr pagebreak | link anchor template image media',
+    quickbars_selection_toolbar: 'bold italic underline | forecolor backcolor | ' +
+      'quicklink h2 h3 blockquote | superscript subscript',
+    plugins: 'preview print paste searchreplace autolink directionality code visualblocks visualchars ' +
+      'fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor ' +
+      'insertdatetime advlist lists wordcount help charmap quickbars'
+  };
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -94,7 +140,6 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     list: []
   };
 
-  private postId = '';
   private taxonomies!: TaxonomyModel[];
   private options: OptionEntity = {};
   private optionsListener!: Subscription;
@@ -110,6 +155,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     private postService: PostService,
     private taxonomyService: TaxonomyService,
     private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private message: NzMessageService
   ) {
@@ -132,7 +178,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
   ngOnDestroy() {
     this.optionsListener.unsubscribe();
     this.paramListener.unsubscribe();
-    this.postListener.unsubscribe();
+    this.postListener?.unsubscribe();
     this.taxonomyListener.unsubscribe();
     this.tagListener.unsubscribe();
   }
@@ -144,6 +190,44 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     }
     this.tagListLoading = true;
     this.tagSearchChange$.next(keyword);
+  }
+
+  savePost() {
+    const { value, valid } = this.validateForm(this.postForm);
+    if (!valid) {
+      return;
+    }
+    this.saveLoading = true;
+    const postData: PostSaveParam = {
+      postId: this.activePost.post.postId,
+      postTitle: value.title,
+      postContent: value.content,
+      postExcerpt: value.excerpt,
+      postDate: value.postDate,
+      postGuid: value.guid,
+      postStatus: value.status,
+      commentFlag: value.commentFlag,
+      postAuthor: value.author,
+      postOriginal: value.original,
+      postPassword: value.status === PostStatus.PASSWORD ? value.password : '',
+      postParent: '',
+      postType: this.postType,
+      postSource: value.source,
+      postTaxonomies: value.category,
+      postTags: value.tag,
+      showWechatCard: value.wechatCardFlag,
+      copyrightType: value.copyrightType,
+      updateModified: value.updateFlag
+    };
+    this.postService.savePost(postData).subscribe((res) => {
+      this.saveLoading = false;
+      if (res.code !== ResponseCode.SUCCESS) {
+        this.message.error(res.message || Message.UNKNOWN_ERROR);
+      } else {
+        this.message.success(Message.SUCCESS);
+        this.router.navigate([this.postType === PostType.POST ? '/post' : '/post/standalone']);
+      }
+    });
   }
 
   protected updateBreadcrumb(): void {
@@ -166,7 +250,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
         },
         meta: {
           copyright_type: '1',
-          show_wechat_card: '1',
+          show_wechat_card: '1'
         },
         categories: [],
         tags: []
@@ -213,7 +297,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
       author: this.activePost.meta['post_author'] || '',
       copyrightType: Number(this.activePost.meta['copyright_type']) || 0,
       wechatCardFlag: Number(this.activePost.meta['show_wechat_card']) || 0,
-      updateFlag: 0,
+      updateFlag: 0
     });
   }
 

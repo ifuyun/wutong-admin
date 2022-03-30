@@ -13,7 +13,17 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentFlag, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
-import { COMMENT_FLAG, POST_EXCERPT_LENGTH, POST_STATUS, POST_TAG_LIMIT, POST_TAXONOMY_LIMIT, TREE_ROOT_NODE_KEY } from '../../../config/constants';
+import {
+  COMMENT_FLAG,
+  POST_AUTHOR_LENGTH,
+  POST_EXCERPT_LENGTH,
+  POST_SOURCE_LENGTH,
+  POST_STATUS,
+  POST_TAG_LIMIT,
+  POST_TAXONOMY_LIMIT,
+  POST_TITLE_LENGTH,
+  TREE_ROOT_NODE_KEY
+} from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
@@ -63,8 +73,11 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   activePost!: Post;
   saveLoading = false;
   postFormRowGutter = 16;
+  maxTitleLength = POST_TITLE_LENGTH;
   maxExcerptLength = POST_EXCERPT_LENGTH;
   maxTaxonomyNumber = POST_TAXONOMY_LIMIT;
+  maxPostSourceLength = POST_SOURCE_LENGTH;
+  maxPostAuthorLength = POST_AUTHOR_LENGTH;
   maxTagNumber = POST_TAG_LIMIT;
   tagList: string[] = [];
   tagListLoading = false;
@@ -72,7 +85,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   postCategoryList: NzTreeNodeOptions[] = [];
   disabledDate = (current: Date): boolean => current.getTime() > Date.now();
   postForm: FormGroup = this.fb.group({
-    title: ['', [Validators.required]],
+    title: ['', [Validators.required, Validators.maxLength(this.maxTitleLength)]],
     postDate: ['', [Validators.required]],
     category: ['', [
       Validators.required,
@@ -122,17 +135,23 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
           return null;
         }
         if (!source) {
-          result['source'] = true;
+          result['source'] = { required: true };
+        }
+        if (source.length > this.maxPostSourceLength) {
+          result['source'].maxlength = true;
         }
         if (!author) {
-          result['author'] = true;
+          result['author'] = { required: true };
+        }
+        if (author.length > this.maxPostAuthorLength) {
+          result['author'].maxlength = true;
         }
         return result;
       },
       (control: AbstractControl): ValidationErrors | null => {
         const status = control.get('status')?.value;
         const password = control.get('password')?.value.trim();
-        return status === PostStatus.PASSWORD && !password ? { password: true } : null;
+        return status === PostStatus.PASSWORD && !password ? { password: { required: true } } : null;
       }
     ]
   });

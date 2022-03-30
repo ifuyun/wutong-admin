@@ -3,7 +3,6 @@ export enum ApiUrl {
   GET_POSTS = '/posts',
   SAVE_POSTS = '/posts',
   GET_POST = '/posts/:postId',
-  GET_POST_STANDALONE = '/posts/standalone',
   GET_POST_ARCHIVE_DATES = '/posts/archive-dates',
   GET_OPTIONS = '/options',
   GET_TAXONOMIES = '/taxonomies',
@@ -12,5 +11,5 @@ export enum ApiUrl {
   GET_COMMENTS = '/comments',
   SAVE_COMMENTS = '/comments',
   AUDIT_COMMENTS = '/comments/audit',
-  GET_LOGIN_USER = '/users/login-user',
+  GET_LOGIN_USER = '/users/login-user'
 }

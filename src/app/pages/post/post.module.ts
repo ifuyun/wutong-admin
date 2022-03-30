@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { NgZorroAntdModule } from '../../modules/antd/ng-zorro-antd.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { ArticleEditComponent } from './article-edit/article-edit.component';
@@ -26,7 +27,11 @@ import { StandaloneListComponent } from './standalone-list/standalone-list.compo
     NgZorroAntdModule,
     PipesModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    EditorModule
+  ],
+  providers: [
+    { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
   ],
   exports: [
     PostListComponent

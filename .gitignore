@@ -44,3 +44,4 @@ Thumbs.db
 # Project
 package-lock.json
 /src/environments/*
+*.css.map

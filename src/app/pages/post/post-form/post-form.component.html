@@ -3,9 +3,25 @@
     <div class="form-left">
       <nz-form-item>
         <nz-form-control [nzErrorTip]="titleErrorTpl">
-          <input nz-input type="text" formControlName="title" placeholder="请输入标题"/>
+          <input
+            nz-input
+            nzSize="large"
+            type="text"
+            class="title-input"
+            formControlName="title"
+            [maxlength]="maxTitleLength"
+            placeholder="请输入标题"/>
           <ng-template #titleErrorTpl let-control>
             <ng-container *ngIf="control.hasError('required')">请输入标题</ng-container>
+            <ng-container *ngIf="control.hasError('maxlength')">标题最大长度为{{maxTitleLength}}字符</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="contentErrorTpl">
+          <editor [init]="editorOptions" formControlName="content"></editor>
+          <ng-template #contentErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入内容</ng-container>
           </ng-template>
         </nz-form-control>
       </nz-form-item>
@@ -45,7 +61,7 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item class="vertical">
-        <div class="form-label"><label class="required">摘要</label></div>
+        <div class="form-label"><label>摘要</label></div>
         <nz-form-control [nzErrorTip]="excerptErrorTpl">
           <nz-textarea-count [nzMaxCharacterCount]="maxExcerptLength">
             <textarea nz-input rows="6" formControlName="excerpt" placeholder="请输入内容摘要"></textarea>
@@ -58,6 +74,9 @@
       </nz-form-item>
     </div>
     <div class="form-right">
+      <nz-form-item>
+        <button nz-button nzBlock nzSize="large" nzType="primary" (click)="savePost()">发布</button>
+      </nz-form-item>
       <nz-form-item>
         <nz-form-label nzRequired>发布日期</nz-form-label>
         <nz-form-control [nzErrorTip]="postDateErrorTpl">
@@ -108,7 +127,7 @@
         >
           <input nz-input type="text" formControlName="password" placeholder="请输入密码"/>
           <ng-template #passwordErrorTpl>
-            <ng-container *ngIf="postForm.errors?.['password']">请输入密码</ng-container>
+            <ng-container *ngIf="postForm.errors?.['password'].required">请输入密码</ng-container>
           </ng-template>
         </nz-form-control>
       </nz-form-item>
@@ -138,9 +157,10 @@
             [nzValidateStatus]="postForm.get('source')?.dirty && postForm.errors?.['source'] ? 'error' : 'success'"
             [nzErrorTip]="sourceErrorTpl"
           >
-            <input nz-input type="text" formControlName="source" placeholder="请输入来源"/>
+            <input nz-input type="text" formControlName="source" [maxlength]="maxPostSourceLength" placeholder="请输入来源"/>
             <ng-template #sourceErrorTpl>
-              <ng-container *ngIf="postForm.errors?.['source']">请输入来源</ng-container>
+              <ng-container *ngIf="postForm.errors?.['source'].required">请输入来源</ng-container>
+              <ng-container *ngIf="postForm.errors?.['source'].maxlength">来源最大长度为{{maxPostSourceLength}}字符</ng-container>
             </ng-template>
           </nz-form-control>
         </nz-form-item>
@@ -150,9 +170,10 @@
             [nzValidateStatus]="postForm.get('author')?.dirty && postForm.errors?.['author'] ? 'error' : 'success'"
             [nzErrorTip]="authorErrorTpl"
           >
-            <input nz-input type="text" formControlName="author" placeholder="请输入作者"/>
+            <input nz-input type="text" formControlName="author" [maxlength]="maxPostAuthorLength" placeholder="请输入作者"/>
             <ng-template #authorErrorTpl>
-              <ng-container *ngIf="postForm.errors?.['author']">请输入作者</ng-container>
+              <ng-container *ngIf="postForm.errors?.['author'].required">请输入作者</ng-container>
+              <ng-container *ngIf="postForm.errors?.['author'].maxlength">作者最大长度为{{maxPostAuthorLength}}字符</ng-container>
             </ng-template>
           </nz-form-control>
         </nz-form-item>
@@ -177,7 +198,7 @@
           </nz-radio-group>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="postId">
         <nz-form-label nzRequired>更新时间</nz-form-label>
         <nz-form-control>
           <nz-radio-group formControlName="updateFlag" nzName="updateFlag">

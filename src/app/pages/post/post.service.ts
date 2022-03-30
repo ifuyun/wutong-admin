@@ -24,7 +24,9 @@ export class PostService {
   }
 
   getPostById(postId: string): Observable<Post> {
-    return this.apiService.httpGet(this.apiService.getApiUrlWithParam(ApiUrl.GET_POST, postId)).pipe(
+    return this.apiService.httpGet(this.apiService.getApiUrlWithParam(ApiUrl.GET_POST, postId), {
+      fa: 1
+    }).pipe(
       map((res) => res?.data || {})
     );
   }
