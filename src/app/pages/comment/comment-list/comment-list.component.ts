@@ -64,7 +64,6 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   };
 
   private postId!: string;
-  private checkedCommentIds: string[] = [];
   private statuses!: CommentStatus[];
   private orders: string[][] = [];
   /* antd初始化和重置filter时都会触发nzQueryParams，因此设置状态限制请求数 */
@@ -159,34 +158,34 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.router.navigate(['./'], { queryParams: { keyword: this.keyword }, relativeTo: this.route });
   }
 
-  confirmAuditOperation(action: string, commentIds?: string[]) {
-    this.checkedCommentIds = commentIds || Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
-    if (this.checkedCommentIds.length < 1) {
+  auditComments(action: string, commentIds?: string[]) {
+    const checkedIds: string[] = commentIds || Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
+    if (checkedIds.length < 1) {
       this.message.error('请先选择至少一条评论');
       return;
     }
     this.auditAction = <CommentAuditAction>action;
-    this.checkedLength = this.checkedCommentIds.length;
-    this.modal.confirm({
+    this.checkedLength = checkedIds.length;
+    const confirmModal = this.modal.confirm({
       nzContent: this.confirmModalContent,
       nzClassName: 'confirm-with-no-title',
       nzOkDanger: this.auditAction === CommentAuditAction.TRASH,
-      nzOnOk: () => this.auditComments(),
+      nzOnOk: () => {
+        this.commentService.auditComments({
+          commentIds: checkedIds,
+          action: <CommentAuditAction>this.auditAction
+        }).subscribe((res) => {
+          this.auditAction = null;
+          if (res.code === ResponseCode.SUCCESS) {
+            confirmModal.destroy();
+            this.message.success(Message.SUCCESS);
+            this.fetchData(true);
+          }
+        });
+        return false;
+      },
       nzOnCancel: () => {
         this.auditAction = null;
-      }
-    });
-  }
-
-  auditComments() {
-    this.commentService.auditComments({
-      commentIds: this.checkedCommentIds,
-      action: <CommentAuditAction>this.auditAction
-    }).subscribe((res) => {
-      this.auditAction = null;
-      if (res.code === ResponseCode.SUCCESS) {
-        this.message.success(Message.SUCCESS);
-        this.fetchData(true);
       }
     });
   }

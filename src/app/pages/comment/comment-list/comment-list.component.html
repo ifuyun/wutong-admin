@@ -1,8 +1,8 @@
 <div class="table-operations">
-  <button nz-button [disabled]="!pendingEnabled" (click)="confirmAuditOperation('normal')">批准</button>
-  <button nz-button [disabled]="!pendingEnabled" (click)="confirmAuditOperation('reject')">驳回</button>
-  <button nz-button [disabled]="!pendingEnabled" (click)="confirmAuditOperation('spam')">垃圾评论</button>
-  <button nz-button [disabled]="!trashEnabled" (click)="confirmAuditOperation('trash')">删除</button>
+  <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('normal')">批准</button>
+  <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('reject')">驳回</button>
+  <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('spam')">垃圾评论</button>
+  <button nz-button [disabled]="!trashEnabled" (click)="auditComments('trash')">删除</button>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
       <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..."/>
@@ -59,11 +59,11 @@
     <td nzEllipsis [title]="data.commentAuthorEmail">{{ data.commentAuthorEmail }}</td>
     <td nzRight>
       <ng-container *ngIf="data.commentStatus === 'pending'">
-        <a class="op-btn-normal" (click)="confirmAuditOperation('normal', [data.commentId])">批准</a>
+        <a class="op-btn-normal" (click)="auditComments('normal', [data.commentId])">批准</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a class="op-btn-reject" (click)="confirmAuditOperation('reject', [data.commentId])">驳回</a>
+        <a class="op-btn-reject" (click)="auditComments('reject', [data.commentId])">驳回</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a class="op-btn-spam" (click)="confirmAuditOperation('spam', [data.commentId])">垃圾评论</a>
+        <a class="op-btn-spam" (click)="auditComments('spam', [data.commentId])">垃圾评论</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>
       <a (click)="showCommentModal('reply', data)">回复</a>
@@ -71,7 +71,7 @@
       <a (click)="showCommentModal('edit', data)">编辑</a>
       <ng-container *ngIf="data.commentStatus !== 'trash'">
         <nz-divider nzType="vertical"></nz-divider>
-        <a (click)="confirmAuditOperation('trash', [data.commentId])">删除</a>
+        <a (click)="auditComments('trash', [data.commentId])">删除</a>
       </ng-container>
     </td>
   </tr>
@@ -82,13 +82,13 @@
 </ng-template>
 <ng-template #confirmModalContent>
   <div *ngIf="auditAction === 'spam'">
-    <span>确定将 <span class="warning">{{checkedLength}}</span> 条评论标记为垃圾评论吗？</span>
+    <div>确定将这 <span class="confirm-warning">{{checkedLength}}</span> 条评论标记为垃圾评论吗？</div>
   </div>
   <div *ngIf="auditAction !== 'spam'">
     <ng-container [ngSwitch]="auditAction">
-      <span *ngSwitchCase="'normal'">确定批准 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
-      <span *ngSwitchCase="'reject'">确定驳回 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
-      <span *ngSwitchCase="'trash'">确定删除 <span class="warning">{{checkedLength}}</span> 条评论吗？</span>
+      <div *ngSwitchCase="'normal'">确定批准这 <span class="confirm-warning">{{checkedLength}}</span> 条评论吗？</div>
+      <div *ngSwitchCase="'reject'">确定驳回这 <span class="confirm-warning">{{checkedLength}}</span> 条评论吗？</div>
+      <div *ngSwitchCase="'trash'">确定删除这 <span class="confirm-warning">{{checkedLength}}</span> 条评论吗？</div>
     </ng-container>
   </div>
 </ng-template>

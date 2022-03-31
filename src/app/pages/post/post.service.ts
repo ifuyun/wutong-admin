@@ -55,4 +55,10 @@ export class PostService {
   savePost(param: PostSaveParam): Observable<HttpResponseEntity> {
     return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_POSTS), param);
   }
+
+  deletePosts(postIds: string[]): Observable<HttpResponseEntity> {
+    return this.apiService.httpDelete(this.apiService.getApiUrl(ApiUrl.DELETE_POSTS), {
+      postIds
+    });
+  }
 }

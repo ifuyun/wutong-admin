@@ -2,6 +2,7 @@ export enum ApiUrl {
   API_URL_PREFIX = '/api',
   GET_POSTS = '/posts',
   SAVE_POSTS = '/posts',
+  DELETE_POSTS = '/posts',
   GET_POST = '/posts/:postId',
   GET_POST_ARCHIVE_DATES = '/posts/archive-dates',
   GET_OPTIONS = '/options',

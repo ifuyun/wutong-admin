@@ -12,6 +12,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzListModule } from 'ng-zorro-antd/list';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzModalModule } from 'ng-zorro-antd/modal';
@@ -58,7 +59,7 @@ import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
     NzImageModule,
     NzInputModule,
     // NzInputNumberModule,
-    // NzListModule,
+    NzListModule,
     // NzMentionModule,
     NzModalModule,
     // NzNoAnimationModule,

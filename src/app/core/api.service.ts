@@ -61,6 +61,15 @@ export class ApiService {
     );
   }
 
+  httpDelete<T extends HttpResponseEntity>(url: string, body: Record<string, any> | FormData = {}): Observable<T> {
+    return this.http.delete<T>(url, {
+      observe: 'body',
+      body: body
+    }).pipe(
+      catchError(this.handleError<T>())
+    );
+  }
+
   private handleError<T>() {
     return (error: HttpErrorResponse): Observable<T> => {
       this.message.error(error.error?.message || error.message || Message.UNKNOWN_ERROR);

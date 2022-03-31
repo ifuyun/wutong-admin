@@ -1,10 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { uniq } from 'lodash';
 import { NzImage, NzImageService } from 'ng-zorro-antd/image';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
 import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
@@ -41,6 +42,7 @@ import { PostService } from '../post.service';
 })
 export class PostListComponent extends ListComponent implements OnInit, OnDestroy {
   @Input() postType!: PostType;
+  @ViewChild('confirmModalContent') confirmModalContent!: TemplateRef<any>;
 
   postList: Post[] = [];
   page: number = 1;
@@ -51,7 +53,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   allChecked = false;
   indeterminate = false;
   checkedMap: Record<string, boolean> = {};
-  checkedLength = 0;
+  checkedPosts: Post[] = [];
   tableWidth!: string;
   statusFilter: NzTableFilterList = [];
   commentFlagFilter: NzTableFilterList = [];
@@ -191,7 +193,8 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     private router: Router,
     private imageService: NzImageService,
     private fb: FormBuilder,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private modal: NzModalService
   ) {
     super();
   }
@@ -382,7 +385,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       postTags: value.tag,
       showWechatCard: value.wechatCardFlag,
       copyrightType: value.copyrightType,
-      updateModified: value.updateFlag,
+      updateModified: value.updateFlag
     };
     this.postService.savePost(postData).subscribe((res) => {
       this.saveLoading = false;
@@ -390,6 +393,31 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         this.message.success(Message.SUCCESS);
         this.fetchData(true);
         this.closePostModal();
+      }
+    });
+  }
+
+  deletePosts(postIds?: string[]) {
+    const checkedIds: string[] = postIds || Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
+    if (checkedIds.length < 1) {
+      this.message.error('请先选择至少一条评论');
+      return;
+    }
+    this.checkedPosts = this.postList.filter((item) => checkedIds.includes(item.post.postId));
+    const confirmModal = this.modal.confirm({
+      nzWidth: 480,
+      nzContent: this.confirmModalContent,
+      nzClassName: 'confirm-with-no-title',
+      nzOkDanger: true,
+      nzOnOk: () => {
+        this.postService.deletePosts(checkedIds).subscribe((res) => {
+          if (res.code === ResponseCode.SUCCESS) {
+            confirmModal.destroy();
+            this.message.success(Message.SUCCESS);
+            this.fetchData(true);
+          }
+        });
+        return false;
       }
     });
   }
