@@ -184,9 +184,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
       action: <CommentAuditAction>this.auditAction
     }).subscribe((res) => {
       this.auditAction = null;
-      if (res.code !== ResponseCode.SUCCESS) {
-        this.message.error(res.message || Message.UNKNOWN_ERROR);
-      } else {
+      if (res.code === ResponseCode.SUCCESS) {
         this.message.success(Message.SUCCESS);
         this.fetchData(true);
       }
@@ -242,12 +240,10 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     }
     this.commentService.saveComment(commentData).subscribe((res) => {
       this.saveLoading = false;
-      this.closeCommentModal();
-      if (res.code !== ResponseCode.SUCCESS) {
-        this.message.error(res.message || Message.UNKNOWN_ERROR);
-      } else {
+      if (res.code === ResponseCode.SUCCESS) {
         this.message.success(Message.SUCCESS);
         this.fetchData(true);
+        this.closeCommentModal();
       }
     });
   }

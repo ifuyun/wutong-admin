@@ -88,7 +88,8 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     title: ['', [Validators.required, Validators.maxLength(this.maxTitleLength)]],
     postDate: ['', [Validators.required]],
     category: ['', [
-      Validators.required,
+      (control: AbstractControl): ValidationErrors | null =>
+        (!control.value || control.value.length < 1) && this.postType === PostType.POST ? { required: true } : null,
       (control: AbstractControl): ValidationErrors | null => {
         const checkedIds = control.value;
         let allIds: string[] = [];
@@ -385,12 +386,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     };
     this.postService.savePost(postData).subscribe((res) => {
       this.saveLoading = false;
-      this.closePostModal();
-      if (res.code !== ResponseCode.SUCCESS) {
-        this.message.error(res.message || Message.UNKNOWN_ERROR);
-      } else {
+      if (res.code === ResponseCode.SUCCESS) {
         this.message.success(Message.SUCCESS);
         this.fetchData(true);
+        this.closePostModal();
       }
     });
   }

@@ -45,3 +45,5 @@ Thumbs.db
 package-lock.json
 /src/environments/*
 *.css.map
+/src/assets/editor/**/*.css
+!/src/assets/editor/**/*.min.css

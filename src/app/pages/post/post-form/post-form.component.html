@@ -52,7 +52,7 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item class="vertical">
-        <div class="form-label"><label>URL</label></div>
+        <div [ngClass]="{'form-label': true, required: postType === 'page'}"><label>URL</label></div>
         <nz-form-control [nzErrorTip]="guidErrorTpl">
           <input nz-input type="text" formControlName="guid" placeholder="请输入URL"/>
           <ng-template #guidErrorTpl let-control>
@@ -64,7 +64,7 @@
         <div class="form-label"><label>摘要</label></div>
         <nz-form-control [nzErrorTip]="excerptErrorTpl">
           <nz-textarea-count [nzMaxCharacterCount]="maxExcerptLength">
-            <textarea nz-input rows="6" formControlName="excerpt" placeholder="请输入内容摘要"></textarea>
+            <textarea nz-input rows="4" formControlName="excerpt" [maxlength]="maxExcerptLength" placeholder="请输入内容摘要"></textarea>
           </nz-textarea-count>
           <ng-template #excerptErrorTpl let-control>
             <ng-container *ngIf="control.hasError('required')">请输入内容摘要</ng-container>
@@ -90,7 +90,7 @@
           </ng-template>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="postType === 'post'">
         <nz-form-label nzRequired>分类</nz-form-label>
         <nz-form-control [nzErrorTip]="categoryErrorTpl">
           <nz-tree-select

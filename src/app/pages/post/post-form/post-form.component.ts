@@ -21,9 +21,6 @@ import { Post, PostSaveParam } from '../post.interface';
 import { PostService } from '../post.service';
 
 declare type ToolbarMode = 'floating' | 'sliding' | 'scrolling' | 'wrap';
-const EDITOR_PATH = '/admin/assets/editor';
-const USE_DARK_MODE = window.matchMedia('(prefers-color-scheme: dark)').matches;
-const EDITOR_THEME = USE_DARK_MODE ? 'dark' : 'default';
 
 @Component({
   selector: 'app-post-form',
@@ -52,7 +49,8 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     content: ['', [Validators.required]],
     postDate: ['', [Validators.required]],
     category: ['', [
-      Validators.required,
+      (control: AbstractControl): ValidationErrors | null =>
+        (!control.value || control.value.length < 1) && this.postType === PostType.POST ? { required: true } : null,
       (control: AbstractControl): ValidationErrors | null => {
         const checkedIds = control.value;
         let allIds: string[] = [];
@@ -63,7 +61,10 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
       }
     ]],
     tag: [[]],
-    guid: [''],
+    guid: ['', [
+      (control: AbstractControl): ValidationErrors | null =>
+      !control.value.trim() && this.postType === PostType.PAGE ? { required: true } : null
+    ]],
     status: ['', [Validators.required]],
     password: [''],
     commentFlag: ['', [Validators.required]],
@@ -108,31 +109,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
       }
     ]
   });
-  editorOptions = {
-    height: 600,
-    skin_url: `${EDITOR_PATH}/ui/${EDITOR_THEME}`,
-    content_css: `${EDITOR_PATH}/content/${EDITOR_THEME}/content.min.css`,
-    content_style: 'body { font-size: 14px; }',
-    fontsize_formats: '12px 13px 14px 16px 18px 24px 32px 36px',
-    language: 'zh_CN',
-    language_url: `${EDITOR_PATH}/langs/zh_CN.js`,
-    image_advtab: true,
-    image_caption: true,
-    menubar: false,
-    // todo: image
-    contextmenu: 'link table',
-    toolbar_sticky: true,
-    toolbar_mode: <ToolbarMode>'sliding',
-    toolbar: 'undo redo | fontsizeselect formatselect | forecolor backcolor removeformat | ' +
-      'codesample blockquote code pastetext | fullscreen preview print | fontselect | ' +
-      'bold italic underline strikethrough | numlist bullist | alignleft aligncenter alignright alignjustify | ' +
-      'outdent indent | superscript subscript charmap | hr pagebreak | link anchor template image media',
-    quickbars_selection_toolbar: 'bold italic underline | forecolor backcolor | ' +
-      'quicklink h2 h3 blockquote | superscript subscript',
-    plugins: 'preview print paste searchreplace autolink directionality code visualblocks visualchars ' +
-      'fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor ' +
-      'insertdatetime advlist lists wordcount help charmap quickbars'
-  };
+  editorOptions!: Record<string, any>;
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -140,6 +117,9 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     list: []
   };
 
+  private editorPath = '/admin/assets/editor';
+  private userDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  private editorTheme = this.userDarkMode ? 'dark' : 'default';
   private taxonomies!: TaxonomyModel[];
   private options: OptionEntity = {};
   private optionsListener!: Subscription;
@@ -168,10 +148,10 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     });
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
       this.postId = queryParams.get('postId')?.trim() || '';
-      this.updatePageInfo();
       this.fetchPost();
       this.fetchCategories();
     });
+    this.initEditor();
     this.initTagSearch();
   }
 
@@ -221,9 +201,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     };
     this.postService.savePost(postData).subscribe((res) => {
       this.saveLoading = false;
-      if (res.code !== ResponseCode.SUCCESS) {
-        this.message.error(res.message || Message.UNKNOWN_ERROR);
-      } else {
+      if (res.code === ResponseCode.SUCCESS) {
         this.message.success(Message.SUCCESS);
         this.router.navigate([this.postType === PostType.POST ? '/post' : '/post/standalone']);
       }
@@ -255,12 +233,14 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
         categories: [],
         tags: []
       };
+      this.updatePageInfo();
       this.initForm();
       return;
     }
     this.postListener = this.postService.getPostById(this.postId).subscribe((post) => {
       this.activePost = post;
       this.activePost.post.postDate = new Date(this.activePost.post.postDate);
+      this.updatePageInfo();
       this.initForm();
     });
   }
@@ -299,6 +279,34 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
       wechatCardFlag: Number(this.activePost.meta['show_wechat_card']) || 0,
       updateFlag: 0
     });
+  }
+
+  private initEditor() {
+    this.editorOptions = {
+      height: 600,
+      skin_url: `${this.editorPath}/ui/${this.editorTheme}`,
+      content_css: `${this.editorPath}/content/${this.editorTheme}/content.min.css`,
+      content_style: 'body { font-size: 14px; }',
+      fontsize_formats: '12px 13px 14px 16px 18px 24px 32px 36px',
+      language: 'zh_CN',
+      language_url: `${this.editorPath}/langs/zh_CN.js`,
+      image_advtab: true,
+      image_caption: true,
+      menubar: false,
+      // todo: image
+      contextmenu: 'link table',
+      toolbar_sticky: true,
+      toolbar_mode: <ToolbarMode>'sliding',
+      toolbar: 'undo redo | fontsizeselect formatselect | forecolor backcolor removeformat | ' +
+        'codesample blockquote code pastetext | fullscreen preview print | fontselect | ' +
+        'bold italic underline strikethrough | numlist bullist | alignleft aligncenter alignright alignjustify | ' +
+        'outdent indent | superscript subscript charmap | hr pagebreak | link anchor template image media',
+      quickbars_selection_toolbar: 'bold italic underline | forecolor backcolor | ' +
+        'quicklink h2 h3 blockquote | superscript subscript',
+      plugins: 'preview print paste searchreplace autolink directionality code visualblocks visualchars ' +
+        'fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor ' +
+        'insertdatetime advlist lists wordcount help charmap quickbars'
+    };
   }
 
   private initTagSearch() {
@@ -344,6 +352,15 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
         }];
     }
     this.titles.unshift(pageTitle);
+    if (this.postId) {
+      const postTitle = this.activePost.post.postTitle;
+      this.titles.unshift(postTitle);
+      this.breadcrumbData.list.push({
+        label: postTitle,
+        url: '',
+        tooltip: postTitle
+      });
+    }
     this.updateTitle();
     this.updateBreadcrumb();
   }

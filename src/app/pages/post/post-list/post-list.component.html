@@ -236,7 +236,7 @@
             </nz-form-item>
           </div>
         </div>
-        <div nz-row [nzGutter]="postFormRowGutter">
+        <div nz-row [nzGutter]="postFormRowGutter" *ngIf="postType === 'post'">
           <div nz-col [nzSpan]="24">
             <nz-form-item>
               <nz-form-label nzRequired>分类</nz-form-label>
