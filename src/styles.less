@@ -31,6 +31,40 @@
   }
 }
 
+.status, .table-row-btn {
+  &-publish, &-normal {
+    color: var(--status-normal-color);
+  }
+
+  &-password {
+    color: var(--status-password-color);
+  }
+
+  &-private {
+    color: var(--status-private-color);
+  }
+
+  &-draft, &-auto-draft {
+    color: var(--status-pending-color);
+  }
+
+  &-trash {
+    color: var(--status-disabled-color);
+  }
+
+  &-pending {
+    color: var(--status-pending-color);
+  }
+
+  &-reject {
+    color: var(--status-reject-color);
+  }
+
+  &-spam {
+    color: var(--status-spam-color);
+  }
+}
+
 .confirm-with-no-title {
   .ant-modal-confirm-content {
     margin-top: 0;

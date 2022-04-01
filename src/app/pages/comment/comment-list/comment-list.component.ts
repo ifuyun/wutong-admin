@@ -49,8 +49,8 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   trashEnabled = false;
   commentModalVisible = false;
   commentOperation!: CommentOperation | null;
-  saveLoading = false;
   activeComment!: CommentModel;
+  saveLoading = false;
   commentForm: FormGroup = this.fb.group({
     commentContent: ['', [Validators.required, Validators.maxLength(this.commentMaxLength)]],
     commentStatus: ['']
@@ -190,15 +190,13 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     });
   }
 
-  showCommentModal(action: string, comment: CommentModel) {
+  editComment(action: string, comment: CommentModel) {
     this.commentOperation = <CommentOperation>action;
     this.activeComment = comment;
-    if (action === CommentOperation.EDIT) {
-      this.commentForm.get('commentContent')?.setValue(comment.commentContent);
-      this.commentForm.get('commentStatus')?.setValue(comment.commentStatus);
-    } else if (action === CommentOperation.REPLY) {
-      this.commentForm.get('commentContent')?.setValue('');
-    }
+    this.commentForm.setValue({
+      commentContent: action === CommentOperation.EDIT ? comment.commentContent : '',
+      commentStatus: comment.commentStatus
+    });
     this.resetFormStatus(this.commentForm);
     this.commentModalVisible = true;
   }

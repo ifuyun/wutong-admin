@@ -44,6 +44,13 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   @Input() postType!: PostType;
   @ViewChild('confirmModalContent') confirmModalContent!: TemplateRef<any>;
 
+  readonly maxTitleLength = POST_TITLE_LENGTH;
+  readonly maxExcerptLength = POST_EXCERPT_LENGTH;
+  readonly maxTaxonomyNumber = POST_TAXONOMY_LIMIT;
+  readonly maxPostSourceLength = POST_SOURCE_LENGTH;
+  readonly maxPostAuthorLength = POST_AUTHOR_LENGTH;
+  readonly maxTagNumber = POST_TAG_LIMIT;
+
   postList: Post[] = [];
   page: number = 1;
   total: number = 0;
@@ -70,17 +77,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     key: TREE_ROOT_NODE_KEY,
     children: []
   }];
-  postCategoryExpanded: string[] = [];
+  categoryFilterExpanded: string[] = [];
   postModalVisible = false;
-  activePost!: Post;
   saveLoading = false;
   postFormRowGutter = 16;
-  maxTitleLength = POST_TITLE_LENGTH;
-  maxExcerptLength = POST_EXCERPT_LENGTH;
-  maxTaxonomyNumber = POST_TAXONOMY_LIMIT;
-  maxPostSourceLength = POST_SOURCE_LENGTH;
-  maxPostAuthorLength = POST_AUTHOR_LENGTH;
-  maxTagNumber = POST_TAG_LIMIT;
   tagList: string[] = [];
   tagListLoading = false;
   tagSearchChange$ = new BehaviorSubject('');
@@ -165,6 +165,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     list: []
   };
 
+  private activePost!: Post;
   private category: string = '';
   private tag: string = '';
   private year: string = '';
@@ -325,7 +326,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.imageService.preview(images);
   }
 
-  showPostModal(post: Post) {
+  editPost(post: Post) {
     this.activePost = post;
     this.postForm.setValue({
       title: post.post.postTitle,
@@ -499,7 +500,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     }
     this.taxonomyListener = this.taxonomyService.getTaxonomies({
       type: TaxonomyType.POST,
-      status: [TaxonomyStatus.OPEN, TaxonomyStatus.CLOSED],
+      status: [TaxonomyStatus.PUBLISH, TaxonomyStatus.PRIVATE],
       page: 1,
       pageSize: 0
     }).subscribe((res) => {
@@ -531,12 +532,12 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   private initCategoryFilter() {
     this.resetCategoryFilterStatus();
     this.activeCategory = this.category;
-    this.postCategoryExpanded = [TREE_ROOT_NODE_KEY];
+    this.categoryFilterExpanded = [TREE_ROOT_NODE_KEY];
     if (this.activeCategory) {
       const curId = this.taxonomyService.getTaxonomyIdBySlug(this.taxonomies, this.activeCategory);
       const parents = this.taxonomyService.getParentTaxonomies(this.taxonomies, curId)
         .map((item) => item.slug);
-      this.postCategoryExpanded = this.postCategoryExpanded.concat(parents);
+      this.categoryFilterExpanded = this.categoryFilterExpanded.concat(parents);
     }
   }
 

@@ -1,21 +1,21 @@
-import { TaxonomyStatus } from '../../config/common.enum';
+import { TaxonomyStatus, TaxonomyType } from '../../config/common.enum';
 
 export interface TaxonomyEntity {
   name: string;
-  description?: string;
   slug: string;
+  description?: string;
   taxonomyId: string;
-  parentId: string;
-  status: number;
-  termOrder: number;
+  parentId?: string;
+  status: TaxonomyStatus;
+  termOrder?: number;
   count?: number;
 }
 
 export interface TaxonomyModel extends TaxonomyEntity {
-  type: string;
-  termGroup: number;
-  created: Date;
-  modified: Date;
+  type?: TaxonomyType;
+  termGroup?: number;
+  created?: Date;
+  modified?: Date;
 }
 
 export interface TaxonomyList {
@@ -31,4 +31,15 @@ export interface TaxonomyQueryParam {
   pageSize?: number;
   keyword?: string;
   orders?: string[][];
+}
+
+export interface TaxonomySaveParam {
+  taxonomyId?: string;
+  type: string;
+  name: string;
+  slug: string;
+  description: string;
+  parentId?: string;
+  termOrder: number;
+  status: string;
 }

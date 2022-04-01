@@ -3,7 +3,9 @@ import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiUrl } from '../../config/api-url';
+import { TaxonomyType } from '../../config/common.enum';
 import { ApiService } from '../../core/api.service';
+import { HttpResponseEntity } from '../../interfaces/http-response';
 import { TaxonomyList, TaxonomyModel, TaxonomyQueryParam } from './taxonomy.interface';
 
 @Injectable({
@@ -24,7 +26,8 @@ export class TaxonomyService {
       key: bySlug ? item.slug : item.taxonomyId,
       title: item.name,
       taxonomyId: item.taxonomyId,
-      parentId: item.parentId
+      parentId: item.parentId,
+      status: item.status
     }));
     return nodes.filter((father) => {
       father.children = nodes.filter((child) => father['taxonomyId'] === child['parentId']);
@@ -95,5 +98,11 @@ export class TaxonomyService {
     };
     taxonomyIds.forEach((id) => findNode(taxonomies, id));
     return result;
+  }
+
+  updateAllCount(type: TaxonomyType): Observable<HttpResponseEntity> {
+    return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.UPDATE_TAXONOMY_OBJECT_COUNT), {
+      type
+    });
   }
 }

@@ -1,9 +1,13 @@
 <div class="table-operations">
+  <button nz-button nzType="primary" (click)="editTaxonomy()">{{taxonomyType === 'tag' ? '新增标签' : '新增一级分类'}}</button>
   <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
   <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">删除</button>
+  <button nz-button nzType="default" [nzLoading]="countLoading" (click)="updateAllCount(taxonomyType)">
+    更新{{taxonomyType === 'link' ? '链接' : '内容'}}数量
+  </button>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
-      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..." />
+      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..."/>
     </nz-input-group>
     <ng-template #searchBtn>
       <button nz-button nzType="primary" (click)="onSearch()" nzSearch><i nz-icon nzType="search"></i></button>
@@ -28,34 +32,45 @@
   <thead>
   <tr>
     <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
-    <th nzWidth="160px" nzColumnKey="name">名称</th>
-    <th nzWidth="160px" nzColumnKey="slug">别名</th>
-    <th nzWidth="300px" nzColumnKey="description">描述</th>
-    <th nzWidth="80px" nzColumnKey="termOrder" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
+    <th nzColumnKey="name">名称</th>
+    <ng-container *ngIf="taxonomyType !== 'tag'">
+      <th nzWidth="160px" nzColumnKey="slug">别名</th>
+      <th nzWidth="300px" nzColumnKey="description">描述</th>
+      <th nzWidth="80px" nzColumnKey="termOrder" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
+    </ng-container>
     <th nzWidth="100px" nzColumnKey="status">状态</th>
-    <th nzWidth="80px" nzColumnKey="count">总数</th>
-    <th nzRight>操作</th>
+    <th nzWidth="80px" nzColumnKey="count">{{taxonomyType === 'link' ? '链接数量' : '内容数量'}}</th>
+    <th nzWidth="180px" nzRight>操作</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let data of taxonomyList">
     <td [nzChecked]="checkedMap[data.taxonomyId] || false" (nzCheckedChange)="onItemChecked(data.taxonomyId, $event)"></td>
     <td nzEllipsis [title]="data.name">{{ data.name }}</td>
-    <td nzEllipsis [title]="data.slug">
-      <a routerLink="/post" [queryParams]="{category: data.slug}">{{ data.slug }}</a>
-    </td>
-    <td [title]="data.description">{{ data.description }}</td>
-    <td nzEllipsis [title]="data.termOrder">{{ data.termOrder }}</td>
+    <ng-container *ngIf="taxonomyType !== 'tag'">
+      <td nzEllipsis [title]="data.slug">{{ data.slug }}</td>
+      <td [title]="data.description">{{ data.description }}</td>
+      <td nzEllipsis [title]="data.termOrder">{{ data.termOrder }}</td>
+    </ng-container>
     <td nzEllipsis [title]="data.status">
-      <a routerLink="./" [queryParams]="{status: data.status}">{{ data.status | taxonomyStatus }}</a>
+      <a [ngClass]="'status-' + data.status"
+         routerLink="./" [queryParams]="{status: data.status}">{{ data.status | taxonomyStatus }}</a>
     </td>
-    <td>{{ data.count }}</td>
+    <td>
+      <a *ngIf="taxonomyType === 'post'" routerLink="/post" [queryParams]="{category: data.slug}">{{ data.count }}</a>
+      <a *ngIf="taxonomyType === 'tag'" routerLink="/post" [queryParams]="{tag: data.slug}">{{ data.count }}</a>
+      <a *ngIf="taxonomyType === 'link'" routerLink="/link" [queryParams]="{taxonomy: data.taxonomyId}">{{ data.count }}</a>
+    </td>
     <td nzRight>
-      <a href="#">查看</a>
+      <ng-container *ngIf="taxonomyType !== 'tag' && data.status === 'publish'">
+        <a (click)="editTaxonomy(data.taxonomyId)">新增子分类</a>
+        <nz-divider nzType="vertical"></nz-divider>
+      </ng-container>
+      <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'post'">编辑</a>
+      <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'tag'">编辑</a>
+      <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'link'">编辑</a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a href="#">编辑</a>
-      <nz-divider nzType="vertical"></nz-divider>
-      <a href="#">删除</a>
+      <a href="#" *ngIf="data.status !== 'trash'">删除</a>
     </td>
   </tr>
   </tbody>
@@ -63,3 +78,94 @@
 <ng-template #rangeTemplate let-range="range" let-total>
   当前：第 <span style="color: red">{{ range[0] }}-{{ range[1] }}</span> 条，共：<span style="color: red">{{ total }}</span> 条
 </ng-template>
+<nz-modal
+  [(nzVisible)]="editModalVisible"
+  [nzTitle]="editModalTitle"
+  [nzContent]="editModalContent"
+  [nzFooter]="editModalFooter"
+  (nzOnCancel)="closeEditModal()"
+  [nzMaskClosable]="false"
+>
+  <ng-template #editModalTitle>
+    <ng-container [ngSwitch]="taxonomyType">
+      <ng-container *ngSwitchCase="'post'">{{activeTaxonomy.taxonomyId ? '编辑' : '新增'}}文章分类</ng-container>
+      <ng-container *ngSwitchCase="'tag'">{{activeTaxonomy.taxonomyId ? '编辑' : '新增'}}标签</ng-container>
+      <ng-container *ngSwitchCase="'link'">{{activeTaxonomy.taxonomyId ? '编辑' : '新增'}}链接分类</ng-container>
+    </ng-container>
+  </ng-template>
+  <ng-template #editModalContent>
+    <form nz-form [formGroup]="taxonomyForm">
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">名称</nz-form-label>
+        <nz-form-control [nzErrorTip]="nameErrorTpl">
+          <input nz-input type="text" formControlName="name" [maxlength]="maxNameLength" placeholder="请输入名称"/>
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入名称</ng-container>
+            <ng-container *ngIf="control.hasError('maxlength')">名称最大长度为{{maxNameLength}}字符</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <ng-container *ngIf="taxonomyType !== 'tag'">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSpan]="4">别名</nz-form-label>
+          <nz-form-control [nzErrorTip]="slugErrorTpl">
+            <input nz-input type="text" formControlName="slug" [maxlength]="maxNameLength" placeholder="请输入别名"/>
+            <ng-template #slugErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">请输入别名</ng-container>
+              <ng-container *ngIf="control.hasError('maxlength')">别名最大长度为{{maxSlugLength}}字符</ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSpan]="4">描述</nz-form-label>
+          <nz-form-control [nzErrorTip]="descErrorTpl">
+            <nz-textarea-count [nzMaxCharacterCount]="maxDescriptionLength">
+              <textarea nz-input rows="4" formControlName="description" placeholder="请输入描述"></textarea>
+            </nz-textarea-count>
+            <ng-template #descErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">请输入描述</ng-container>
+              <ng-container *ngIf="control.hasError('maxlength')">描述最大长度为{{maxDescriptionLength}}字符</ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSpan]="4">父节点</nz-form-label>
+          <nz-form-control>
+            <nz-tree-select
+              nzShowSearch
+              formControlName="parent"
+              nzPlaceHolder="请选择分类"
+              [nzDropdownStyle]="{'max-height': '400px'}"
+              [nzNodes]="taxonomyTree"
+            ></nz-tree-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSpan]="4">排序</nz-form-label>
+          <nz-form-control [nzErrorTip]="orderErrorTpl">
+            <input nz-input type="text" formControlName="order" [maxlength]="maxNameLength" placeholder="请输入排序"/>
+            <ng-template #orderErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">请输入排序</ng-container>
+              <ng-container *ngIf="control.hasError('pattern')">排序值范围为 0~99999</ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+      </ng-container>
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">状态</nz-form-label>
+        <nz-form-control [nzErrorTip]="statusErrorTpl">
+          <nz-select formControlName="status" nzPlaceHolder="请选择状态">
+            <nz-option *ngFor="let status of taxonomyStatusList" [nzValue]="status.key" [nzLabel]="status.label"></nz-option>
+          </nz-select>
+          <ng-template #statusErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请选择状态</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-template>
+  <ng-template #editModalFooter>
+    <button nz-button nzType="default" (click)="closeEditModal()">取消</button>
+    <button nz-button nzType="primary" (click)="saveTaxonomy()" [nzLoading]="saveLoading">确定</button>
+  </ng-template>
+</nz-modal>

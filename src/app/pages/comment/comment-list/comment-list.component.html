@@ -45,7 +45,7 @@
   <tr *ngFor="let data of commentList">
     <td [nzChecked]="checkedMap[data.commentId] || false" (nzCheckedChange)="onItemChecked(data.commentId, $event)"></td>
     <td nzEllipsis [title]="data.commentContent">
-      <a (click)="showCommentModal('detail', data)">{{ data.commentContent }}</a>
+      <a (click)="editComment('detail', data)">{{ data.commentContent }}</a>
     </td>
     <td nzEllipsis [title]="data.post?.postTitle">
       <a [href]="data.post?.postGuid" target="_blank">{{ data.post?.postTitle }}</a>
@@ -59,16 +59,16 @@
     <td nzEllipsis [title]="data.commentAuthorEmail">{{ data.commentAuthorEmail }}</td>
     <td nzRight>
       <ng-container *ngIf="data.commentStatus === 'pending'">
-        <a class="op-btn-normal" (click)="auditComments('normal', [data.commentId])">批准</a>
+        <a class="table-row-btn-normal" (click)="auditComments('normal', [data.commentId])">批准</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a class="op-btn-reject" (click)="auditComments('reject', [data.commentId])">驳回</a>
+        <a class="table-row-btn-reject" (click)="auditComments('reject', [data.commentId])">驳回</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a class="op-btn-spam" (click)="auditComments('spam', [data.commentId])">垃圾评论</a>
+        <a class="table-row-btn-spam" (click)="auditComments('spam', [data.commentId])">垃圾评论</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>
-      <a (click)="showCommentModal('reply', data)">回复</a>
+      <a (click)="editComment('reply', data)">回复</a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a (click)="showCommentModal('edit', data)">编辑</a>
+      <a (click)="editComment('edit', data)">编辑</a>
       <ng-container *ngIf="data.commentStatus !== 'trash'">
         <nz-divider nzType="vertical"></nz-divider>
         <a (click)="auditComments('trash', [data.commentId])">删除</a>
@@ -103,7 +103,7 @@
   <ng-template #commentModalTitle>
     <ng-container [ngSwitch]="commentOperation">
       <ng-container *ngSwitchCase="'detail'">查看评论</ng-container>
-      <ng-container *ngSwitchCase="'edit'">修改评论</ng-container>
+      <ng-container *ngSwitchCase="'edit'">编辑评论</ng-container>
       <ng-container *ngSwitchCase="'reply'">回复评论</ng-container>
     </ng-container>
   </ng-template>

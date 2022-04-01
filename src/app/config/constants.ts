@@ -7,6 +7,9 @@ export const POST_TAXONOMY_LIMIT = 5;
 export const POST_TAG_LIMIT = 15;
 export const POST_SOURCE_LENGTH = 100;
 export const POST_AUTHOR_LENGTH = 50;
+export const TAXONOMY_NAME_LENGTH = 20;
+export const TAXONOMY_SLUG_LENGTH = 50;
+export const TAXONOMY_DESCRIPTION_LENGTH = 40;
 
 export const POST_STATUS: Record<string, string> = Object.freeze({
   publish: '公开',
@@ -42,11 +45,16 @@ export const COMMENT_STATUS_LIST = Object.freeze(Object.keys(COMMENT_STATUS).map
   label: COMMENT_STATUS[item]
 })));
 
-export const TAXONOMY_STATUS: Record<number, string> = Object.freeze({
-  0: '不公开',
-  1: '公开',
-  2: '已删除'
+export const TAXONOMY_STATUS: Record<string, string> = Object.freeze({
+  publish: '公开',
+  private: '隐藏',
+  trash: '已删除'
 });
+
+export const TAXONOMY_STATUS_LIST = Object.freeze(Object.keys(TAXONOMY_STATUS).map((item) => ({
+  key: item,
+  label: TAXONOMY_STATUS[item]
+})));
 
 export const LINK_VISIBLE: Record<string, string> = Object.freeze({
   site: '全站',

@@ -251,7 +251,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     }
     this.taxonomyListener = this.taxonomyService.getTaxonomies({
       type: TaxonomyType.POST,
-      status: [TaxonomyStatus.OPEN, TaxonomyStatus.CLOSED],
+      status: [TaxonomyStatus.PUBLISH, TaxonomyStatus.PRIVATE],
       page: 1,
       pageSize: 0
     }).subscribe((res) => {

@@ -57,9 +57,9 @@ export enum TaxonomyType {
 }
 
 export enum TaxonomyStatus {
-  CLOSED = 0,
-  OPEN = 1,
-  TRASH = 2
+  PUBLISH = 'publish',
+  PRIVATE = 'private',
+  TRASH = 'trash'
 }
 
 export enum LinkVisible {
