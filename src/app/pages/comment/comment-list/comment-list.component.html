@@ -54,7 +54,7 @@
     <td>
       <a [ngClass]="'status-' + data.commentStatus" routerLink="./" [queryParams]="{status: data.commentStatus}">{{ data.commentStatus | commentStatus }}</a>
     </td>
-    <td [title]="data.commentVote">{{ data.commentVote }}</td>
+    <td nzAlign="right" [title]="data.commentVote">{{ data.commentVote }}</td>
     <td nzEllipsis [title]="data.commentAuthor">{{ data.commentAuthor }}</td>
     <td nzEllipsis [title]="data.commentAuthorEmail">{{ data.commentAuthorEmail }}</td>
     <td nzRight>

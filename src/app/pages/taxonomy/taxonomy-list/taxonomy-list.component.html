@@ -35,12 +35,14 @@
     <th nzColumnKey="name">名称</th>
     <ng-container *ngIf="taxonomyType !== 'tag'">
       <th nzWidth="160px" nzColumnKey="slug">别名</th>
-      <th nzWidth="300px" nzColumnKey="description">描述</th>
-      <th nzWidth="80px" nzColumnKey="termOrder" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
+      <th nzColumnKey="description">描述</th>
+      <th nzWidth="100px" nzColumnKey="termOrder" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
     </ng-container>
-    <th nzWidth="100px" nzColumnKey="status">状态</th>
-    <th nzWidth="80px" nzColumnKey="count">{{taxonomyType === 'link' ? '链接数量' : '内容数量'}}</th>
-    <th nzWidth="180px" nzRight>操作</th>
+    <th nzWidth="100px" nzColumnKey="status" [nzFilters]="statusFilter" [nzFilterFn]="true">状态</th>
+    <th nzWidth="100px" nzColumnKey="count" [nzSortFn]="true" [nzSortPriority]="true">
+      {{taxonomyType === 'link' ? '链接数量' : '内容数量'}}
+    </th>
+    <th nzWidth="200px" nzRight>操作</th>
   </tr>
   </thead>
   <tbody>
@@ -50,13 +52,13 @@
     <ng-container *ngIf="taxonomyType !== 'tag'">
       <td nzEllipsis [title]="data.slug">{{ data.slug }}</td>
       <td [title]="data.description">{{ data.description }}</td>
-      <td nzEllipsis [title]="data.termOrder">{{ data.termOrder }}</td>
+      <td nzEllipsis nzAlign="right" [title]="data.termOrder">{{ data.termOrder }}</td>
     </ng-container>
     <td nzEllipsis [title]="data.status">
       <a [ngClass]="'status-' + data.status"
          routerLink="./" [queryParams]="{status: data.status}">{{ data.status | taxonomyStatus }}</a>
     </td>
-    <td>
+    <td nzAlign="right">
       <a *ngIf="taxonomyType === 'post'" routerLink="/post" [queryParams]="{category: data.slug}">{{ data.count }}</a>
       <a *ngIf="taxonomyType === 'tag'" routerLink="/post" [queryParams]="{tag: data.slug}">{{ data.count }}</a>
       <a *ngIf="taxonomyType === 'link'" routerLink="/link" [queryParams]="{taxonomy: data.taxonomyId}">{{ data.count }}</a>
@@ -69,8 +71,10 @@
       <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'post'">编辑</a>
       <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'tag'">编辑</a>
       <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'link'">编辑</a>
-      <nz-divider nzType="vertical"></nz-divider>
-      <a href="#" *ngIf="data.status !== 'trash'">删除</a>
+      <ng-container *ngIf="data.status !== 'trash'">
+        <nz-divider nzType="vertical"></nz-divider>
+        <a href="#">删除</a>
+      </ng-container>
     </td>
   </tr>
   </tbody>

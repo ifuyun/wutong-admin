@@ -4,12 +4,13 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
+import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
 import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
 import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
-import { TAXONOMY_DESCRIPTION_LENGTH, TAXONOMY_NAME_LENGTH, TAXONOMY_SLUG_LENGTH, TAXONOMY_STATUS_LIST, TREE_ROOT_NODE_KEY } from '../../../config/constants';
+import { POST_STATUS, TAXONOMY_DESCRIPTION_LENGTH, TAXONOMY_NAME_LENGTH, TAXONOMY_SLUG_LENGTH, TAXONOMY_STATUS, TAXONOMY_STATUS_LIST, TREE_ROOT_NODE_KEY } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
@@ -39,6 +40,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   allChecked = false;
   indeterminate = false;
   checkedMap: Record<string, boolean> = {};
+  statusFilter: NzTableFilterList = [];
   editModalVisible = false;
   activeTaxonomy!: TaxonomyModel;
   saveLoading = false;
@@ -65,7 +67,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   };
 
   private allTaxonomies!: TaxonomyModel[];
-  private status!: TaxonomyStatus | null;
+  private statuses!: TaxonomyStatus[];
   private orders: string[][] = [];
   private lastParam: string = '';
   private options: OptionEntity = {};
@@ -104,7 +106,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
       this.page = Number(queryParams.get('page')) || 1;
       this.keyword = queryParams.get('keyword')?.trim() || '';
-      this.status = <TaxonomyStatus>queryParams.get('status')?.trim();
+      this.statuses = <TaxonomyStatus[]>(queryParams.getAll('status') || []);
+      this.initFilter();
       this.fetchData();
       this.taxonomyType !== TaxonomyType.TAG && this.fetchAllTaxonomies();
     });
@@ -128,6 +131,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         this.orders.push([item.key, item.value === 'descend' ? 'desc' : 'asc']);
       }
     });
+    const currentFilter = filter.filter((item) => item.key === 'status' && item.value.length > 0);
+    this.statuses = currentFilter.length > 0 ? currentFilter[0].value : [];
     this.fetchData();
   }
 
@@ -227,8 +232,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
       pageSize: this.pageSize,
       orders: this.orders
     };
-    if (this.status !== null && this.status !== undefined) {
-      param.status = this.status;
+    if (this.statuses && this.statuses.length > 0) {
+      param.status = this.statuses;
     }
     if (this.keyword) {
       param.keyword = this.keyword;
@@ -261,6 +266,14 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
       this.allTaxonomies = res.taxonomies || [];
       this.taxonomyTree[0].children = this.taxonomyService.generateTaxonomyTree(this.allTaxonomies);
     });
+  }
+
+  private initFilter() {
+    this.statusFilter = Object.keys(TAXONOMY_STATUS).map((key) => ({
+      text: POST_STATUS[key],
+      value: key,
+      byDefault: this.statuses.includes(<TaxonomyStatus>key)
+    }));
   }
 
   private refreshTaxonomyTreeStatus(current?: string) {

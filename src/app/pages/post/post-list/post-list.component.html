@@ -63,8 +63,8 @@
       <th nzColumnKey="tag">标签</th>
       <th nzWidth="80px" nzColumnKey="postViewCount" [nzSortFn]="true" [nzSortPriority]="true">访问</th>
       <th nzWidth="60px" nzColumnKey="commentCount" [nzSortFn]="true" [nzSortPriority]="true">评论</th>
-      <th nzWidth="80px" [nzFilters]="statusFilter" [nzFilterFn]="true" nzColumnKey="postStatus">状态</th>
-      <th nzWidth="100px" [nzFilters]="commentFlagFilter" [nzFilterFn]="true" nzColumnKey="commentFlag">评论状态</th>
+      <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="statusFilter" [nzFilterFn]="true">状态</th>
+      <th nzWidth="100px" nzColumnKey="commentFlag" [nzFilters]="commentFlagFilter" [nzFilterFn]="true">评论状态</th>
       <th nzWidth="140px" nzColumnKey="postModified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true">创建时间</th>
       <th nzWidth="80px" nzColumnKey="author">作者</th>
@@ -107,8 +107,8 @@
           <nz-tag nzColor="blue">{{tag.name}}</nz-tag>
         </a>
       </td>
-      <td>{{ data.post.postViewCount }}</td>
-      <td>
+      <td nzAlign="right">{{ data.post.postViewCount }}</td>
+      <td nzAlign="right">
         <a routerLink="/comment" [queryParams]="{postId: data.post.postId}">{{ data.post.commentCount || 0 }}</a>
       </td>
       <td>
