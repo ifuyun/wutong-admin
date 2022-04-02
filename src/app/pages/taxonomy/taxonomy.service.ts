@@ -6,7 +6,7 @@ import { ApiUrl } from '../../config/api-url';
 import { TaxonomyType } from '../../config/common.enum';
 import { ApiService } from '../../core/api.service';
 import { HttpResponseEntity } from '../../interfaces/http-response';
-import { TaxonomyList, TaxonomyModel, TaxonomyQueryParam } from './taxonomy.interface';
+import { TaxonomyList, TaxonomyModel, TaxonomyQueryParam, TaxonomySaveParam } from './taxonomy.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -104,5 +104,9 @@ export class TaxonomyService {
     return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.UPDATE_TAXONOMY_OBJECT_COUNT), {
       type
     });
+  }
+
+  saveTaxonomy(param: TaxonomySaveParam): Observable<HttpResponseEntity> {
+    return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_TAXONOMIES), param);
   }
 }

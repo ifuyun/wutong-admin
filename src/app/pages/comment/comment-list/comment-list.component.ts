@@ -65,9 +65,9 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
 
   private postId!: string;
   private statuses!: CommentStatus[];
-  private orders: string[][] = [];
   /* antd初始化和重置filter时都会触发nzQueryParams，因此设置状态限制请求数 */
   private initialized = false;
+  private orders: string[][] = [];
   private lastParam: string = '';
   private options: OptionEntity = {};
   private user!: LoginUserEntity;

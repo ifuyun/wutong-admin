@@ -27,7 +27,7 @@ export interface TaxonomyList {
 export interface TaxonomyQueryParam {
   type: string;
   status?: TaxonomyStatus | TaxonomyStatus[];
-  page: number;
+  page?: number;
   pageSize?: number;
   keyword?: string;
   orders?: string[][];

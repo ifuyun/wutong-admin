@@ -174,6 +174,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   private commentFlags!: CommentFlag[];
   private postDateList!: PostArchiveDate[];
   private taxonomies!: TaxonomyModel[];
+  private initialized = false;
   private orders: string[][] = [];
   private lastParam: string = '';
   private options: OptionEntity = {};
@@ -214,6 +215,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.keyword = queryParams.get('keyword')?.trim() || '';
       this.statuses = <PostStatus[]>(queryParams.getAll('status') || []);
       this.commentFlags = <CommentFlag[]>(queryParams.getAll('commentFlag') || []);
+      this.initialized = false;
       this.updatePageInfo();
       this.initFilter();
       this.fetchArchiveDates();
@@ -233,6 +235,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   }
 
   onQueryParamsChange(params: NzTableQueryParams) {
+    if (!this.initialized) {
+      this.initialized = true;
+      return;
+    }
     const { pageSize, pageIndex, sort, filter } = params;
     this.pageSize = pageSize;
     this.page = pageIndex;

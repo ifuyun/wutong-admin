@@ -7,6 +7,7 @@ export enum ApiUrl {
   GET_POST_ARCHIVE_DATES = '/posts/archive-dates',
   GET_OPTIONS = '/options',
   GET_TAXONOMIES = '/taxonomies',
+  SAVE_TAXONOMIES = '/taxonomies',
   UPDATE_TAXONOMY_OBJECT_COUNT = '/taxonomies/update-count',
   GET_TAGS = '/tags',
   GET_LINKS = '/links',

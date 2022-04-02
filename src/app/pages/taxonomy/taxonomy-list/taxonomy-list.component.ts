@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzTableFilterList } from 'ng-zorro-antd/table/src/table.types';
 import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
@@ -16,7 +17,7 @@ import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionsService } from '../../../services/options.service';
-import { TaxonomyModel, TaxonomyQueryParam } from '../taxonomy.interface';
+import { TaxonomyModel, TaxonomyQueryParam, TaxonomySaveParam } from '../taxonomy.interface';
 import { TaxonomyService } from '../taxonomy.service';
 
 @Component({
@@ -68,6 +69,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
 
   private allTaxonomies!: TaxonomyModel[];
   private statuses!: TaxonomyStatus[];
+  private initialized = false;
   private orders: string[][] = [];
   private lastParam: string = '';
   private options: OptionEntity = {};
@@ -91,7 +93,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private modal: NzModalService
   ) {
     super();
   }
@@ -107,6 +110,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
       this.page = Number(queryParams.get('page')) || 1;
       this.keyword = queryParams.get('keyword')?.trim() || '';
       this.statuses = <TaxonomyStatus[]>(queryParams.getAll('status') || []);
+      this.initialized = false;
       this.initFilter();
       this.fetchData();
       this.taxonomyType !== TaxonomyType.TAG && this.fetchAllTaxonomies();
@@ -122,6 +126,10 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   }
 
   onQueryParamsChange(params: NzTableQueryParams) {
+    if (!this.initialized) {
+      this.initialized = true;
+      return;
+    }
     const { pageSize, pageIndex, sort, filter } = params;
     this.pageSize = pageSize;
     this.page = pageIndex;
@@ -164,7 +172,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         slug: '',
         description: '',
         taxonomyId: '',
-        parentId: taxonomy || TREE_ROOT_NODE_KEY,
+        parentId: taxonomy,
         status: TaxonomyStatus.PUBLISH
       };
     }
@@ -176,17 +184,13 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
       name: taxonomy.name,
       slug: taxonomy.slug,
       description: taxonomy.description,
-      parent: taxonomy.parentId,
+      parent: taxonomy.parentId || TREE_ROOT_NODE_KEY,
       order: typeof taxonomy.termOrder === 'number' ? taxonomy.termOrder : '',
       status: taxonomy.status
     });
     this.refreshTaxonomyTreeStatus(this.activeTaxonomy.taxonomyId);
     this.resetFormStatus(this.taxonomyForm);
     this.editModalVisible = true;
-  }
-
-  deleteTaxonomies(taxonomyIds?: string[]) {
-
   }
 
   closeEditModal() {
@@ -198,16 +202,75 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     if (!valid) {
       return;
     }
-    this.saveLoading = true;
+    const saveFn = () => {
+      this.saveLoading = true;
+      const taxonomyData: TaxonomySaveParam = {
+        taxonomyId: this.activeTaxonomy.taxonomyId,
+        type: this.taxonomyType,
+        name: value.name,
+        slug: this.taxonomyType === TaxonomyType.TAG ? value.name : value.slug,
+        description: this.taxonomyType === TaxonomyType.TAG ? value.name : value.description,
+        parentId: !value.parent || value.parent === TREE_ROOT_NODE_KEY ? '' : value.parent,
+        termOrder: value.order,
+        status: value.status
+      };
+      this.taxonomyService.saveTaxonomy(taxonomyData).subscribe((res) => {
+        this.saveLoading = false;
+        if (res.code === ResponseCode.SUCCESS) {
+          this.message.success(Message.SUCCESS);
+          this.fetchData(true);
+          this.fetchAllTaxonomies(true);
+          this.closeEditModal();
+        }
+      });
+    };
+    if (this.taxonomyType === TaxonomyType.TAG || !this.activeTaxonomy.taxonomyId) {
+      saveFn();
+    } else {
+      const modalContent = value.status === TaxonomyStatus.PUBLISH
+        ? '将分类设为公开，其所有父节点也将同步设为公开'
+        : `将分类设为${TAXONOMY_STATUS[value.status]}，其所有子节点也将同步设为${TAXONOMY_STATUS[value.status]}`;
+      this.modal.warning({
+        nzTitle: '注意',
+        nzContent: modalContent,
+        nzOkDanger: true,
+        nzOnOk: () => saveFn()
+      });
+    }
+  }
+
+  deleteTaxonomies(taxonomyIds?: string[]) {
+
   }
 
   updateAllCount(type: TaxonomyType) {
-    this.countLoading = true;
-    this.countListener = this.taxonomyService.updateAllCount(type).subscribe((res) => {
-      this.countLoading = false;
-      if (res.code === ResponseCode.SUCCESS) {
-        this.message.success(Message.SUCCESS);
-        this.fetchData(true);
+    let modalContent: string;
+    switch (type) {
+      case TaxonomyType.LINK:
+        modalContent = '确定更新全部链接分类的链接数量吗？';
+        break;
+      case TaxonomyType.TAG:
+        modalContent = '确定更新全部标签的内容数量吗？';
+        break;
+      default:
+        modalContent = '确定更新全部文章分类的内容数量吗？';
+    }
+    const confirmModal = this.modal.confirm({
+      nzContent: modalContent,
+      nzClassName: 'confirm-with-no-title',
+      nzOkDanger: false,
+      nzOkLoading: this.countLoading,
+      nzOnOk: () => {
+        this.countLoading = true;
+        this.countListener = this.taxonomyService.updateAllCount(type).subscribe((res) => {
+          this.countLoading = false;
+          if (res.code === ResponseCode.SUCCESS) {
+            confirmModal.destroy();
+            this.message.success(Message.SUCCESS);
+            this.fetchData(true);
+          }
+        });
+        return false;
       }
     });
   }
@@ -253,14 +316,13 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     });
   }
 
-  private fetchAllTaxonomies() {
-    if (this.allTaxonomies) {
+  private fetchAllTaxonomies(force = false) {
+    if (this.allTaxonomies && !force) {
       return;
     }
     this.allTaxonomiesListener = this.taxonomyService.getTaxonomies({
       type: this.taxonomyType,
       status: [TaxonomyStatus.PUBLISH, TaxonomyStatus.PRIVATE],
-      page: 1,
       pageSize: 0
     }).subscribe((res) => {
       this.allTaxonomies = res.taxonomies || [];
@@ -280,10 +342,16 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     const iterator = (nodes: NzTreeNodeOptions[], isParentDisabled: boolean) => {
       nodes.forEach((node) => {
         let isDisabled = false;
-        if (node['status'] && node['status'] !== TaxonomyStatus.PUBLISH || node['taxonomyId'] === current || isParentDisabled) {
+        if (
+          node.key !== TREE_ROOT_NODE_KEY && (
+            node['status'] && node['status'] !== TaxonomyStatus.PUBLISH ||
+            node['taxonomyId'] === current ||
+            isParentDisabled
+          )
+        ) {
           isDisabled = true;
           node.disabled = true;
-          node.expanded = false;
+          node.expanded = node['taxonomyId'] === current;
         } else {
           node.disabled = false;
           node.expanded = true;
