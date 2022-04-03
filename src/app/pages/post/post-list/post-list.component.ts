@@ -79,6 +79,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   }];
   categoryFilterExpanded: string[] = [];
   postModalVisible = false;
+  activePost!: Post;
   saveLoading = false;
   postFormRowGutter = 16;
   tagList: string[] = [];
@@ -86,12 +87,11 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   tagSearchChange$ = new BehaviorSubject('');
   postCategoryList: NzTreeNodeOptions[] = [];
   disabledDate = (current: Date): boolean => current.getTime() > Date.now();
+  passwordVisible = false;
   postForm: FormGroup = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(this.maxTitleLength)]],
     postDate: ['', [Validators.required]],
     category: ['', [
-      (control: AbstractControl): ValidationErrors | null =>
-        (!control.value || control.value.length < 1) && this.postType === PostType.POST ? { required: true } : null,
       (control: AbstractControl): ValidationErrors | null => {
         const checkedIds = control.value;
         let allIds: string[] = [];
@@ -130,6 +130,15 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   }, {
     validators: [
       (control: AbstractControl): ValidationErrors | null => {
+        const status = control.get('status')?.value;
+        const category = control.get('category')?.value;
+        const condition = (!category || category.length < 1) &&
+          (![PostStatus.TRASH, PostStatus.DRAFT].includes(status)) &&
+          this.postType === PostType.POST;
+
+        return condition ? { category: { required: true } } : null;
+      },
+      (control: AbstractControl): ValidationErrors | null => {
         const original = control.get('original')?.value;
         const source = control.get('source')?.value.trim();
         const author = control.get('author')?.value.trim();
@@ -165,7 +174,6 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     list: []
   };
 
-  private activePost!: Post;
   private category: string = '';
   private tag: string = '';
   private year: string = '';
@@ -372,6 +380,17 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     if (!valid) {
       return;
     }
+    if (this.activePost.post.postStatus !== PostStatus.TRASH && value.status === PostStatus.TRASH) {
+      this.message.error('状态不允许为"删除"');
+      return;
+    }
+    if (value.status === PostStatus.TRASH && (value.category.length > 0 || value.tag.length > 0)) {
+      const errTypes: string[] = [];
+      value.category.length > 0 && errTypes.push('分类');
+      value.tag.length > 0 && errTypes.push('标签');
+      this.message.error(`要添加${errTypes.join('和')}，请将状态设为非"删除"状态`);
+      return;
+    }
     this.saveLoading = true;
     const postData: PostSaveParam = {
       postId: this.activePost.post.postId,
@@ -407,14 +426,14 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   deletePosts(postIds?: string[]) {
     const checkedIds: string[] = postIds || Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
     if (checkedIds.length < 1) {
-      this.message.error('请先选择至少一条评论');
+      this.message.error('请先选择至少一篇内容');
       return;
     }
     this.checkedPosts = this.postList.filter((item) => checkedIds.includes(item.post.postId));
     const confirmModal = this.modal.confirm({
       nzWidth: 480,
+      nzTitle: '确定删除吗？',
       nzContent: this.confirmModalContent,
-      nzClassName: 'confirm-with-no-title',
       nzOkDanger: true,
       nzOnOk: () => {
         this.postService.deletePosts(checkedIds).subscribe((res) => {

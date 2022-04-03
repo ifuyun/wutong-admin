@@ -45,7 +45,10 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   editModalVisible = false;
   activeTaxonomy!: TaxonomyModel;
   saveLoading = false;
-  taxonomyStatusList = TAXONOMY_STATUS_LIST;
+  taxonomyStatusList = TAXONOMY_STATUS_LIST.map((item) => ({
+    ...item,
+    disabled: item.key === TaxonomyStatus.TRASH
+  }));
   taxonomyForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(this.maxNameLength)]],
     slug: ['', [Validators.required, Validators.maxLength(this.maxSlugLength)]],
@@ -59,7 +62,6 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     key: TREE_ROOT_NODE_KEY,
     children: []
   }];
-  countLoading = false;
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -72,6 +74,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   private initialized = false;
   private orders: string[][] = [];
   private lastParam: string = '';
+  private countLoading = false;
   private options: OptionEntity = {};
   private titleMap = {
     [TaxonomyType.POST]: '文章分类管理',
@@ -224,7 +227,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         }
       });
     };
-    if (this.taxonomyType === TaxonomyType.TAG || !this.activeTaxonomy.taxonomyId) {
+    if (this.taxonomyType === TaxonomyType.TAG || !this.activeTaxonomy.taxonomyId || value.status === this.activeTaxonomy.status) {
       saveFn();
     } else {
       const modalContent = value.status === TaxonomyStatus.PUBLISH
@@ -239,7 +242,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     }
   }
 
-  deleteTaxonomies(taxonomyIds?: string[]) {
+  deleteTaxonomies(taxonomyId?: string) {
 
   }
 
@@ -256,8 +259,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         modalContent = '确定更新全部文章分类的内容数量吗？';
     }
     const confirmModal = this.modal.confirm({
+      nzTitle: '确定更新吗？',
       nzContent: modalContent,
-      nzClassName: 'confirm-with-no-title',
       nzOkDanger: false,
       nzOkLoading: this.countLoading,
       nzOnOk: () => {

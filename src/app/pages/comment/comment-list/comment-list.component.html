@@ -66,8 +66,10 @@
         <a class="table-row-btn-spam" (click)="auditComments('spam', [data.commentId])">垃圾评论</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>
-      <a (click)="editComment('reply', data)">回复</a>
-      <nz-divider nzType="vertical"></nz-divider>
+      <ng-container *ngIf="data.commentStatus === 'normal' || data.commentStatus === 'pending'">
+        <a (click)="editComment('reply', data)">回复</a>
+        <nz-divider nzType="vertical"></nz-divider>
+      </ng-container>
       <a (click)="editComment('edit', data)">编辑</a>
       <ng-container *ngIf="data.commentStatus !== 'trash'">
         <nz-divider nzType="vertical"></nz-divider>

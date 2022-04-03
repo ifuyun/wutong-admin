@@ -69,6 +69,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   private initialized = false;
   private orders: string[][] = [];
   private lastParam: string = '';
+  private auditLoading = false;
   private options: OptionEntity = {};
   private user!: LoginUserEntity;
   private optionsListener!: Subscription;
@@ -167,15 +168,18 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
     this.auditAction = <CommentAuditAction>action;
     this.checkedLength = checkedIds.length;
     const confirmModal = this.modal.confirm({
+      nzTitle: '确定删除吗？',
       nzContent: this.confirmModalContent,
-      nzClassName: 'confirm-with-no-title',
       nzOkDanger: this.auditAction === CommentAuditAction.TRASH,
+      nzOkLoading: this.auditLoading,
       nzOnOk: () => {
+        this.auditLoading = true;
         this.commentService.auditComments({
           commentIds: checkedIds,
           action: <CommentAuditAction>this.auditAction
         }).subscribe((res) => {
           this.auditAction = null;
+          this.auditLoading = false;
           if (res.code === ResponseCode.SUCCESS) {
             confirmModal.destroy();
             this.message.success(Message.SUCCESS);

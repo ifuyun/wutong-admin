@@ -2,7 +2,7 @@
   <button nz-button nzType="primary" (click)="editTaxonomy()">{{taxonomyType === 'tag' ? '新增标签' : '新增一级分类'}}</button>
   <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
   <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">删除</button>
-  <button nz-button nzType="default" [nzLoading]="countLoading" (click)="updateAllCount(taxonomyType)">
+  <button nz-button nzType="default" (click)="updateAllCount(taxonomyType)">
     更新{{taxonomyType === 'link' ? '链接' : '内容'}}数量
   </button>
   <div class="table-search">
@@ -159,7 +159,8 @@
         <nz-form-label nzRequired [nzSpan]="4">状态</nz-form-label>
         <nz-form-control [nzErrorTip]="statusErrorTpl">
           <nz-select formControlName="status" nzPlaceHolder="请选择状态">
-            <nz-option *ngFor="let status of taxonomyStatusList" [nzValue]="status.key" [nzLabel]="status.label"></nz-option>
+            <nz-option *ngFor="let status of taxonomyStatusList"
+                       [nzValue]="status.key" [nzLabel]="status.label" [nzDisabled]="status.disabled"></nz-option>
           </nz-select>
           <ng-template #statusErrorTpl let-control>
             <ng-container *ngIf="control.hasError('required')">请选择状态</ng-container>

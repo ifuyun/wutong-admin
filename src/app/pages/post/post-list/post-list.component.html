@@ -239,8 +239,12 @@
         <div nz-row [nzGutter]="postFormRowGutter" *ngIf="postType === 'post'">
           <div nz-col [nzSpan]="24">
             <nz-form-item>
-              <nz-form-label nzRequired>分类</nz-form-label>
-              <nz-form-control [nzErrorTip]="categoryErrorTpl">
+              <nz-form-label
+                [nzRequired]="postForm.get('status')?.value !== 'draft' && postForm.get('status')?.value !== 'trash'">分类</nz-form-label>
+              <nz-form-control
+                [nzValidateStatus]="postForm.get('category')?.dirty &&
+                  (postForm.errors?.['category'] || postForm.get('category')?.invalid) ? 'error' : 'success'"
+                [nzErrorTip]="categoryErrorTpl">
                 <nz-tree-select
                   nzShowSearch
                   nzCheckable
@@ -251,8 +255,8 @@
                   [nzNodes]="postCategoryList"
                 ></nz-tree-select>
                 <ng-template #categoryErrorTpl let-control>
-                  <ng-container *ngIf="control.hasError('required')">请选择分类</ng-container>
-                  <ng-container *ngIf="control.hasError('maxsize')">分类最多选择{{maxTaxonomyNumber}}个</ng-container>
+                  <ng-container *ngIf="postForm.errors?.['category'].required">请选择分类</ng-container>
+                  <ng-container *ngIf="control?.hasError('maxsize')">分类最多选择{{maxTaxonomyNumber}}个</ng-container>
                 </ng-template>
               </nz-form-control>
             </nz-form-item>
@@ -290,30 +294,33 @@
         </div>
       </div>
       <div nz-row [nzGutter]="postFormRowGutter">
-        <div nz-col [nzSpan]="24">
+        <div nz-col [nzSpan]="12">
           <nz-form-item>
-            <nz-form-label nzRequired>公开度</nz-form-label>
+            <nz-form-label nzRequired>状态</nz-form-label>
             <nz-form-control>
-              <nz-radio-group formControlName="status" nzName="postStatus">
-                <label nz-radio nzValue="publish">公开</label>
-                <label nz-radio nzValue="password" *ngIf="postType !== 'attachment'">加密</label>
-                <label nz-radio nzValue="private" *ngIf="postType !== 'attachment'">隐藏</label>
-                <label nz-radio nzValue="trash">删除</label>
-              </nz-radio-group>
+              <nz-select formControlName="status">
+                <nz-option nzLabel="公开" nzValue="publish"></nz-option>
+                <nz-option nzLabel="加密" nzValue="password"></nz-option>
+                <nz-option nzLabel="隐藏" nzValue="private"></nz-option>
+                <nz-option nzLabel="草稿" nzValue="draft"></nz-option>
+                <nz-option nzLabel="删除" nzValue="trash" nzDisabled *ngIf="activePost.post.postStatus === 'trash'"></nz-option>
+              </nz-select>
             </nz-form-control>
           </nz-form-item>
         </div>
-      </div>
-      <div nz-row [nzGutter]="postFormRowGutter"
-           *ngIf="postForm.get('status')?.value === 'password'">
-        <div nz-col [nzSpan]="12">
+        <div nz-col [nzSpan]="12" *ngIf="postForm.get('status')?.value === 'password'">
           <nz-form-item>
             <nz-form-label nzRequired>密码</nz-form-label>
             <nz-form-control
               [nzValidateStatus]="postForm.get('password')?.dirty && postForm.errors?.['password'] ? 'error' : 'success'"
               [nzErrorTip]="passwordErrorTpl"
             >
-              <input nz-input type="text" formControlName="password" placeholder="请输入密码"/>
+              <nz-input-group [nzSuffix]="passwordSuffix">
+                <input nz-input [type]="passwordVisible ? 'text' : 'password'" formControlName="password" placeholder="请输入密码"/>
+              </nz-input-group>
+              <ng-template #passwordSuffix>
+                <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible"></i>
+              </ng-template>
               <ng-template #passwordErrorTpl>
                 <ng-container *ngIf="postForm.errors?.['password'].required">请输入密码</ng-container>
               </ng-template>
@@ -453,7 +460,9 @@
 </nz-modal>
 <ng-template #confirmModalContent>
   <div>
-    <div>确定删除以下 <span class="confirm-warning">{{checkedPosts.length}}</span> 篇内容吗？</div>
+    <p>删除内容的同时，将同时删除内容关联的所有<ng-container *ngIf="postType === 'post'">分类和</ng-container>标签。</p>
+    <p>如果只是不想公开内容，请将内容状态设为"<span class="confirm-warning">隐藏</span>"即可。</p>
+    <p>确定删除以下 <span class="confirm-warning">{{checkedPosts.length}}</span> 篇内容吗？</p>
     <nz-list nzSize="small" class="confirm-list">
       <nz-list-item nzNoFlex *ngFor="let post of checkedPosts; let i = index" [title]="post.post.postTitle">
         <span class="confirm-list-index">{{i + 1}}.</span>{{post.post.postTitle}}

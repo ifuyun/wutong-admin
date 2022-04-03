@@ -109,13 +109,13 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-label nzRequired>公开度</nz-form-label>
+        <nz-form-label nzRequired>状态</nz-form-label>
         <nz-form-control>
-          <nz-select nzAllowClear formControlName="status" nzPlaceHolder="请选择公开度">
+          <nz-select nzAllowClear formControlName="status" nzPlaceHolder="请选择状态">
             <nz-option nzLabel="公开" nzValue="publish"></nz-option>
             <nz-option nzLabel="加密" nzValue="password"></nz-option>
             <nz-option nzLabel="隐藏" nzValue="private"></nz-option>
-            <nz-option nzLabel="删除" nzValue="trash"></nz-option>
+            <nz-option nzLabel="草稿" nzValue="draft"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
@@ -125,7 +125,12 @@
           [nzValidateStatus]="postForm.get('password')?.dirty && postForm.errors?.['password'] ? 'error' : 'success'"
           [nzErrorTip]="passwordErrorTpl"
         >
-          <input nz-input type="text" formControlName="password" placeholder="请输入密码"/>
+          <nz-input-group [nzSuffix]="passwordSuffix">
+            <input nz-input [type]="passwordVisible ? 'text' : 'password'" formControlName="password" placeholder="请输入密码"/>
+          </nz-input-group>
+          <ng-template #passwordSuffix>
+            <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible"></i>
+          </ng-template>
           <ng-template #passwordErrorTpl>
             <ng-container *ngIf="postForm.errors?.['password'].required">请输入密码</ng-container>
           </ng-template>

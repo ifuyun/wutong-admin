@@ -44,6 +44,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
   tagSearchChange$ = new BehaviorSubject('');
   postCategoryList: NzTreeNodeOptions[] = [];
   disabledDate = (current: Date): boolean => current.getTime() > Date.now();
+  passwordVisible = false;
   postForm: FormGroup = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(this.maxTitleLength)]],
     content: ['', [Validators.required]],
@@ -175,6 +176,10 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
   savePost() {
     const { value, valid } = this.validateForm(this.postForm);
     if (!valid) {
+      return;
+    }
+    if (this.activePost.post.postStatus !== PostStatus.TRASH && value.status === PostStatus.TRASH) {
+      this.message.error('状态不允许为"删除"');
       return;
     }
     this.saveLoading = true;

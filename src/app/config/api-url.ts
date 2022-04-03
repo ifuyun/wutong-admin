@@ -9,7 +9,7 @@ export enum ApiUrl {
   GET_TAXONOMIES = '/taxonomies',
   SAVE_TAXONOMIES = '/taxonomies',
   UPDATE_TAXONOMY_OBJECT_COUNT = '/taxonomies/update-count',
-  GET_TAGS = '/tags',
+  GET_TAGS = '/taxonomies/tags',
   GET_LINKS = '/links',
   GET_COMMENTS = '/comments',
   SAVE_COMMENTS = '/comments',
