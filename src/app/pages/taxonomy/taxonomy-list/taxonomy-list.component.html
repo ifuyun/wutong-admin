@@ -1,8 +1,8 @@
 <div class="table-operations">
   <button nz-button nzType="primary" (click)="editTaxonomy()">{{taxonomyType === 'tag' ? '新增标签' : '新增一级分类'}}</button>
-  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
-  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">删除</button>
-  <button nz-button nzType="default" (click)="updateAllCount(taxonomyType)">
+  <button nz-button [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
+  <button nz-button [disabled]="!trashEnabled" (click)="deleteTaxonomies()">删除</button>
+  <button nz-button (click)="updateAllCount(taxonomyType)">
     更新{{taxonomyType === 'link' ? '链接' : '内容'}}数量
   </button>
   <div class="table-search">
@@ -73,7 +73,7 @@
       <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'link'">编辑</a>
       <ng-container *ngIf="data.status !== 'trash'">
         <nz-divider nzType="vertical"></nz-divider>
-        <a href="#">删除</a>
+        <a (click)="deleteTaxonomies(data.taxonomyId)">删除</a>
       </ng-container>
     </td>
   </tr>
@@ -147,7 +147,7 @@
         <nz-form-item>
           <nz-form-label nzRequired [nzSpan]="4">排序</nz-form-label>
           <nz-form-control [nzErrorTip]="orderErrorTpl">
-            <input nz-input type="text" formControlName="order" [maxlength]="maxNameLength" placeholder="请输入排序"/>
+            <input nz-input type="text" formControlName="order" [maxlength]="5" placeholder="请输入排序"/>
             <ng-template #orderErrorTpl let-control>
               <ng-container *ngIf="control.hasError('required')">请输入排序</ng-container>
               <ng-container *ngIf="control.hasError('pattern')">排序值范围为 0~99999</ng-container>
@@ -170,7 +170,20 @@
     </form>
   </ng-template>
   <ng-template #editModalFooter>
-    <button nz-button nzType="default" (click)="closeEditModal()">取消</button>
+    <button nz-button (click)="closeEditModal()">取消</button>
     <button nz-button nzType="primary" (click)="saveTaxonomy()" [nzLoading]="saveLoading">确定</button>
   </ng-template>
 </nz-modal>
+<ng-template #confirmModalContent>
+  <div>
+    <ng-container *ngIf="taxonomyType === 'tag'">
+      <p>删除标签的同时，所有包含此标签的内容将不再含有此标签。</p>
+      <p>确定删除这 <span class="confirm-warning">{{checkedLength}}</span> 个标签吗？</p>
+    </ng-container>
+    <ng-container *ngIf="taxonomyType !== 'tag'">
+      <p>请确认其和所有后代分类下已没有关联的{{taxonomyType === 'link' ? '链接' : '内容'}}，否则，将不允许删除。</p>
+      <p>删除分类时，其和所有后代分类将同时被删除。</p>
+      <p>确定删除这 <span class="confirm-warning">{{checkedLength}}</span> 个分类吗？</p>
+    </ng-container>
+  </div>
+</ng-template>

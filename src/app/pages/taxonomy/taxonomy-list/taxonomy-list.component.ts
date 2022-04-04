@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,6 +27,7 @@ import { TaxonomyService } from '../taxonomy.service';
 })
 export class TaxonomyListComponent extends ListComponent implements OnInit, OnDestroy {
   @Input() taxonomyType!: TaxonomyType;
+  @ViewChild('confirmModalContent') confirmModalContent!: TemplateRef<any>;
 
   readonly maxNameLength = TAXONOMY_NAME_LENGTH;
   readonly maxSlugLength = TAXONOMY_SLUG_LENGTH;
@@ -41,7 +42,9 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   allChecked = false;
   indeterminate = false;
   checkedMap: Record<string, boolean> = {};
+  checkedLength = 0;
   statusFilter: NzTableFilterList = [];
+  trashEnabled = false;
   editModalVisible = false;
   activeTaxonomy!: TaxonomyModel;
   saveLoading = false;
@@ -74,6 +77,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   private initialized = false;
   private orders: string[][] = [];
   private lastParam: string = '';
+  private deleteLoading = false;
   private countLoading = false;
   private options: OptionEntity = {};
   private titleMap = {
@@ -153,11 +157,13 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     });
     this.allChecked = checked;
     this.indeterminate = false;
+    this.refreshBtnStatus();
   }
 
   onItemChecked(checkedKey: string, checked: boolean) {
     this.checkedMap[checkedKey] = checked;
     this.refreshCheckedStatus();
+    this.refreshBtnStatus();
   }
 
   onSearch(event?: KeyboardEvent) {
@@ -243,7 +249,30 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   }
 
   deleteTaxonomies(taxonomyId?: string) {
-
+    const checkedIds: string[] = taxonomyId ? [taxonomyId] : Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
+    if (checkedIds.length < 1) {
+      this.message.error('请先选择至少一条记录');
+      return;
+    }
+    this.checkedLength = checkedIds.length;
+    const confirmModal = this.modal.confirm({
+      nzTitle: '确定删除吗？',
+      nzContent: this.confirmModalContent,
+      nzOkDanger: true,
+      nzOkLoading: this.deleteLoading,
+      nzOnOk: () => {
+        this.deleteLoading = true;
+        this.taxonomyService.deleteTaxonomies(this.taxonomyType, checkedIds).subscribe((res) => {
+          this.deleteLoading = false;
+          if (res.code === ResponseCode.SUCCESS) {
+            confirmModal.destroy();
+            this.message.success(Message.SUCCESS);
+            this.fetchData(true);
+          }
+        });
+        return false;
+      }
+    });
   }
 
   updateAllCount(type: TaxonomyType) {
@@ -375,6 +404,17 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   private resetCheckedStatus() {
     this.allChecked = false;
     this.indeterminate = false;
+    this.trashEnabled = false;
     this.checkedMap = {};
+  }
+
+  private refreshBtnStatus() {
+    const checkedList = this.taxonomyList.filter((item) => this.checkedMap[item.taxonomyId]);
+    if (checkedList.length > 0) {
+      this.trashEnabled = checkedList.every(
+        (item) => this.checkedMap[item.taxonomyId] && item.status !== TaxonomyStatus.TRASH);
+    } else {
+      this.trashEnabled = false;
+    }
   }
 }

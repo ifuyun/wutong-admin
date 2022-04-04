@@ -143,7 +143,7 @@
         <a [routerLink]="postType === 'post' ? './edit' : '/post/edit-standalone'" [queryParams]="{postId: data.post.postId}">编辑</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>
-      <a (click)="deletePosts([data.post.postId])" *ngIf="data.post.postStatus !== 'trash'">删除</a>
+      <a (click)="deletePosts(data.post.postId)" *ngIf="data.post.postStatus !== 'trash'">删除</a>
     </td>
   </tr>
   </tbody>
@@ -460,7 +460,7 @@
 </nz-modal>
 <ng-template #confirmModalContent>
   <div>
-    <p>删除内容的同时，将同时删除内容关联的所有<ng-container *ngIf="postType === 'post'">分类和</ng-container>标签。</p>
+    <p>删除内容的同时，将删除其关联的所有{{postType === 'post'  ? '分类和' : ''}}标签。</p>
     <p>如果只是不想公开内容，请将内容状态设为"<span class="confirm-warning">隐藏</span>"即可。</p>
     <p>确定删除以下 <span class="confirm-warning">{{checkedPosts.length}}</span> 篇内容吗？</p>
     <nz-list nzSize="small" class="confirm-list">

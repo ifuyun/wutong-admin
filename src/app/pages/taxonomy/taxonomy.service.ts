@@ -109,4 +109,11 @@ export class TaxonomyService {
   saveTaxonomy(param: TaxonomySaveParam): Observable<HttpResponseEntity> {
     return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_TAXONOMIES), param);
   }
+
+  deleteTaxonomies(type: TaxonomyType, taxonomyIds: string[]): Observable<HttpResponseEntity> {
+    return this.apiService.httpDelete(this.apiService.getApiUrl(ApiUrl.DELETE_TAXONOMIES), {
+      type,
+      taxonomyIds
+    });
+  }
 }

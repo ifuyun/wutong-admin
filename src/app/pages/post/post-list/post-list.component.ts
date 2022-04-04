@@ -423,8 +423,8 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     });
   }
 
-  deletePosts(postIds?: string[]) {
-    const checkedIds: string[] = postIds || Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
+  deletePosts(postId?: string) {
+    const checkedIds: string[] = postId ? [postId] : Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
     if (checkedIds.length < 1) {
       this.message.error('请先选择至少一篇内容');
       return;

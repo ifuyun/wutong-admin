@@ -8,6 +8,7 @@ export enum ApiUrl {
   GET_OPTIONS = '/options',
   GET_TAXONOMIES = '/taxonomies',
   SAVE_TAXONOMIES = '/taxonomies',
+  DELETE_TAXONOMIES = '/taxonomies',
   UPDATE_TAXONOMY_OBJECT_COUNT = '/taxonomies/update-count',
   GET_TAGS = '/taxonomies/tags',
   GET_LINKS = '/links',
