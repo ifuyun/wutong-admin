@@ -8,6 +8,7 @@ export interface TaxonomyEntity {
   parentId?: string;
   status: TaxonomyStatus;
   termOrder?: number;
+  isRequired?: 0 | 1;
   count?: number;
 }
 

@@ -180,8 +180,8 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
         }).subscribe((res) => {
           this.auditAction = null;
           this.auditLoading = false;
+          confirmModal.destroy();
           if (res.code === ResponseCode.SUCCESS) {
-            confirmModal.destroy();
             this.message.success(Message.SUCCESS);
             this.fetchData(true);
           }

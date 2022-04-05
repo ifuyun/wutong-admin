@@ -11,7 +11,15 @@ import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
-import { POST_STATUS, TAXONOMY_DESCRIPTION_LENGTH, TAXONOMY_NAME_LENGTH, TAXONOMY_SLUG_LENGTH, TAXONOMY_STATUS, TAXONOMY_STATUS_LIST, TREE_ROOT_NODE_KEY } from '../../../config/constants';
+import {
+  POST_STATUS,
+  TAXONOMY_DESCRIPTION_LENGTH,
+  TAXONOMY_NAME_LENGTH,
+  TAXONOMY_SLUG_LENGTH,
+  TAXONOMY_STATUS,
+  TAXONOMY_STATUS_LIST,
+  TREE_ROOT_NODE_KEY
+} from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
@@ -182,7 +190,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         description: '',
         taxonomyId: '',
         parentId: taxonomy,
-        status: TaxonomyStatus.PUBLISH
+        status: TaxonomyStatus.PUBLISH,
+        isRequired: 0
       };
     }
     if (this.taxonomyType === TaxonomyType.TAG) {
@@ -236,9 +245,22 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     if (this.taxonomyType === TaxonomyType.TAG || !this.activeTaxonomy.taxonomyId || value.status === this.activeTaxonomy.status) {
       saveFn();
     } else {
-      const modalContent = value.status === TaxonomyStatus.PUBLISH
-        ? '将分类设为公开，其所有父节点也将同步设为公开'
-        : `将分类设为${TAXONOMY_STATUS[value.status]}，其所有子节点也将同步设为${TAXONOMY_STATUS[value.status]}`;
+      let modalContent: string;
+      switch (value.status) {
+        case TaxonomyStatus.PUBLISH:
+          modalContent = '将分类设为公开，其所有祖先分类也将同步设为公开。';
+          break;
+        case TaxonomyStatus.PRIVATE:
+          modalContent = `将分类设为${TAXONOMY_STATUS[TaxonomyStatus.PRIVATE]}，` +
+            `其所有${TAXONOMY_STATUS[TaxonomyStatus.PUBLISH]}的后代分类和${TAXONOMY_STATUS[TaxonomyStatus.TRASH]}的祖先分类` +
+            `也将同步变更为${TAXONOMY_STATUS[TaxonomyStatus.PRIVATE]}。`;
+          if (this.activeTaxonomy.status === TaxonomyStatus.PUBLISH) {
+            modalContent += `且，将影响其和所有后代分类关联的${this.taxonomyType === TaxonomyType.POST ? '文章' : '链接'}的公开状态。`;
+          }
+          break;
+        default:
+          modalContent = `将分类设为${TAXONOMY_STATUS[value.status]}，其所有后代分类也将同步设为${TAXONOMY_STATUS[value.status]}`;
+      }
       this.modal.warning({
         nzTitle: '注意',
         nzContent: modalContent,
@@ -248,8 +270,13 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     }
   }
 
-  deleteTaxonomies(taxonomyId?: string) {
-    const checkedIds: string[] = taxonomyId ? [taxonomyId] : Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
+  deleteTaxonomies(taxonomy?: TaxonomyModel) {
+    if (taxonomy?.isRequired) {
+      this.message.error(`分类"${taxonomy.name}"为基础数据，不允许删除`);
+      return;
+    }
+    const checkedIds: string[] = taxonomy ? [taxonomy.taxonomyId]
+      : Object.keys(this.checkedMap).filter((item) => this.checkedMap[item]);
     if (checkedIds.length < 1) {
       this.message.error('请先选择至少一条记录');
       return;
@@ -264,8 +291,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         this.deleteLoading = true;
         this.taxonomyService.deleteTaxonomies(this.taxonomyType, checkedIds).subscribe((res) => {
           this.deleteLoading = false;
+          confirmModal.destroy();
           if (res.code === ResponseCode.SUCCESS) {
-            confirmModal.destroy();
             this.message.success(Message.SUCCESS);
             this.fetchData(true);
           }
@@ -412,7 +439,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     const checkedList = this.taxonomyList.filter((item) => this.checkedMap[item.taxonomyId]);
     if (checkedList.length > 0) {
       this.trashEnabled = checkedList.every(
-        (item) => this.checkedMap[item.taxonomyId] && item.status !== TaxonomyStatus.TRASH);
+        (item) => this.checkedMap[item.taxonomyId] && item.status !== TaxonomyStatus.TRASH && !item.isRequired);
     } else {
       this.trashEnabled = false;
     }

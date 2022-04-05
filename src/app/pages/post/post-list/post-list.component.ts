@@ -185,6 +185,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   private initialized = false;
   private orders: string[][] = [];
   private lastParam: string = '';
+  private deleteLoading = false;
   private options: OptionEntity = {};
   private optionsListener!: Subscription;
   private paramListener!: Subscription;
@@ -435,10 +436,13 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       nzTitle: '确定删除吗？',
       nzContent: this.confirmModalContent,
       nzOkDanger: true,
+      nzOkLoading: this.deleteLoading,
       nzOnOk: () => {
+        this.deleteLoading = true;
         this.postService.deletePosts(checkedIds).subscribe((res) => {
+          this.deleteLoading = false;
+          confirmModal.destroy();
           if (res.code === ResponseCode.SUCCESS) {
-            confirmModal.destroy();
             this.message.success(Message.SUCCESS);
             this.fetchData(true);
           }
