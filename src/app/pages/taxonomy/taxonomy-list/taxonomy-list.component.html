@@ -147,7 +147,12 @@
               [nzDisabled]="!!activeTaxonomy.isRequired"
               [nzNodes]="taxonomyTree"
               [nzDropdownStyle]="{'max-height': '400px'}"
-            ></nz-tree-select>
+              [nzTreeTemplate]="treeTemplate"
+            >
+              <ng-template #treeTemplate let-node>
+                <span [ngClass]="{'node-status-trash': node.origin.isDeleted}">{{ node.title }}</span>
+              </ng-template>
+            </nz-tree-select>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>

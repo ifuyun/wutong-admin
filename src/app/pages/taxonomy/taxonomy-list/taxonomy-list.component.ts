@@ -295,6 +295,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
           if (res.code === ResponseCode.SUCCESS) {
             this.message.success(Message.SUCCESS);
             this.fetchData(true);
+            this.fetchAllTaxonomies(true);
           }
         });
         return false;
@@ -381,7 +382,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     }
     this.allTaxonomiesListener = this.taxonomyService.getTaxonomies({
       type: this.taxonomyType,
-      status: [TaxonomyStatus.PUBLISH, TaxonomyStatus.PRIVATE],
+      status: [TaxonomyStatus.PUBLISH, TaxonomyStatus.PRIVATE, TaxonomyStatus.TRASH],
       pageSize: 0
     }).subscribe((res) => {
       this.allTaxonomies = res.taxonomies || [];
@@ -403,7 +404,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         let isDisabled = false;
         if (
           node.key !== TREE_ROOT_NODE_KEY && (
-            node['status'] && node['status'] !== TaxonomyStatus.PUBLISH ||
+            node['status'] &&
+            node['status'] !== TaxonomyStatus.PUBLISH ||
             node['taxonomyId'] === current ||
             isParentDisabled
           )

@@ -3,7 +3,7 @@ import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiUrl } from '../../config/api-url';
-import { TaxonomyType } from '../../config/common.enum';
+import { TaxonomyStatus, TaxonomyType } from '../../config/common.enum';
 import { ApiService } from '../../core/api.service';
 import { HttpResponseEntity } from '../../interfaces/http-response';
 import { TaxonomyList, TaxonomyModel, TaxonomyQueryParam, TaxonomySaveParam } from './taxonomy.interface';
@@ -27,7 +27,8 @@ export class TaxonomyService {
       title: item.name,
       taxonomyId: item.taxonomyId,
       parentId: item.parentId,
-      status: item.status
+      status: item.status,
+      isDeleted: item.status === TaxonomyStatus.TRASH
     }));
     return nodes.filter((father) => {
       father.children = nodes.filter((child) => father['taxonomyId'] === child['parentId']);
