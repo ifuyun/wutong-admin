@@ -12,6 +12,8 @@ export enum ApiUrl {
   UPDATE_TAXONOMY_OBJECT_COUNT = '/taxonomies/update-count',
   GET_TAGS = '/taxonomies/tags',
   GET_LINKS = '/links',
+  SAVE_LINKS = '/links',
+  DELETE_LINKS = '/links',
   GET_COMMENTS = '/comments',
   SAVE_COMMENTS = '/comments',
   AUDIT_COMMENTS = '/comments/audit',

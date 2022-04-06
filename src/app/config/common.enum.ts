@@ -64,8 +64,8 @@ export enum TaxonomyStatus {
 
 export enum LinkTarget {
   BLANK = '_blank',
-  TOP = '_top',
-  SELF = '_self'
+  SELF = '_self',
+  TOP = '_top'
 }
 
 export enum LinkScope {

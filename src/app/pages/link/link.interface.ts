@@ -8,7 +8,7 @@ export interface LinkEntity {
   linkDescription: string;
   linkScope: LinkScope;
   linkStatus: LinkStatus;
-  linkTarget: string;
+  linkTarget: LinkTarget;
   linkOrder: number;
   linkImage?: string;
 }
@@ -31,8 +31,13 @@ export interface LinkQueryParam {
   page: number;
   pageSize?: number;
   keyword?: string;
+  taxonomyId?: string;
   target?: LinkTarget | LinkTarget[];
   visible?: LinkScope | LinkScope[];
   status?: LinkStatus | LinkStatus[];
   orders?: string[][];
+}
+
+export interface LinkSaveParam extends LinkEntity {
+  linkTaxonomy: string;
 }

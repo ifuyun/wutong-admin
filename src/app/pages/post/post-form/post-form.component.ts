@@ -52,14 +52,8 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
     category: ['', [
       (control: AbstractControl): ValidationErrors | null =>
         (!control.value || control.value.length < 1) && this.postType === PostType.POST ? { required: true } : null,
-      (control: AbstractControl): ValidationErrors | null => {
-        const checkedIds = control.value;
-        let allIds: string[] = [];
-        if (checkedIds) {
-          allIds = this.taxonomyService.getAllChildren(this.postCategoryList, checkedIds);
-        }
-        return allIds.length > this.maxTaxonomyNumber ? { maxsize: true } : null;
-      }
+      (control: AbstractControl): ValidationErrors | null =>
+        control.value.length > this.maxTaxonomyNumber ? { maxsize: true } : null
     ]],
     tag: [[]],
     guid: ['', [

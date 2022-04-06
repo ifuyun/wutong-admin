@@ -242,8 +242,7 @@
               <nz-form-label
                 [nzRequired]="postForm.get('status')?.value !== 'draft' && postForm.get('status')?.value !== 'trash'">分类</nz-form-label>
               <nz-form-control
-                [nzValidateStatus]="postForm.get('category')?.dirty &&
-                  (postForm.errors?.['category'] || postForm.get('category')?.invalid) ? 'error' : 'success'"
+                [nzValidateStatus]="postForm.get('category')?.dirty && postForm.errors?.['category'] ? 'error' : 'success'"
                 [nzErrorTip]="categoryErrorTpl">
                 <nz-tree-select
                   nzShowSearch
@@ -255,9 +254,9 @@
                   [nzDropdownStyle]="{'max-height': '400px'}"
                   [nzNodes]="postCategoryList"
                 ></nz-tree-select>
-                <ng-template #categoryErrorTpl let-control>
+                <ng-template #categoryErrorTpl>
                   <ng-container *ngIf="postForm.errors?.['category'].required">请选择分类</ng-container>
-                  <ng-container *ngIf="control?.hasError('maxsize')">分类最多选择{{maxTaxonomyNumber}}个</ng-container>
+                  <ng-container *ngIf="postForm.errors?.['category'].maxsize">分类最多选择{{maxTaxonomyNumber}}个</ng-container>
                 </ng-template>
               </nz-form-control>
             </nz-form-item>

@@ -10,6 +10,9 @@ export const POST_AUTHOR_LENGTH = 50;
 export const TAXONOMY_NAME_LENGTH = 20;
 export const TAXONOMY_SLUG_LENGTH = 50;
 export const TAXONOMY_DESCRIPTION_LENGTH = 40;
+export const LINK_NAME_LENGTH = 20;
+export const LINK_URL_LENGTH = 100;
+export const LINK_DESCRIPTION_LENGTH = 40;
 
 export const POST_STATUS: Record<string, string> = Object.freeze({
   publish: '公开',

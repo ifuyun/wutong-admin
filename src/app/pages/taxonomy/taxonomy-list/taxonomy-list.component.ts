@@ -128,8 +128,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
       this.initialized = false;
       this.initFilter();
       this.fetchData();
-      this.taxonomyType !== TaxonomyType.TAG && this.fetchAllTaxonomies();
     });
+    this.taxonomyType !== TaxonomyType.TAG && this.fetchAllTaxonomies();
   }
 
   ngOnDestroy(): void {
@@ -222,7 +222,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     }
     const saveFn = () => {
       this.saveLoading = true;
-      const taxonomyData: TaxonomySaveParam = {
+      const formData: TaxonomySaveParam = {
         taxonomyId: this.activeTaxonomy.taxonomyId,
         type: this.taxonomyType,
         name: value.name,
@@ -232,7 +232,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         termOrder: value.order,
         status: value.status
       };
-      this.taxonomyService.saveTaxonomy(taxonomyData).subscribe((res) => {
+      this.taxonomyService.saveTaxonomy(formData).subscribe((res) => {
         this.saveLoading = false;
         if (res.code === ResponseCode.SUCCESS) {
           this.message.success(Message.SUCCESS);

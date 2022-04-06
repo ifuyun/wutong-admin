@@ -91,16 +91,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   postForm: FormGroup = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(this.maxTitleLength)]],
     postDate: ['', [Validators.required]],
-    category: ['', [
-      (control: AbstractControl): ValidationErrors | null => {
-        const checkedIds = control.value;
-        let allIds: string[] = [];
-        if (checkedIds) {
-          allIds = this.taxonomyService.getAllChildren(this.postCategoryList, checkedIds);
-        }
-        return allIds.length > this.maxTaxonomyNumber ? { maxsize: true } : null;
-      }
-    ]],
+    category: [[]],
     tag: [[]],
     status: ['', [Validators.required]],
     password: [''],
@@ -136,7 +127,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
           (![PostStatus.TRASH, PostStatus.DRAFT].includes(status)) &&
           this.postType === PostType.POST;
 
-        return condition ? { category: { required: true } } : null;
+        return condition ? { category: { required: true } }
+          : category.length > this.maxTaxonomyNumber
+            ? { category: { maxsize: true } }
+            : null;
       },
       (control: AbstractControl): ValidationErrors | null => {
         const original = control.get('original')?.value;
@@ -150,12 +144,14 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
           result['source'] = { required: true };
         }
         if (source.length > this.maxPostSourceLength) {
+          result['source'] = result['source'] || {};
           result['source'].maxlength = true;
         }
         if (!author) {
           result['author'] = { required: true };
         }
         if (author.length > this.maxPostAuthorLength) {
+          result['author'] = result['author'] || {};
           result['author'].maxlength = true;
         }
         return result;
