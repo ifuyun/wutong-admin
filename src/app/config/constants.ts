@@ -56,14 +56,18 @@ export const TAXONOMY_STATUS_LIST = Object.freeze(Object.keys(TAXONOMY_STATUS).m
   label: TAXONOMY_STATUS[item]
 })));
 
-export const LINK_VISIBLE: Record<string, string> = Object.freeze({
+export const LINK_SCOPE: Record<string, string> = Object.freeze({
   site: '全站',
-  homepage: '首页',
-  invisible: '不可见'
+  homepage: '首页'
 });
 
 export const LINK_TARGET: Record<string, string> = Object.freeze({
   _blank: '新页面',
-  _top: '父页面',
-  _self: '当前页'
+  _self: '当前页',
+  _top: '父页面'
+});
+
+export const LINK_STATUS: Record<string, string> = Object.freeze({
+  normal: '正常',
+  trash: '已删除'
 });

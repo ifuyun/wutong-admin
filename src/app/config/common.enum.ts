@@ -62,16 +62,20 @@ export enum TaxonomyStatus {
   TRASH = 'trash'
 }
 
-export enum LinkVisible {
-  SITE = 'site',
-  HOMEPAGE = 'homepage',
-  INVISIBLE = 'invisible'
-}
-
 export enum LinkTarget {
   BLANK = '_blank',
   TOP = '_top',
   SELF = '_self'
+}
+
+export enum LinkScope {
+  SITE = 'site',
+  HOMEPAGE = 'homepage'
+}
+
+export enum LinkStatus {
+  NORMAL = 'normal',
+  TRASH = 'trash'
 }
 
 export enum CopyrightType {

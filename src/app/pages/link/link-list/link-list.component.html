@@ -1,9 +1,10 @@
 <div class="table-operations">
-  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
-  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">删除</button>
+  <a nz-button nzType="primary" routerLink="/taxonomy/link">管理链接分类</a>
+  <button nz-button [disabled]="!allChecked && !indeterminate">编辑</button>
+  <button nz-button [disabled]="!allChecked && !indeterminate">删除</button>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
-      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..." />
+      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..."/>
     </nz-input-group>
     <ng-template #searchBtn>
       <button nz-button nzType="primary" (click)="onSearch()" nzSearch><i nz-icon nzType="search"></i></button>
@@ -12,10 +13,10 @@
 </div>
 <nz-table
   nzShowSizeChanger
-  nzSize="middle"
   nzOuterBordered
-  nzPaginationType="default"
+  nzSize="middle"
   nzTableLayout="fixed"
+  nzPaginationType="default"
   [nzData]="linkList || []"
   [nzFrontPagination]="false"
   [nzLoading]="loading"
@@ -24,18 +25,22 @@
   [nzPageSize]="pageSize"
   (nzQueryParams)="onQueryParamsChange($event)"
   [nzShowTotal]="rangeTemplate"
+  [nzScroll]="{x: '1300px'}"
 >
   <thead>
   <tr>
-    <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
-    <th nzWidth="120px" nzColumnKey="name">名称</th>
-    <th nzWidth="240px" nzColumnKey="url">URL</th>
-    <th nzWidth="200px" nzColumnKey="description">描述</th>
-    <th nzWidth="100px" nzColumnKey="visible">可见性</th>
-    <th nzWidth="90px" nzColumnKey="target">打开方式</th>
-    <th nzWidth="70px" nzColumnKey="linkOrder" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
+    <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate"
+        (nzCheckedChange)="onAllChecked($event)"></th>
+    <th nzWidth="160px" nzColumnKey="name">名称</th>
+    <th nzWidth="200px" nzColumnKey="url">URL</th>
+    <th nzColumnKey="description">描述</th>
+    <th nzWidth="80px" nzColumnKey="scope" [nzFilters]="scopeFilter" [nzFilterFn]="true">可见性</th>
+    <th nzWidth="80px" nzColumnKey="status" [nzFilters]="statusFilter" [nzFilterFn]="true">状态</th>
+    <th nzWidth="100px" nzColumnKey="target" [nzFilters]="targetFilter" [nzFilterFn]="true">打开方式</th>
+    <th nzWidth="70px" nzColumnKey="order" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
+    <th nzWidth="130px" nzColumnKey="modified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
     <th nzWidth="130px" nzColumnKey="created" [nzSortFn]="true" [nzSortPriority]="true">添加时间</th>
-    <th nzRight>操作</th>
+    <th nzWidth="110px" nzRight>操作</th>
   </tr>
   </thead>
   <tbody>
@@ -44,16 +49,25 @@
     <td nzEllipsis [title]="data.linkName">{{ data.linkName }}</td>
     <td nzEllipsis [title]="data.linkUrl">{{ data.linkUrl }}</td>
     <td nzEllipsis [title]="data.linkDescription">{{ data.linkDescription }}</td>
-    <td [title]="data.linkVisible | linkVisible">{{ data.linkVisible | linkVisible }}</td>
-    <td [title]="data.linkTarget | linkTarget">{{ data.linkTarget | linkTarget }}</td>
-    <td [title]="data.linkOrder">{{ data.linkOrder }}</td>
+    <td>
+      <a routerLink="./" [queryParams]="{visible: data.linkScope}">{{ data.linkScope | linkScope }}</a>
+    </td>
+    <td>
+      <a [ngClass]="'status-' + data.linkStatus"
+         routerLink="./" [queryParams]="{status: data.linkStatus}">{{ data.linkStatus | linkStatus }}</a>
+    </td>
+    <td>
+      <a routerLink="./" [queryParams]="{target: data.linkTarget}">{{ data.linkTarget | linkTarget }}</a>
+    </td>
+    <td>{{ data.linkOrder }}</td>
+    <td nzEllipsis [title]="data.modified | date:'yyyy-MM-dd HH:mm'">{{ data.modified | date:'yy-MM-dd HH:mm' }}</td>
     <td nzEllipsis [title]="data.created | date:'yyyy-MM-dd HH:mm'">{{ data.created | date:'yy-MM-dd HH:mm' }}</td>
     <td nzRight>
-      <a href="#">查看</a>
-      <nz-divider nzType="vertical"></nz-divider>
       <a href="#">编辑</a>
-      <nz-divider nzType="vertical"></nz-divider>
-      <a href="#">删除</a>
+      <ng-container *ngIf="data.linkStatus !== 'trash'">
+        <nz-divider nzType="vertical"></nz-divider>
+        <a (click)="deleteLinks(data.linkId)">删除</a>
+      </ng-container>
     </td>
   </tr>
   </tbody>

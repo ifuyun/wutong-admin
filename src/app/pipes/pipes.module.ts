@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommentFlagPipe } from './comment-flag.pipe';
 import { CommentStatusPipe } from './comment-status.pipe';
+import { LinkStatusPipe } from './link-status.pipe';
 import { LinkTargetPipe } from './link-target.pipe';
-import { LinkVisiblePipe } from './link-visible.pipe';
+import { LinkScopePipe } from './link-scope.pipe';
 import { PostStatusPipe } from './post-status.pipe';
 import { TaxonomyStatusPipe } from './taxonomy-status.pipe';
 
@@ -12,7 +13,8 @@ import { TaxonomyStatusPipe } from './taxonomy-status.pipe';
     CommentFlagPipe,
     CommentStatusPipe,
     TaxonomyStatusPipe,
-    LinkVisiblePipe,
+    LinkScopePipe,
+    LinkStatusPipe,
     LinkTargetPipe
   ],
   imports: [],
@@ -21,7 +23,8 @@ import { TaxonomyStatusPipe } from './taxonomy-status.pipe';
     CommentFlagPipe,
     CommentStatusPipe,
     TaxonomyStatusPipe,
-    LinkVisiblePipe,
+    LinkScopePipe,
+    LinkStatusPipe,
     LinkTargetPipe
   ]
 })

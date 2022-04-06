@@ -1,18 +1,24 @@
-import { LinkVisible } from '../../config/common.enum';
+import { LinkStatus, LinkTarget, LinkScope } from '../../config/common.enum';
+import { TaxonomyModel } from '../taxonomy/taxonomy.interface';
 
-export interface LinkModel {
+export interface LinkEntity {
   linkId: string;
-  linkUrl: string;
   linkName: string;
-  linkImage: string;
-  linkTarget: string;
+  linkUrl: string;
   linkDescription: string;
-  linkVisible: LinkVisible;
-  linkOwner: string;
+  linkScope: LinkScope;
+  linkStatus: LinkStatus;
+  linkTarget: string;
   linkOrder: number;
-  linkRss: string;
-  created: Date;
-  modified: Date;
+  linkImage?: string;
+}
+
+export interface LinkModel extends LinkEntity {
+  linkOwner?: string;
+  linkRss?: string;
+  created?: Date;
+  modified?: Date;
+  taxonomies?: TaxonomyModel[];
 }
 
 export interface LinkList {
@@ -25,6 +31,8 @@ export interface LinkQueryParam {
   page: number;
   pageSize?: number;
   keyword?: string;
-  visible?: LinkVisible | LinkVisible[];
+  target?: LinkTarget | LinkTarget[];
+  visible?: LinkScope | LinkScope[];
+  status?: LinkStatus | LinkStatus[];
   orders?: string[][];
 }

@@ -1,11 +1,11 @@
 <div class="table-operations" [ngSwitch]="postType">
   <ng-container *ngSwitchCase="'post'">
     <a nz-button nzType="primary" routerLink="/post/edit">写文章</a>
-    <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">快速编辑</button>
+    <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate">快速编辑</button>
   </ng-container>
   <ng-container *ngSwitchCase="'page'">
     <a nz-button nzType="primary" routerLink="/post/edit-standalone">创建新页面</a>
-    <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate" [nzLoading]="false">快速编辑</button>
+    <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate">快速编辑</button>
   </ng-container>
   <ng-container *ngSwitchCase="'attachment'">
     <a nz-button nzType="primary" routerLink="/resource/upload">上传文件</a>
@@ -22,8 +22,8 @@
 </div>
 <nz-table
   nzShowSizeChanger
-  nzSize="middle"
   nzOuterBordered
+  nzSize="middle"
   nzPaginationType="default"
   [nzData]="postList || []"
   [nzFrontPagination]="false"
