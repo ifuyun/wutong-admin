@@ -15,6 +15,18 @@
     flex: 0 0 @form-right-width;
     width: @form-right-width;
 
+    .form-btns {
+      justify-content: space-between;
+
+      .form-btn-primary {
+        flex-grow: 1;
+      }
+
+      [nz-button]:not(:last-child) {
+        margin-right: 8px;
+      }
+    }
+
     nz-form-label {
       width: 80px;
     }

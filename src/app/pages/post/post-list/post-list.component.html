@@ -63,7 +63,7 @@
       <th nzColumnKey="tag">标签</th>
       <th nzWidth="80px" nzColumnKey="postViewCount" [nzSortFn]="true" [nzSortPriority]="true">访问</th>
       <th nzWidth="60px" nzColumnKey="commentCount" [nzSortFn]="true" [nzSortPriority]="true">评论</th>
-      <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="statusFilter" [nzFilterFn]="true">状态</th>
+      <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="statusFilter" [nzFilterFn]="true">可见性</th>
       <th nzWidth="100px" nzColumnKey="commentFlag" [nzFilters]="commentFlagFilter" [nzFilterFn]="true">评论状态</th>
       <th nzWidth="140px" nzColumnKey="postModified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true">创建时间</th>
@@ -74,7 +74,7 @@
     <ng-container *ngIf="postType === 'attachment'">
       <th nzWidth="240px">标题</th>
       <th nzWidth="300px">文件路径</th>
-      <th nzWidth="80px">状态</th>
+      <th nzWidth="80px">可见性</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true" nzCustomFilter>
         上传时间
         <nz-filter-trigger
@@ -296,7 +296,7 @@
       <div nz-row [nzGutter]="postFormRowGutter">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
-            <nz-form-label nzRequired>状态</nz-form-label>
+            <nz-form-label nzRequired>可见性</nz-form-label>
             <nz-form-control>
               <nz-select formControlName="status">
                 <nz-option nzLabel="公开" nzValue="publish"></nz-option>
@@ -461,7 +461,7 @@
 <ng-template #confirmModalContent>
   <div>
     <p>删除内容的同时，将删除其关联的所有{{postType === 'post'  ? '分类和' : ''}}标签。</p>
-    <p>如果只是不想公开内容，请将内容状态设为"<span class="confirm-warning">隐藏</span>"即可。</p>
+    <p>如果只是不想公开内容，请将内容可见性设为"<span class="confirm-warning">隐藏</span>"即可。</p>
     <p>确定删除以下 <span class="confirm-warning">{{checkedPosts.length}}</span> 篇内容吗？</p>
     <nz-list nzSize="small" class="confirm-list">
       <nz-list-item nzNoFlex *ngFor="let post of checkedPosts; let i = index" [title]="post.post.postTitle">

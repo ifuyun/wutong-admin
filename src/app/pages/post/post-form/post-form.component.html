@@ -74,8 +74,10 @@
       </nz-form-item>
     </div>
     <div class="form-right">
-      <nz-form-item>
-        <button nz-button nzBlock nzSize="large" nzType="primary" (click)="savePost()">发布</button>
+      <nz-form-item class="form-btns">
+        <button nz-button nzSize="large">保存草稿</button>
+        <button nz-button nzSize="large">预览</button>
+        <button nz-button nzSize="large" nzType="primary" class="form-btn-primary" (click)="savePost()">发布</button>
       </nz-form-item>
       <nz-form-item>
         <nz-form-label nzRequired>发布日期</nz-form-label>
@@ -110,13 +112,12 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-label nzRequired>状态</nz-form-label>
+        <nz-form-label nzRequired>可见性</nz-form-label>
         <nz-form-control>
-          <nz-select nzAllowClear formControlName="status" nzPlaceHolder="请选择状态">
+          <nz-select nzAllowClear formControlName="status" nzPlaceHolder="请选择可见性">
             <nz-option nzLabel="公开" nzValue="publish"></nz-option>
             <nz-option nzLabel="加密" nzValue="password"></nz-option>
             <nz-option nzLabel="隐藏" nzValue="private"></nz-option>
-            <nz-option nzLabel="草稿" nzValue="draft"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>

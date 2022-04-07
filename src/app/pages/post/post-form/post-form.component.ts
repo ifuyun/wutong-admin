@@ -173,7 +173,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
       return;
     }
     if (this.activePost.post.postStatus !== PostStatus.TRASH && value.status === PostStatus.TRASH) {
-      this.message.error('状态不允许为"删除"');
+      this.message.error('可见性不允许为"删除"');
       return;
     }
     this.saveLoading = true;

@@ -378,14 +378,14 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       return;
     }
     if (this.activePost.post.postStatus !== PostStatus.TRASH && value.status === PostStatus.TRASH) {
-      this.message.error('状态不允许为"删除"');
+      this.message.error('可见性不允许为"删除"');
       return;
     }
     if (value.status === PostStatus.TRASH && (value.category.length > 0 || value.tag.length > 0)) {
       const errTypes: string[] = [];
       value.category.length > 0 && errTypes.push('分类');
       value.tag.length > 0 && errTypes.push('标签');
-      this.message.error(`要添加${errTypes.join('和')}，请将状态设为非"删除"状态`);
+      this.message.error(`要添加${errTypes.join('和')}，请将可见性设为非"删除"`);
       return;
     }
     this.saveLoading = true;
