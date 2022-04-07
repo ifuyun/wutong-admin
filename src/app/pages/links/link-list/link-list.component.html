@@ -1,0 +1,195 @@
+<div class="table-operations">
+  <a nz-button nzType="primary" routerLink="/taxonomies/link-categories">管理链接分类</a>
+  <button nz-button nzType="primary" (click)="editLink()">新增</button>
+  <button nz-button [disabled]="!allChecked && !indeterminate">编辑</button>
+  <button nz-button [disabled]="!trashEnabled" (click)="deleteLinks()">删除</button>
+  <div class="table-search">
+    <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
+      <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..."/>
+    </nz-input-group>
+    <ng-template #searchBtn>
+      <button nz-button nzType="primary" (click)="onSearch()" nzSearch><i nz-icon nzType="search"></i></button>
+    </ng-template>
+  </div>
+</div>
+<nz-table
+  nzShowSizeChanger
+  nzOuterBordered
+  nzSize="middle"
+  nzTableLayout="fixed"
+  nzPaginationType="default"
+  [nzData]="linkList || []"
+  [nzFrontPagination]="false"
+  [nzLoading]="loading"
+  [nzTotal]="total || 0"
+  [nzPageIndex]="page"
+  [nzPageSize]="pageSize"
+  (nzQueryParams)="onQueryParamsChange($event)"
+  [nzShowTotal]="rangeTemplate"
+  [nzScroll]="{x: '1400px'}"
+>
+  <thead>
+  <tr>
+    <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate"
+        (nzCheckedChange)="onAllChecked($event)"></th>
+    <th nzWidth="160px" nzColumnKey="name">名称</th>
+    <th nzWidth="200px" nzColumnKey="url">URL</th>
+    <th nzColumnKey="description">描述</th>
+    <th nzWidth="80px" nzColumnKey="scope" [nzFilters]="scopeFilter" [nzFilterFn]="true">可见性</th>
+    <th nzWidth="80px" nzColumnKey="status" [nzFilters]="statusFilter" [nzFilterFn]="true">状态</th>
+    <th nzWidth="100px" nzColumnKey="target" [nzFilters]="targetFilter" [nzFilterFn]="true">打开方式</th>
+    <th nzWidth="70px" nzColumnKey="order" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
+    <th nzWidth="100px" nzColumnKey="taxoomy">分类</th>
+    <th nzWidth="130px" nzColumnKey="modified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
+    <th nzWidth="130px" nzColumnKey="created" [nzSortFn]="true" [nzSortPriority]="true">添加时间</th>
+    <th nzWidth="110px" nzRight>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of linkList">
+    <td [nzChecked]="checkedMap[data.linkId] || false" (nzCheckedChange)="onItemChecked(data.linkId, $event)"></td>
+    <td nzEllipsis [title]="data.linkName">{{ data.linkName }}</td>
+    <td nzEllipsis [title]="data.linkUrl">{{ data.linkUrl }}</td>
+    <td nzEllipsis [title]="data.linkDescription">{{ data.linkDescription }}</td>
+    <td>
+      <a routerLink="./" [queryParams]="{visible: data.linkScope}">{{ data.linkScope | linkScope }}</a>
+    </td>
+    <td>
+      <a [ngClass]="'status-' + data.linkStatus"
+         routerLink="./" [queryParams]="{status: data.linkStatus}">{{ data.linkStatus | linkStatus }}</a>
+    </td>
+    <td>
+      <a routerLink="./" [queryParams]="{target: data.linkTarget}">{{ data.linkTarget | linkTarget }}</a>
+    </td>
+    <td>{{ data.linkOrder }}</td>
+    <td nzEllipsis [title]="data.taxonomies?.[0]?.name">
+      <a routerLink="./" [queryParams]="{taxonomy: data.taxonomies?.[0]?.taxonomyId}">{{ data.taxonomies?.[0]?.name }}</a>
+    </td>
+    <td nzEllipsis [title]="data.modified | date:'yyyy-MM-dd HH:mm'">{{ data.modified | date:'yy-MM-dd HH:mm' }}</td>
+    <td nzEllipsis [title]="data.created | date:'yyyy-MM-dd HH:mm'">{{ data.created | date:'yy-MM-dd HH:mm' }}</td>
+    <td nzRight>
+      <a (click)="editLink(data)">编辑</a>
+      <ng-container *ngIf="data.linkStatus !== 'trash'">
+        <nz-divider nzType="vertical"></nz-divider>
+        <a (click)="deleteLinks(data.linkId)">删除</a>
+      </ng-container>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>
+<ng-template #rangeTemplate let-range="range" let-total>
+  当前：第 <span style="color: red">{{ range[0] }}-{{ range[1] }}</span> 条，共：<span style="color: red">{{ total }}</span> 条
+</ng-template>
+<nz-modal
+  nzCentered
+  [(nzVisible)]="editModalVisible"
+  [nzTitle]="editModalTitle"
+  [nzContent]="editModalContent"
+  [nzFooter]="editModalFooter"
+  (nzOnCancel)="closeEditModal()"
+  [nzMaskClosable]="false"
+>
+  <ng-template #editModalTitle>
+    {{activeLink.linkId ? '编辑' : '新增'}}链接
+  </ng-template>
+  <ng-template #editModalContent>
+    <form nz-form [formGroup]="linkForm" class="link-form">
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">名称</nz-form-label>
+        <nz-form-control [nzErrorTip]="nameErrorTpl">
+          <input nz-input type="text" formControlName="name" [maxlength]="maxNameLength" placeholder="请输入名称"/>
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入名称</ng-container>
+            <ng-container *ngIf="control.hasError('maxlength')">名称最大长度为{{maxNameLength}}字符</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">URL</nz-form-label>
+        <nz-form-control [nzErrorTip]="urlErrorTpl">
+          <input nz-input type="text" formControlName="url" [maxlength]="maxUrlLength" placeholder="请输入名称"/>
+          <ng-template #urlErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入URL</ng-container>
+            <ng-container *ngIf="control.hasError('maxlength')">URL最大长度为{{maxUrlLength}}字符</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">描述</nz-form-label>
+        <nz-form-control [nzErrorTip]="descErrorTpl">
+          <nz-textarea-count [nzMaxCharacterCount]="maxDescriptionLength">
+            <textarea nz-input rows="2" formControlName="description" placeholder="请输入描述"></textarea>
+          </nz-textarea-count>
+          <ng-template #descErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入描述</ng-container>
+            <ng-container *ngIf="control.hasError('maxlength')">描述最大长度为{{maxDescriptionLength}}字符</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">可见性</nz-form-label>
+        <nz-form-control>
+          <nz-radio-group formControlName="scope" nzName="scope">
+            <label nz-radio nzValue="site">全站</label>
+            <label nz-radio nzValue="homepage">首页</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">打开方式</nz-form-label>
+        <nz-form-control>
+          <nz-radio-group formControlName="target" nzName="target">
+            <label nz-radio nzValue="_blank">新页面</label>
+            <label nz-radio nzValue="_self">当前页</label>
+            <label nz-radio nzValue="_top">父页面</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">排序</nz-form-label>
+        <nz-form-control [nzErrorTip]="orderErrorTpl">
+          <input nz-input type="text" formControlName="order" [maxlength]="3" placeholder="请输入排序"/>
+          <ng-template #orderErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入排序</ng-container>
+            <ng-container *ngIf="control.hasError('pattern')">排序值范围为 0~999</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired [nzSpan]="4">分类</nz-form-label>
+        <nz-form-control [nzErrorTip]="taxonomyErrorTpl">
+          <nz-tree-select
+            nzShowSearch
+            nzDefaultExpandAll
+            formControlName="taxonomy"
+            nzPlaceHolder="请选择分类"
+            [nzNodes]="taxonomyTree"
+            [nzDropdownStyle]="{'max-height': '400px'}"
+          >
+          </nz-tree-select>
+          <ng-template #taxonomyErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请选择分类</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="4">状态</nz-form-label>
+        <nz-form-control>
+          <nz-radio-group formControlName="status" nzName="status">
+            <label nz-radio nzValue="normal">正常</label>
+            <label nz-radio nzDisabled nzValue="trash">已删除</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-template>
+  <ng-template #editModalFooter>
+    <button nz-button nzType="default" (click)="closeEditModal()">取消</button>
+    <button nz-button nzType="primary" (click)="saveLink()" [nzLoading]="saveLoading">确定</button>
+  </ng-template>
+</nz-modal>
+<ng-template #confirmModalContent>
+  <div>
+    <p>确定删除这 <span class="confirm-warning">{{checkedLength}}</span> 个链接吗？</p>
+  </div>
+</ng-template>

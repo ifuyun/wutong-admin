@@ -30,7 +30,7 @@ export class MenusService {
       order: 1
     }]
   }, {
-    key: 'post',
+    key: 'posts',
     title: '内容管理',
     icon: 'form',
     level: 1,
@@ -38,30 +38,30 @@ export class MenusService {
     children: [{
       key: 'postList',
       title: '文章列表',
-      url: '/post',
+      url: '/posts',
       level: 2,
       order: 1
     }, {
       key: 'postForm',
       title: '写文章',
-      url: '/post/edit',
+      url: '/posts/edit',
       level: 2,
       order: 2
     }, {
       key: 'postStandalone',
       title: '页面列表',
-      url: '/post/standalone',
+      url: '/posts/standalone',
       level: 2,
       order: 3
     }, {
       key: 'postFormStandalone',
-      title: '创建新页面',
-      url: '/post/edit-standalone',
+      title: '新建页面',
+      url: '/posts/edit-standalone',
       level: 2,
       order: 4
     }]
   }, {
-    key: 'comment',
+    key: 'comments',
     title: '评论管理',
     icon: 'comment',
     level: 1,
@@ -69,12 +69,12 @@ export class MenusService {
     children: [{
       key: 'commentList',
       title: '评论列表',
-      url: '/comment',
+      url: '/comments',
       level: 2,
       order: 1
     }]
   }, {
-    key: 'taxonomy',
+    key: 'taxonomies',
     title: '类别管理',
     icon: 'tags',
     level: 1,
@@ -82,24 +82,24 @@ export class MenusService {
     children: [{
       key: 'taxonomyPost',
       title: '文章分类管理',
-      url: '/taxonomy/post',
+      url: '/taxonomies/post-categories',
       level: 2,
       order: 1
     }, {
       key: 'taxonomyTag',
       title: '标签管理',
-      url: '/taxonomy/tag',
+      url: '/taxonomies/tags',
       level: 2,
       order: 2
     }, {
       key: 'taxonomyLink',
       title: '链接分类管理',
-      url: '/taxonomy/link',
+      url: '/taxonomies/link-categories',
       level: 2,
       order: 3
     }]
   }, {
-    key: 'resource',
+    key: 'resources',
     title: '素材管理',
     icon: 'picture',
     level: 1,
@@ -107,18 +107,18 @@ export class MenusService {
     children: [{
       key: 'resourceList',
       title: '素材列表',
-      url: '/resource',
+      url: '/resources',
       level: 2,
       order: 1
     }, {
       key: 'resourceUpload',
       title: '文件上传',
-      url: '/resource/upload',
+      url: '/resources/upload',
       level: 2,
       order: 2
     }]
   }, {
-    key: 'link',
+    key: 'links',
     title: '链接管理',
     icon: 'link',
     level: 1,
@@ -126,25 +126,43 @@ export class MenusService {
     children: [{
       key: 'linkList',
       title: '链接列表',
-      url: '/link',
+      url: '/links',
       level: 2,
       order: 1
     }]
   }, {
-    key: 'setting',
+    key: 'options',
     title: '网站设置',
     icon: 'setting',
     level: 1,
     order: 7,
     children: [{
-      key: 'settingList',
-      title: '网站设置',
-      url: '/setting',
+      key: 'optionsGeneral',
+      title: '常规设置',
+      url: '/options/general',
       level: 2,
       order: 1
+    }, {
+      key: 'optionsWriting',
+      title: '撰写设置',
+      url: '/options/writing',
+      level: 2,
+      order: 2
+    }, {
+      key: 'optionsReading',
+      title: '阅读设置',
+      url: '/options/reading',
+      level: 2,
+      order: 3
+    }, {
+      key: 'optionsDiscussion',
+      title: '讨论设置',
+      url: '/options/discussion',
+      level: 2,
+      order: 4
     }]
   }, {
-    key: 'log',
+    key: 'logs',
     title: '日志',
     icon: 'database',
     level: 1,
@@ -152,13 +170,13 @@ export class MenusService {
     children: [{
       key: 'logAccess',
       title: '访客日志',
-      url: '/log/access',
+      url: '/logs/access',
       level: 2,
       order: 1
     }, {
       key: 'logSystem',
       title: '系统日志',
-      url: '/log/system',
+      url: '/logs/system',
       level: 2,
       order: 2
     }]
