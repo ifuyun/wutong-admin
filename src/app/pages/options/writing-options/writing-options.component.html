@@ -1,1 +1,35 @@
-<p>writing-options works!</p>
+<div nz-row>
+  <form nz-form nz-col nzSpan="12" [formGroup]="optionsForm">
+    <nz-form-item>
+      <nz-form-label nzSpan="5" nzRequired>默认文章分类</nz-form-label>
+      <nz-form-control [nzErrorTip]="titleErrorTpl">
+        <nz-tree-select
+          nzShowSearch
+          nzDefaultExpandAll
+          formControlName="defaultCategory"
+          nzPlaceHolder="请选择默认文章分类"
+          [nzNodes]="taxonomyTree"
+          [nzDropdownStyle]="{'max-height': '400px'}"
+        >
+        </nz-tree-select>
+        <ng-template #titleErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请选择默认文章分类</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="5" nzRequired>默认文章形式</nz-form-label>
+      <nz-form-control [nzErrorTip]="descErrorTpl">
+        <nz-select nzAllowClear formControlName="defaultPostFormat" nzPlaceHolder="请选择默认文章形式">
+          <nz-option *ngFor="let item of postFormats" [nzLabel]="item.label" [nzValue]="item.key"></nz-option>
+        </nz-select>
+        <ng-template #descErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请选择默认文章形式</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <div class="form-btns">
+      <button nz-button nzType="primary" (click)="saveOptions()" [nzLoading]="saveLoading">保存更改</button>
+    </div>
+  </form>
+</div>

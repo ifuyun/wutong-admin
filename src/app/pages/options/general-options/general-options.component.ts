@@ -104,9 +104,9 @@ export class GeneralOptionsComponent extends BaseComponent implements OnInit, On
       siteUrl: value.url,
       copyNotice: value.copyright,
       icpNum: value.icpNum,
-      adminEmail: value.adminEmail,
+      adminEmail: value.adminEmail
     };
-    this.optionService.saveOptions(formData).subscribe((res) => {
+    this.optionService.saveGeneralOptions(formData).subscribe((res) => {
       this.saveLoading = false;
       if (res.code === ResponseCode.SUCCESS) {
         this.message.success(Message.SUCCESS);
@@ -127,7 +127,7 @@ export class GeneralOptionsComponent extends BaseComponent implements OnInit, On
       url: this.options['site_url'],
       copyright: this.options['copyright_notice'],
       icpNum: this.options['icp_num'],
-      adminEmail: this.options['admin_email'],
+      adminEmail: this.options['admin_email']
     });
   }
 
@@ -145,5 +145,4 @@ export class GeneralOptionsComponent extends BaseComponent implements OnInit, On
     this.updateTitle();
     this.updateBreadcrumb();
   }
-
 }

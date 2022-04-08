@@ -28,6 +28,7 @@
   [nzPageSize]="pageSize"
   (nzQueryParams)="onQueryParamsChange($event)"
   [nzShowTotal]="rangeTemplate"
+  [nzScroll]="{x: taxonomyType !== 'tag' ? '1000px' : '700px'}"
 >
   <thead>
   <tr>

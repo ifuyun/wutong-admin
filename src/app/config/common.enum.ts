@@ -6,7 +6,13 @@ export enum PostType {
   POST = 'post',
   PAGE = 'page',
   REVISION = 'revision',
-  ATTACHMENT = 'attachment'
+  ATTACHMENT = 'attachment',
+  STATUS = 'status',
+  QUOTE = 'quote',
+  NOTE = 'note',
+  IMAGE = 'image',
+  VIDEO = 'video',
+  AUDIO = 'audio'
 }
 
 export enum PostStatus {

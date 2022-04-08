@@ -29,7 +29,11 @@ export class OptionService {
     );
   }
 
-  saveOptions(param: Record<string, any>): Observable<HttpResponseEntity> {
+  saveGeneralOptions(param: Record<string, any>): Observable<HttpResponseEntity> {
     return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_OPTIONS_GENERAL), param);
+  }
+
+  saveWritingOptions(param: Record<string, any>): Observable<HttpResponseEntity> {
+    return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_OPTIONS_WRITING), param);
   }
 }

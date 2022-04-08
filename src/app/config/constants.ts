@@ -28,6 +28,21 @@ export const SITE_ICP_NUM_LENGTH = 50;
 export const SITE_COPYRIGHT_LENGTH = 100;
 export const UPLOAD_URL_PREFIX_LENGTH = 20;
 
+export const POST_FORMAT: Record<string, string> = Object.freeze({
+  post: '文章',
+  status: '状态',
+  quote: '引语',
+  note: '笔记',
+  image: '图片',
+  video: '视频',
+  audio: '音频'
+});
+
+export const POST_FORMAT_LIST = Object.freeze(Object.keys(POST_FORMAT).map((item) => ({
+  key: item,
+  label: POST_FORMAT[item]
+})));
+
 export const POST_STATUS: Record<string, string> = Object.freeze({
   publish: '公开',
   password: '加密',
