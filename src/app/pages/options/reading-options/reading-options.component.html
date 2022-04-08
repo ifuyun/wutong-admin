@@ -1,1 +1,39 @@
-<p>reading-options works!</p>
+<div nz-row>
+  <form nz-form nz-col nzSpan="12" [formGroup]="optionsForm">
+    <nz-form-item>
+      <nz-form-label nzSpan="7" nzRequired>博客页面每页显示</nz-form-label>
+      <nz-form-control [nzErrorTip]="pageSizeErrorTpl">
+        <nz-input-number [nzMin]="1" [nzMax]="20" [nzStep]="1" formControlName="postsPerPage"></nz-input-number>
+        <span class="form-label-suffix">篇文章</span>
+        <ng-template #pageSizeErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请输入博客每页显示篇数</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="7" nzRequired>Feed中显示最近</nz-form-label>
+      <nz-form-control [nzErrorTip]="rssSizeErrorTpl">
+        <nz-input-number [nzMin]="1" [nzMax]="20" [nzStep]="1" formControlName="postsPerRss"></nz-input-number>
+        <span class="form-label-suffix">个项目</span>
+        <ng-template #rssSizeErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请输入Feed中显示项目数量</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="7" nzRequired>Feed中的每篇文章显示</nz-form-label>
+      <nz-form-control [nzErrorTip]="useExcerptErrorTpl">
+        <nz-radio-group formControlName="rssUseExcerpt" nzName="rssUseExcerpt">
+          <label nz-radio nzValue="0">全文</label>
+          <label nz-radio nzValue="1">摘要</label>
+        </nz-radio-group>
+        <ng-template #useExcerptErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请选择Feed中的每篇文章的显示方式</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <div class="form-btns">
+      <button nz-button nzType="primary" (click)="saveOptions()" [nzLoading]="saveLoading">保存更改</button>
+    </div>
+  </form>
+</div>
