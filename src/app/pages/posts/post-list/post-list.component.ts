@@ -20,8 +20,8 @@ import {
   POST_EXCERPT_LENGTH,
   POST_SOURCE_LENGTH,
   POST_STATUS,
-  POST_TAG_LIMIT,
-  POST_TAXONOMY_LIMIT,
+  POST_TAG_SIZE,
+  POST_TAXONOMY_SIZE,
   POST_TITLE_LENGTH,
   TREE_ROOT_NODE_KEY
 } from '../../../config/constants';
@@ -29,7 +29,7 @@ import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
-import { OptionsService } from '../../../services/options.service';
+import { OptionService } from '../../options/option.service';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomies/taxonomy.service';
 import { Post, PostArchiveDate, PostQueryParam, PostSaveParam } from '../post.interface';
@@ -46,10 +46,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
 
   readonly maxTitleLength = POST_TITLE_LENGTH;
   readonly maxExcerptLength = POST_EXCERPT_LENGTH;
-  readonly maxTaxonomyNumber = POST_TAXONOMY_LIMIT;
+  readonly maxTaxonomySize = POST_TAXONOMY_SIZE;
   readonly maxPostSourceLength = POST_SOURCE_LENGTH;
   readonly maxPostAuthorLength = POST_AUTHOR_LENGTH;
-  readonly maxTagNumber = POST_TAG_LIMIT;
+  readonly maxTagSize = POST_TAG_SIZE;
 
   postList: Post[] = [];
   page: number = 1;
@@ -92,7 +92,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     title: ['', [Validators.required, Validators.maxLength(this.maxTitleLength)]],
     postDate: ['', [Validators.required]],
     category: [[]],
-    tag: [[]],
+    tag: [[], [
+      (control: AbstractControl): ValidationErrors | null =>
+        control.value.length > this.maxTagSize ? { maxsize: true } : null
+    ]],
     status: ['', [Validators.required]],
     password: [''],
     commentFlag: ['', [Validators.required]],
@@ -128,7 +131,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
           this.postType === PostType.POST;
 
         return condition ? { category: { required: true } }
-          : category.length > this.maxTaxonomyNumber
+          : category.length > this.maxTaxonomySize
             ? { category: { maxsize: true } }
             : null;
       },
@@ -193,7 +196,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   constructor(
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
-    private optionsService: OptionsService,
+    private optionService: OptionService,
     private postService: PostService,
     private taxonomyService: TaxonomyService,
     private route: ActivatedRoute,
@@ -207,7 +210,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.optionsListener = this.optionsService.options$.subscribe((options) => {
+    this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
     });
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {

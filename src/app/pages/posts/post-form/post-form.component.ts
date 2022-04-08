@@ -9,12 +9,12 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentFlag, PostOriginal, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
-import { POST_AUTHOR_LENGTH, POST_EXCERPT_LENGTH, POST_SOURCE_LENGTH, POST_TAG_LIMIT, POST_TAXONOMY_LIMIT, POST_TITLE_LENGTH } from '../../../config/constants';
+import { POST_AUTHOR_LENGTH, POST_EXCERPT_LENGTH, POST_SOURCE_LENGTH, POST_TAG_SIZE, POST_TAXONOMY_SIZE, POST_TITLE_LENGTH } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { BaseComponent } from '../../../core/base.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
-import { OptionsService } from '../../../services/options.service';
+import { OptionService } from '../../options/option.service';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomies/taxonomy.service';
 import { Post, PostSaveParam } from '../post.interface';
@@ -30,15 +30,16 @@ declare type ToolbarMode = 'floating' | 'sliding' | 'scrolling' | 'wrap';
 export class PostFormComponent extends BaseComponent implements OnInit, OnDestroy {
   @Input() postType!: PostType;
 
+  readonly maxTitleLength = POST_TITLE_LENGTH;
+  readonly maxExcerptLength = POST_EXCERPT_LENGTH;
+  readonly maxTaxonomySize = POST_TAXONOMY_SIZE;
+  readonly maxPostSourceLength = POST_SOURCE_LENGTH;
+  readonly maxPostAuthorLength = POST_AUTHOR_LENGTH;
+  readonly maxTagSize = POST_TAG_SIZE;
+
   postId = '';
   activePost!: Post;
   saveLoading = false;
-  maxTitleLength = POST_TITLE_LENGTH;
-  maxExcerptLength = POST_EXCERPT_LENGTH;
-  maxTaxonomyNumber = POST_TAXONOMY_LIMIT;
-  maxPostSourceLength = POST_SOURCE_LENGTH;
-  maxPostAuthorLength = POST_AUTHOR_LENGTH;
-  maxTagNumber = POST_TAG_LIMIT;
   tagList: string[] = [];
   tagListLoading = false;
   tagSearchChange$ = new BehaviorSubject('');
@@ -53,9 +54,12 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
       (control: AbstractControl): ValidationErrors | null =>
         (!control.value || control.value.length < 1) && this.postType === PostType.POST ? { required: true } : null,
       (control: AbstractControl): ValidationErrors | null =>
-        control.value.length > this.maxTaxonomyNumber ? { maxsize: true } : null
+        control.value.length > this.maxTaxonomySize ? { maxsize: true } : null
     ]],
-    tag: [[]],
+    tag: [[], [
+      (control: AbstractControl): ValidationErrors | null =>
+        control.value.length > this.maxTagSize ? { maxsize: true } : null
+    ]],
     guid: ['', [
       (control: AbstractControl): ValidationErrors | null =>
       !control.value.trim() && this.postType === PostType.PAGE ? { required: true } : null
@@ -126,7 +130,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
   constructor(
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
-    private optionsService: OptionsService,
+    private optionService: OptionService,
     private postService: PostService,
     private taxonomyService: TaxonomyService,
     private route: ActivatedRoute,
@@ -138,7 +142,7 @@ export class PostFormComponent extends BaseComponent implements OnInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.optionsListener = this.optionsService.options$.subscribe((options) => {
+    this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
     });
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {

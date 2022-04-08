@@ -16,7 +16,7 @@ import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { LoginUserEntity } from '../../../interfaces/user.interface';
-import { OptionsService } from '../../../services/options.service';
+import { OptionService } from '../../options/option.service';
 import { UserService } from '../../../services/user.service';
 import { PostModel } from '../../posts/post.interface';
 import { PostService } from '../../posts/post.service';
@@ -79,7 +79,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   constructor(
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
-    private optionsService: OptionsService,
+    private optionService: OptionService,
     private commentService: CommentService,
     private userService: UserService,
     private postService: PostService,
@@ -93,7 +93,7 @@ export class CommentListComponent extends ListComponent implements OnInit, OnDes
   }
 
   ngOnInit(): void {
-    this.optionsListener = this.optionsService.options$.subscribe((options) => {
+    this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
     });
     this.userListener = this.userService.loginUser$.subscribe((user) => {

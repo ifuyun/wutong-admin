@@ -24,7 +24,7 @@ import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
-import { OptionsService } from '../../../services/options.service';
+import { OptionService } from '../../options/option.service';
 import { TaxonomyModel, TaxonomyQueryParam, TaxonomySaveParam } from '../taxonomy.interface';
 import { TaxonomyService } from '../taxonomy.service';
 
@@ -103,7 +103,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   constructor(
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
-    private optionsService: OptionsService,
+    private optionService: OptionService,
     private taxonomyService: TaxonomyService,
     private route: ActivatedRoute,
     private router: Router,
@@ -115,7 +115,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   }
 
   ngOnInit(): void {
-    this.optionsListener = this.optionsService.options$.subscribe((options) => {
+    this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
     });
     this.titles = [this.titleMap[this.taxonomyType], '类别管理', this.options['site_name']];

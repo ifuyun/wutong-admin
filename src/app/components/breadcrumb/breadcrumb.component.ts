@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { OptionEntity } from '../../interfaces/option.interface';
-import { OptionsService } from '../../services/options.service';
+import { OptionService } from '../../pages/options/option.service';
 import { BreadcrumbData } from './breadcrumb.interface';
 import { BreadcrumbService } from './breadcrumb.service';
 
@@ -19,12 +19,12 @@ export class BreadcrumbComponent implements OnInit {
 
   constructor(
     private breadcrumbService: BreadcrumbService,
-    private optionsService: OptionsService
+    private optionService: OptionService
   ) {
   }
 
   ngOnInit(): void {
-    this.optionsListener = this.optionsService.options$.subscribe((options) => {
+    this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
     });
     this.breadcrumbListener = this.breadcrumbService.breadcrumb$.subscribe((breadcrumbData) => {

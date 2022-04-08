@@ -256,7 +256,7 @@
                 ></nz-tree-select>
                 <ng-template #categoryErrorTpl>
                   <ng-container *ngIf="postForm.errors?.['category'].required">请选择分类</ng-container>
-                  <ng-container *ngIf="postForm.errors?.['category'].maxsize">分类最多选择{{maxTaxonomyNumber}}个</ng-container>
+                  <ng-container *ngIf="postForm.errors?.['category'].maxsize">分类最多选择{{maxTaxonomySize}}个</ng-container>
                 </ng-template>
               </nz-form-control>
             </nz-form-item>
@@ -267,16 +267,16 @@
         <div nz-col [nzSpan]="24">
           <nz-form-item>
             <nz-form-label>标签</nz-form-label>
-            <nz-form-control>
+            <nz-form-control [nzErrorTip]="tagErrorTpl">
               <nz-select
                 nzMode="tags"
                 nzShowSearch
                 nzServerSearch
                 nzAllowClear
                 formControlName="tag"
-                nzPlaceHolder="请输入标签（{{maxTagNumber}}个以内）"
-                [nzMaxTagCount]="maxTagNumber"
-                [nzMaxMultipleCount]="maxTagNumber"
+                nzPlaceHolder="请输入标签（{{maxTagSize}}个以内）"
+                [nzMaxTagCount]="maxTagSize"
+                [nzMaxMultipleCount]="maxTagSize"
                 (nzOnSearch)="onTagSearch($event)"
               >
                 <ng-container *ngFor="let tag of tagList">
@@ -290,6 +290,9 @@
                 </nz-option>
               </nz-select>
             </nz-form-control>
+            <ng-template #tagErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('maxsize')">标签最多输入{{maxTagSize}}个</ng-container>
+            </ng-template>
           </nz-form-item>
         </div>
       </div>

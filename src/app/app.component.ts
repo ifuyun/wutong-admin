@@ -4,7 +4,7 @@ import { filter, Observable } from 'rxjs';
 import { OptionEntity } from './interfaces/option.interface';
 import { LoginUserEntity } from './interfaces/user.interface';
 import { MenuItem, MenusService } from './services/menus.service';
-import { OptionsService } from './services/options.service';
+import { OptionService } from './pages/options/option.service';
 import { UserService } from './services/user.service';
 
 @Component({
@@ -22,12 +22,12 @@ export class AppComponent implements OnInit {
   isLoggedIn = false;
 
   constructor(
-    private optionsService: OptionsService,
+    private optionService: OptionService,
     private userService: UserService,
     private menusService: MenusService,
     private router: Router
   ) {
-    this.options$ = optionsService.options$;
+    this.options$ = optionService.options$;
     this.menus = this.menusService.menus;
     this.menus.forEach((item) => {
       this.openMap[item.key] = false;
@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
       checkedMenuKey.rootMenuKey && (this.openMap[checkedMenuKey.rootMenuKey] = true);
       checkedMenuKey.childMenuKey && (this.selectedMap[checkedMenuKey.childMenuKey] = true);
     });
-    this.optionsService.getOptions().subscribe();
+    this.optionService.getOptions().subscribe();
     this.userService.loginUser$.subscribe((user) => {
       this.loginUser = user;
       this.isLoggedIn = this.userService.isLoggedIn;

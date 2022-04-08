@@ -1,1 +1,98 @@
-<p>general-options works!</p>
+<div nz-row>
+<form nz-form nz-col nzSpan="12" [formGroup]="optionsForm">
+  <nz-form-item>
+    <nz-form-label nzSpan="4" nzRequired>站点标题</nz-form-label>
+    <nz-form-control [nzErrorTip]="titleErrorTpl">
+      <input nz-input type="text" formControlName="title" [maxlength]="maxTitleLength" placeholder="请输入站点标题"/>
+      <ng-template #titleErrorTpl let-control>
+        <ng-container *ngIf="control.hasError('required')">请输入站点标题</ng-container>
+        <ng-container *ngIf="control.hasError('maxlength')">站点标题最大长度为{{maxTitleLength}}字符</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzSpan="4" nzRequired>站点描述</nz-form-label>
+    <nz-form-control [nzErrorTip]="descErrorTpl">
+      <nz-textarea-count [nzMaxCharacterCount]="maxDescLength">
+        <textarea nz-input rows="4" formControlName="description" [maxlength]="maxDescLength" placeholder="请输入站点描述"></textarea>
+      </nz-textarea-count>
+      <ng-template #descErrorTpl let-control>
+        <ng-container *ngIf="control.hasError('required')">请输入站点描述</ng-container>
+        <ng-container *ngIf="control.hasError('maxlength')">站点描述最大长度为{{maxDescLength}}字符</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzSpan="4" nzRequired>关键词</nz-form-label>
+    <nz-form-control [nzErrorTip]="keywordsErrorTpl">
+      <nz-select
+        nzAllowClear
+        nzMode="tags"
+        formControlName="keywords"
+        nzPlaceHolder="请输入关键词"
+        [nzMaxTagCount]="maxKeywordsSize"
+        [nzMaxMultipleCount]="maxKeywordsSize"
+      >
+      </nz-select>
+      <ng-template #keywordsErrorTpl let-control>
+        <ng-container *ngIf="control.hasError('required')">请输入关键词</ng-container>
+        <ng-container *ngIf="control.hasError('maxsize')">关键词最大个数为{{maxKeywordsSize}}个</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzSpan="4" nzRequired>口号</nz-form-label>
+    <nz-form-control [nzErrorTip]="sloganErrorTpl">
+      <input nz-input type="text" formControlName="slogan" [maxlength]="maxSloganLength" placeholder="请输入口号"/>
+      <ng-template #sloganErrorTpl let-control>
+        <ng-container *ngIf="control.hasError('required')">请输入口号</ng-container>
+        <ng-container *ngIf="control.hasError('maxlength')">口号最大长度为{{maxSloganLength}}字符</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzSpan="4" nzRequired>站点地址</nz-form-label>
+    <nz-form-control [nzErrorTip]="urlErrorTpl">
+      <input nz-input type="text" formControlName="url" [maxlength]="maxUrlLength" placeholder="请输入站点地址"/>
+      <ng-template #urlErrorTpl let-control>
+        <ng-container *ngIf="control.hasError('required')">请输入站点地址</ng-container>
+        <ng-container *ngIf="control.hasError('maxlength')">站点地址最大长度为{{maxUrlLength}}字符</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzSpan="4" nzRequired>版权信息</nz-form-label>
+    <nz-form-control [nzErrorTip]="copyrightErrorTpl">
+      <input nz-input type="text" formControlName="copyright" [maxlength]="maxCopyrightLength" placeholder="请输入版权信息"/>
+      <ng-template #copyrightErrorTpl let-control>
+        <ng-container *ngIf="control.hasError('required')">请输入版权信息</ng-container>
+        <ng-container *ngIf="control.hasError('maxlength')">版权信息最大长度为{{maxCopyrightLength}}字符</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzSpan="4" nzRequired>ICP备案号</nz-form-label>
+    <nz-form-control [nzErrorTip]="icpErrorTpl">
+      <input nz-input type="text" formControlName="icpNum" [maxlength]="maxIcpNumLength" placeholder="请输入ICP备案号"/>
+      <ng-template #icpErrorTpl let-control>
+        <ng-container *ngIf="control.hasError('required')">请输入ICP备案号</ng-container>
+        <ng-container *ngIf="control.hasError('maxlength')">ICP备案号最大长度为{{maxIcpNumLength}}字符</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzSpan="4" nzRequired>管理员邮箱</nz-form-label>
+    <nz-form-control [nzErrorTip]="emailErrorTpl">
+      <input nz-input type="text" formControlName="adminEmail" [maxlength]="maxAdminEmailLength" placeholder="请输入管理员邮箱"/>
+      <ng-template #emailErrorTpl let-control>
+        <ng-container *ngIf="control.hasError('required')">请输入管理员邮箱</ng-container>
+        <ng-container *ngIf="control.hasError('email')">邮箱格式有误</ng-container>
+        <ng-container *ngIf="control.hasError('maxlength')">管理员邮箱最大长度为{{maxAdminEmailLength}}字符</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <div class="form-btns">
+    <button nz-button nzType="primary" (click)="saveOptions()" [nzLoading]="saveLoading">保存更改</button>
+  </div>
+</form>
+</div>

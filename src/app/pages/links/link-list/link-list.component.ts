@@ -23,7 +23,7 @@ import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
-import { OptionsService } from '../../../services/options.service';
+import { OptionService } from '../../options/option.service';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomies/taxonomy.service';
 import { LinkModel, LinkQueryParam, LinkSaveParam } from '../link.interface';
@@ -94,7 +94,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
   constructor(
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
-    private optionsService: OptionsService,
+    private optionService: OptionService,
     private linkService: LinkService,
     private taxonomyService: TaxonomyService,
     private route: ActivatedRoute,
@@ -107,7 +107,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.optionsListener = this.optionsService.options$.subscribe((options) => {
+    this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
     });
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
