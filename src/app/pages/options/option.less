@@ -5,3 +5,35 @@
 .form-btns {
   text-align: center;
 }
+.group-form {
+  .group-label {
+    font-weight: bold;
+
+    &::after {
+      content: ':';
+      position: relative;
+      top: -0.5px;
+      margin: 0 8px 0 2px;
+    }
+  }
+  .group-label, .check-item {
+    line-height: 32px;
+  }
+
+  .check-item:not(:first-child) {
+    margin-top: 4px;
+  }
+
+  .select-small, .input-small {
+    width: 80px;
+  }
+
+  [nz-row]:not(:last-child) {
+    margin-bottom: 24px;
+  }
+}
+
+nz-form-label {
+  text-align: left;
+  font-weight: 600;
+}

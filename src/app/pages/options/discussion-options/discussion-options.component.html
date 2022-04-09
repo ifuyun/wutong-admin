@@ -1,1 +1,94 @@
-<p>discussion-options works!</p>
+<div nz-row>
+  <form nz-form nz-col class="group-form" nzSpan="14" [formGroup]="optionsForm">
+    <div nz-row>
+      <div nz-col nzSpan="6"><span class="group-label">评论设置</span></div>
+      <div nz-col>
+        <div class="check-item">
+          <label nz-checkbox formControlName="defaultCommentStatus">允许他人在新文章上发表评论</label>
+        </div>
+        <div class="check-item">
+          <label nz-checkbox formControlName="commentRegistration">用户必须注册并登录才可以发表评论</label>
+        </div>
+        <div class="check-item">
+          <label nz-checkbox formControlName="threadComments">启用评论嵌套，最多嵌套</label>
+          <span>
+            <nz-select class="select-small" formControlName="threadCommentsDepth" nzPlaceHolder="嵌套层数">
+              <nz-option *ngFor="let v of counter(9); let i = index" [nzLabel]="i + 2" nzValue="{{i + 2}}"></nz-option>
+            </nz-select>
+            层
+          </span>
+        </div>
+        <div class="check-item">
+          <label nz-checkbox formControlName="pageComments">分页显示评论，每页显示</label>
+          <label>
+            <nz-input-number
+              class="input-small"
+              formControlName="commentsPerPage"
+              [nzMin]="1"
+              [nzMax]="100"
+              [nzStep]="1"></nz-input-number>
+            条评论，默认显示
+          </label>
+          <span>
+            <nz-select class="select-small" formControlName="defaultCommentsPage" nzPlaceHolder="显示顺序">
+              <nz-option nzLabel="最后" nzValue="newest"></nz-option>
+              <nz-option nzLabel="最前" nzValue="oldest"></nz-option>
+            </nz-select>
+            一页
+          </span>
+        </div>
+        <div class="check-item">
+          <label>在每个页面顶部显示</label>
+          <span>
+            <nz-select class="select-small" formControlName="commentOrder" nzPlaceHolder="评论排序">
+              <nz-option nzLabel="旧的" nzValue="asc"></nz-option>
+              <nz-option nzLabel="新的" nzValue="desc"></nz-option>
+            </nz-select>
+            评论
+          </span>
+        </div>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="6"><span class="group-label">发送邮件通知我</span></div>
+      <div nz-col>
+        <div class="check-item"><label nz-checkbox formControlName="commentsNotify">有人发表评论时</label></div>
+        <div class="check-item"><label nz-checkbox formControlName="moderationNotify">有评论等待审核时</label></div>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="6"><span class="group-label">在评论显示之前</span></div>
+      <div nz-col>
+        <div class="check-item"><label nz-checkbox formControlName="commentModeration">评论必须经人工批准</label></div>
+        <div class="check-item">
+          <label nz-checkbox formControlName="commentPreviouslyApproved">评论者先前须有评论通过了审核</label>
+        </div>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="6"><span class="group-label">头像显示</span></div>
+      <div nz-col>
+        <div class="check-item"><label nz-checkbox formControlName="showAvatars">显示头像</label></div>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="6"><span class="group-label">默认头像</span></div>
+      <div nz-col>
+        <div class="check-item">
+          <nz-select style="width: 200px" formControlName="avatarDefault" nzPlaceHolder="请选择默认头像">
+            <nz-option nzLabel="神秘人士" nzValue="mystery"></nz-option>
+            <nz-option nzLabel="空白" nzValue="blank"></nz-option>
+            <nz-option nzLabel="Gravatar标志" nzValue="gravatar_default"></nz-option>
+            <nz-option nzLabel="抽象图形（自动生成）" nzValue="identicon"></nz-option>
+            <nz-option nzLabel="Wavatar（自动生成）" nzValue="wavatar"></nz-option>
+            <nz-option nzLabel="小怪物（自动生成）" nzValue="monsterid"></nz-option>
+            <nz-option nzLabel="复古（自动生成）" nzValue="retro"></nz-option>
+          </nz-select>
+        </div>
+      </div>
+    </div>
+    <div class="form-btns">
+      <button nz-button nzType="primary" (click)="saveOptions()" [nzLoading]="saveLoading">保存更改</button>
+    </div>
+  </form>
+</div>

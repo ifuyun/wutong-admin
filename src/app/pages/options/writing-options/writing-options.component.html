@@ -1,8 +1,8 @@
 <div nz-row>
-  <form nz-form nz-col nzSpan="12" [formGroup]="optionsForm">
+  <form nz-form nz-col nzSpan="14" [formGroup]="optionsForm">
     <nz-form-item>
-      <nz-form-label nzSpan="5" nzRequired>默认文章分类</nz-form-label>
-      <nz-form-control [nzErrorTip]="titleErrorTpl">
+      <nz-form-label nzSpan="6" nzRequired>默认文章分类</nz-form-label>
+      <nz-form-control nzSpan="10" [nzErrorTip]="titleErrorTpl">
         <nz-tree-select
           nzShowSearch
           nzDefaultExpandAll
@@ -18,8 +18,8 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-      <nz-form-label nzSpan="5" nzRequired>默认文章形式</nz-form-label>
-      <nz-form-control [nzErrorTip]="descErrorTpl">
+      <nz-form-label nzSpan="6" nzRequired>默认文章形式</nz-form-label>
+      <nz-form-control nzSpan="10" [nzErrorTip]="descErrorTpl">
         <nz-select nzAllowClear formControlName="defaultPostFormat" nzPlaceHolder="请选择默认文章形式">
           <nz-option *ngFor="let item of postFormats" [nzLabel]="item.label" [nzValue]="item.key"></nz-option>
         </nz-select>
@@ -28,8 +28,10 @@
         </ng-template>
       </nz-form-control>
     </nz-form-item>
-    <div class="form-btns">
-      <button nz-button nzType="primary" (click)="saveOptions()" [nzLoading]="saveLoading">保存更改</button>
+    <div nz-row class="form-btns">
+      <div nz-col nzSpan="16">
+        <button nz-button nzType="primary" (click)="saveOptions()" [nzLoading]="saveLoading">保存更改</button>
+      </div>
     </div>
   </form>
 </div>

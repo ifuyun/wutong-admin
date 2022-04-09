@@ -40,4 +40,8 @@ export class OptionService {
   saveReadingOptions(param: Record<string, any>): Observable<HttpResponseEntity> {
     return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_OPTIONS_READING), param);
   }
+
+  saveDiscussionOptions(param: Record<string, any>): Observable<HttpResponseEntity> {
+    return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_OPTIONS_DISCUSSION), param);
+  }
 }
