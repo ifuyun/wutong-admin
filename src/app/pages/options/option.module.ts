@@ -7,13 +7,15 @@ import { OptionRoutingModule } from './option-routing.module';
 import { WritingOptionsComponent } from './writing-options/writing-options.component';
 import { ReadingOptionsComponent } from './reading-options/reading-options.component';
 import { DiscussionOptionsComponent } from './discussion-options/discussion-options.component';
+import { MediaOptionsComponent } from './media-options/media-options.component';
 
 @NgModule({
   declarations: [
     GeneralOptionsComponent,
     WritingOptionsComponent,
     ReadingOptionsComponent,
-    DiscussionOptionsComponent
+    DiscussionOptionsComponent,
+    MediaOptionsComponent
   ],
   imports: [
     CommonModule,

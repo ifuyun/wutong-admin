@@ -160,6 +160,12 @@ export class MenusService {
       url: '/options/discussion',
       level: 2,
       order: 4
+    }, {
+      key: 'optionsMedia',
+      title: '媒体设置',
+      url: '/options/media',
+      level: 2,
+      order: 5
     }]
   }, {
     key: 'logs',

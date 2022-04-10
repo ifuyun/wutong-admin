@@ -44,4 +44,8 @@ export class OptionService {
   saveDiscussionOptions(param: Record<string, any>): Observable<HttpResponseEntity> {
     return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_OPTIONS_DISCUSSION), param);
   }
+
+  saveMediaOptions(param: Record<string, any>): Observable<HttpResponseEntity> {
+    return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.SAVE_OPTIONS_MEDIA), param);
+  }
 }

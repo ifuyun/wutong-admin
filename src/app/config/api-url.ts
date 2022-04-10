@@ -10,6 +10,7 @@ export enum ApiUrl {
   SAVE_OPTIONS_WRITING = '/options/writing',
   SAVE_OPTIONS_READING = '/options/reading',
   SAVE_OPTIONS_DISCUSSION = '/options/discussion',
+  SAVE_OPTIONS_MEDIA = '/options/media',
   GET_TAXONOMIES = '/taxonomies',
   SAVE_TAXONOMIES = '/taxonomies',
   DELETE_TAXONOMIES = '/taxonomies',

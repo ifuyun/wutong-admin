@@ -1,0 +1,75 @@
+<div nz-row>
+  <form nz-form nz-col nzSpan="14" [formGroup]="optionsForm">
+    <nz-form-item>
+      <nz-form-label nzSpan="6" nzRequired>文件上传路径</nz-form-label>
+      <nz-form-control [nzErrorTip]="uploadPathErrorTpl">
+        <input
+          nz-input
+          type="text"
+          formControlName="uploadPath"
+          [maxlength]="maxUploadPathLength"
+          placeholder="请输入文件上传路径"/>
+        <ng-template #uploadPathErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请输入文件上传路径</ng-container>
+          <ng-container *ngIf="control.hasError('maxlength')">文件上传路径最大长度为{{maxUploadPathLength}}字符</ng-container>
+          <ng-container *ngIf="control.hasError('pattern')">路径允许字符为字母、数字、斜杠、连字符、下划线、点号、空格，不以/结尾</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="6" nzRequired>静态资源服务地址</nz-form-label>
+      <nz-form-control [nzErrorTip]="staticHostErrorTpl">
+        <input
+          nz-input
+          type="text"
+          formControlName="staticResourceHost"
+          [maxlength]="maxStaticResourceHostLength"
+          placeholder="请输入静态资源服务地址"/>
+        <ng-template #staticHostErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请输入静态资源服务地址</ng-container>
+          <ng-container *ngIf="control.hasError('maxlength')">
+            静态资源服务地址最大长度为{{maxStaticResourceHostLength}}字符
+          </ng-container>
+          <ng-container *ngIf="control.hasError('pattern')">请输入有效的URL地址，不以/结尾</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="6" nzRequired>上传文件访问URL前缀</nz-form-label>
+      <nz-form-control [nzErrorTip]="urlPrefixErrorTpl">
+        <input
+          nz-input
+          type="text"
+          formControlName="uploadUrlPrefix"
+          [maxlength]="maxUploadUrlPrefixLength"
+          placeholder="请输入上传文件访问URL前缀"/>
+        <ng-template #urlPrefixErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请输入上传文件访问URL前缀</ng-container>
+          <ng-container *ngIf="control.hasError('maxlength')">上传文件访问URL前缀最大长度为{{maxUploadPathLength}}字符</ng-container>
+          <ng-container *ngIf="control.hasError('pattern')">请输入有效的URL地址，以/开头，不以/结尾，中文请进行转码</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="6" nzRequired>水印字体文件路径</nz-form-label>
+      <nz-form-control [nzErrorTip]="fontPathErrorTpl">
+        <input
+          nz-input
+          type="text"
+          formControlName="watermarkFontPath"
+          [maxlength]="maxWatermarkFontPathLength"
+          placeholder="请输入水印字体文件路径"/>
+        <ng-template #fontPathErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请输入水印字体文件路径</ng-container>
+          <ng-container *ngIf="control.hasError('maxlength')">
+            水印字体文件路径最大长度为{{maxWatermarkFontPathLength}}字符
+          </ng-container>
+          <ng-container *ngIf="control.hasError('pattern')">路径允许字符为字母、数字、斜杠、连字符、下划线、点号、空格，不以/结尾</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <div class="form-btns">
+      <button nz-button nzType="primary" (click)="saveOptions()" [nzLoading]="saveLoading">保存更改</button>
+    </div>
+  </form>
+</div>

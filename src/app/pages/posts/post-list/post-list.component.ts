@@ -335,7 +335,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
 
   previewImage(url: string) {
     const images: NzImage[] = [{
-      src: this.options['static_host'] + url
+      src: this.options['static_resource_host'] + url
     }];
     this.imageService.preview(images);
   }

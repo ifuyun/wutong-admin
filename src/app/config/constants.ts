@@ -26,7 +26,10 @@ export const SITE_KEYWORDS_SIZE = 20;
 export const SITE_ADMIN_EMAIL_LENGTH = 100;
 export const SITE_ICP_NUM_LENGTH = 50;
 export const SITE_COPYRIGHT_LENGTH = 100;
+export const UPLOAD_PATH_LENGTH = 200;
+export const STATIC_RESOURCE_HOST_LENGTH = 100;
 export const UPLOAD_URL_PREFIX_LENGTH = 20;
+export const WATERMARK_FONT_PATH_LENGTH = 200;
 
 export const POST_FORMAT: Record<string, string> = Object.freeze({
   post: '文章',
