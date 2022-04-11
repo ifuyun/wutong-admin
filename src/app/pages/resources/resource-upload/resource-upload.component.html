@@ -1,1 +1,35 @@
-<p>resource-upload works!</p>
+<form nz-form [formGroup]="uploadForm">
+  <div>
+    <nz-upload
+      nzType="drag"
+      nzListType="picture"
+      [nzMultiple]="true"
+      [nzShowUploadList]="{showPreviewIcon: true, showRemoveIcon: true}"
+      [nzSize]="fileSizeWithKB"
+      [nzLimit]="fileLimit"
+      [nzDisabled]="fileList.length >= fileLimit"
+      [nzFilter]="filters"
+      [(nzFileList)]="fileList"
+      [nzAction]="uploadAction"
+      (nzChange)="onChange($event)"
+      [nzBeforeUpload]="beforeUpload"
+      [nzPreview]="onPreview"
+    >
+      <p class="ant-upload-drag-icon"><i nz-icon nzType="inbox"></i></p>
+      <p class="ant-upload-text">单击或拖拽文件至此区域进行上传</p>
+      <p class="ant-upload-hint">支持单个或批量上传，每次最多 {{fileLimit}} 个文件，每个文件大小限制 {{fileSizeWithMB}} MB。</p>
+    </nz-upload>
+  </div>
+  <div class="upload-options">
+    <label nz-checkbox formControlName="watermark">对图片添加水印</label>
+    <label nz-checkbox formControlName="original">上传的文件为原创</label>
+  </div>
+  <div class="upload-btns">
+    <button nz-button nzType="primary"
+            [disabled]="fileList.length < 1"
+            (click)="upload()"
+            [nzLoading]="uploading">
+      {{uploading ? '上传中' : '开始上传'}}
+    </button>
+  </div>
+</form>

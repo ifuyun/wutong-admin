@@ -22,5 +22,6 @@ export enum ApiUrl {
   GET_COMMENTS = '/comments',
   SAVE_COMMENTS = '/comments',
   AUDIT_COMMENTS = '/comments/audit',
-  GET_LOGIN_USER = '/users/login-user'
+  GET_LOGIN_USER = '/users/login-user',
+  UPLOAD_FILES = '/posts/upload'
 }

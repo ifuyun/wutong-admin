@@ -40,6 +40,7 @@ export class WritingOptionsComponent extends BaseComponent implements OnInit, On
   private options: OptionEntity = {};
   private optionsListener!: Subscription;
   private taxonomiesListener!: Subscription;
+  private saveListener!: Subscription;
 
   constructor(
     protected title: Title,
@@ -63,6 +64,8 @@ export class WritingOptionsComponent extends BaseComponent implements OnInit, On
 
   ngOnDestroy(): void {
     this.optionsListener.unsubscribe();
+    this.taxonomiesListener?.unsubscribe();
+    this.saveListener?.unsubscribe();
   }
 
   saveOptions() {
@@ -75,7 +78,7 @@ export class WritingOptionsComponent extends BaseComponent implements OnInit, On
       defaultCategory: value.defaultCategory,
       defaultPostFormat: value.defaultPostFormat,
     };
-    this.optionService.saveWritingOptions(formData).subscribe((res) => {
+    this.saveListener = this.optionService.saveWritingOptions(formData).subscribe((res) => {
       this.saveLoading = false;
       if (res.code === ResponseCode.SUCCESS) {
         this.message.success(Message.SUCCESS);
