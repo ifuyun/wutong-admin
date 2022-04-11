@@ -1,15 +1,14 @@
 <div class="table-operations" [ngSwitch]="postType">
   <ng-container *ngSwitchCase="'post'">
     <a nz-button nzType="primary" routerLink="/posts/edit">写文章</a>
-    <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate">快速编辑</button>
   </ng-container>
   <ng-container *ngSwitchCase="'page'">
     <a nz-button nzType="primary" routerLink="/posts/edit-standalone">创建新页面</a>
-    <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate">快速编辑</button>
   </ng-container>
   <ng-container *ngSwitchCase="'attachment'">
     <a nz-button nzType="primary" routerLink="/resources/upload">上传文件</a>
   </ng-container>
+  <button nz-button nzType="default" [disabled]="!allChecked && !indeterminate">快速编辑</button>
   <button nz-button nzType="default" [disabled]="!trashEnabled" (click)="deletePosts()">删除</button>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
@@ -37,7 +36,8 @@
 >
   <thead>
   <tr>
-    <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+    <th nzWidth="40px" [nzChecked]="allChecked" [nzIndeterminate]="indeterminate"
+        (nzCheckedChange)="onAllChecked($event)"></th>
     <ng-container *ngIf="postType !== 'attachment'">
       <th nzWidth="220px" nzColumnKey="postTitle">标题</th>
       <th nzWidth="90px" nzColumnKey="postDate" [nzSortFn]="true" [nzSortPriority]="true" nzCustomFilter>
@@ -72,9 +72,10 @@
       <th nzWidth="170px" nzRight>操作</th>
     </ng-container>
     <ng-container *ngIf="postType === 'attachment'">
-      <th nzWidth="240px">标题</th>
-      <th nzWidth="300px">文件路径</th>
-      <th nzWidth="80px">可见性</th>
+      <th nzWidth="180px" nzColumnKey="postTitle">标题</th>
+      <th nzColumnKey="tag">标签</th>
+      <th nzWidth="300px" nzColumnKey="postGuid">文件路径</th>
+      <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="fileStatusFilter" [nzFilterFn]="true">可见性</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true" nzCustomFilter>
         上传时间
         <nz-filter-trigger
@@ -85,13 +86,14 @@
           <i nz-icon nzType="filter" nzTheme="fill"></i>
         </nz-filter-trigger>
       </th>
-      <th nzWidth="120px" nzRight>操作</th>
+      <th nzWidth="130px" nzRight>操作</th>
     </ng-container>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let data of postList">
-    <td [nzChecked]="checkedMap[data.post.postId] || false" (nzCheckedChange)="onItemChecked(data.post.postId, $event)"></td>
+    <td [nzChecked]="checkedMap[data.post.postId] || false"
+        (nzCheckedChange)="onItemChecked(data.post.postId, $event)"></td>
     <ng-container *ngIf="postType !== 'attachment'">
       <td nzEllipsis [title]="data.post.postTitle">
         <a [href]="data.post.postGuid" target="_blank">{{ data.post.postTitle }}</a>
@@ -112,15 +114,23 @@
         <a routerLink="/comments" [queryParams]="{postId: data.post.postId}">{{ data.post.commentCount || 0 }}</a>
       </td>
       <td>
-        <a [ngClass]="'status-' + data.post.postStatus"
-           routerLink="./" [queryParams]="{status: data.post.postStatus}">{{ data.post.postStatus | postStatus }}</a>
+        <a [ngClass]="'status-' + data.post.postStatus" routerLink="./" [queryParams]="{status: data.post.postStatus}">
+          {{ data.post.postStatus | postStatus }}
+        </a>
       </td>
       <td>
         <a [ngClass]="'comment-flag-' + data.post.commentFlag"
-           routerLink="./" [queryParams]="{commentFlag: data.post.commentFlag}">{{ data.post.commentFlag | commentFlag }}</a>
+           routerLink="./"
+           [queryParams]="{commentFlag: data.post.commentFlag}">
+          {{ data.post.commentFlag | commentFlag }}
+        </a>
       </td>
-      <td [title]="data.post.postModified | date:'yyyy-MM-dd HH:mm'">{{ data.post.postModified | date:'yy-MM-dd HH:mm' }}</td>
-      <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">{{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}</td>
+      <td [title]="data.post.postModified | date:'yyyy-MM-dd HH:mm'">
+        {{ data.post.postModified | date:'yy-MM-dd HH:mm' }}
+      </td>
+      <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">
+        {{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}
+      </td>
       <td nzEllipsis [title]="data.meta['post_author'] || data.post.author?.userNiceName">
         {{ data.meta['post_author'] || data.post.author?.userNiceName }}
       </td>
@@ -128,19 +138,29 @@
     </ng-container>
     <ng-container *ngIf="postType === 'attachment'">
       <td nzEllipsis [title]="data.post.postTitle">{{ data.post.postTitle }}</td>
+      <td nzEllipsis>
+        <a routerLink="./" [queryParams]="{tag: tag.slug}" *ngFor="let tag of data.tags">
+          <nz-tag nzColor="blue">{{tag.name}}</nz-tag>
+        </a>
+      </td>
       <td nzEllipsis [title]="data.post.postGuid">
         <a (click)="previewImage(data.post.postGuid)">{{ data.post.postGuid }}</a>
       </td>
       <td>
-        <a routerLink="./" [queryParams]="{status: data.post.postStatus}">{{ data.post.postStatus | postStatus }}</a>
+        <a [ngClass]="'status-' + data.post.postStatus" routerLink="./" [queryParams]="{status: data.post.postStatus}">
+          {{ data.post.postStatus | postStatus }}
+        </a>
       </td>
-      <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">{{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}</td>
+      <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">
+        {{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}
+      </td>
     </ng-container>
     <td nzRight>
       <a (click)="editPost(data)">快速编辑</a>
       <nz-divider nzType="vertical"></nz-divider>
       <ng-container *ngIf="postType !== 'attachment'">
-        <a [routerLink]="postType === 'post' ? './edit' : '/posts/edit-standalone'" [queryParams]="{postId: data.post.postId}">编辑</a>
+        <a [routerLink]="postType === 'post' ? './edit' : '/posts/edit-standalone'"
+           [queryParams]="{postId: data.post.postId}">编辑</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>
       <a (click)="deletePosts(data.post.postId)" *ngIf="data.post.postStatus !== 'trash'">删除</a>
@@ -154,15 +174,20 @@
 <nz-dropdown-menu #dateList>
   <div class="ant-table-filter-dropdown">
     <div class="filter-box">
-      <nz-select nzAllowClear [(ngModel)]="postDateYear" (ngModelChange)="onPostDateYearChange($event)" nzPlaceHolder="年">
+      <nz-select nzAllowClear [(ngModel)]="postDateYear" (ngModelChange)="onPostDateYearChange($event)"
+                 nzPlaceHolder="年">
         <nz-option *ngFor="let item of postDateYearList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
       </nz-select>
       <nz-select nzAllowClear [(ngModel)]="postDateMonth" nzPlaceHolder="月">
         <nz-option *ngFor="let item of postDateMonthList" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
       </nz-select>
       <div class="filter-btns">
-        <button nz-button nzSize="small" nzType="link" (click)="onPostDateFilterReset()" [disabled]="!postDateYear">重置</button>
-        <button nz-button nzSize="small" nzType="primary" (click)="onPostDateFilterOk()" class="search-button">确定</button>
+        <button nz-button nzSize="small" nzType="link" (click)="onPostDateFilterReset()" [disabled]="!postDateYear">
+          重置
+        </button>
+        <button nz-button nzSize="small" nzType="primary" (click)="onPostDateFilterOk()" class="search-button">
+          确定
+        </button>
       </div>
     </div>
   </div>
@@ -179,8 +204,12 @@
         [(ngModel)]="activeCategory"
       ></nz-tree-select>
       <div class="filter-btns">
-        <button nz-button nzSize="small" nzType="link" (click)="onCategoryFilterReset()" [disabled]="!activeCategory">重置</button>
-        <button nz-button nzSize="small" nzType="primary" (click)="onCategoryFilterOk()" class="search-button">确定</button>
+        <button nz-button nzSize="small" nzType="link" (click)="onCategoryFilterReset()" [disabled]="!activeCategory">
+          重置
+        </button>
+        <button nz-button nzSize="small" nzType="primary" (click)="onCategoryFilterOk()" class="search-button">
+          确定
+        </button>
       </div>
     </div>
   </div>
@@ -192,7 +221,7 @@
   [nzContent]="postModalContent"
   [nzFooter]="postModalFooter"
   (nzOnCancel)="closePostModal()"
-  [nzWidth]="800"
+  [nzWidth]="postType === 'attachment' ? 640 : 800"
   [nzMaskClosable]="false"
 >
   <ng-template #postModalTitle>
@@ -240,7 +269,9 @@
           <div nz-col [nzSpan]="24">
             <nz-form-item>
               <nz-form-label
-                [nzRequired]="postForm.get('status')?.value !== 'draft' && postForm.get('status')?.value !== 'trash'">分类</nz-form-label>
+                [nzRequired]="postForm.get('status')?.value !== 'draft' && postForm.get('status')?.value !== 'trash'">
+                分类
+              </nz-form-label>
               <nz-form-control
                 [nzValidateStatus]="postForm.get('category')?.dirty && postForm.errors?.['category'] ? 'error' : 'success'"
                 [nzErrorTip]="categoryErrorTpl">
@@ -305,8 +336,9 @@
                 <nz-option nzLabel="公开" nzValue="publish"></nz-option>
                 <nz-option nzLabel="加密" nzValue="password"></nz-option>
                 <nz-option nzLabel="隐藏" nzValue="private"></nz-option>
-                <nz-option nzLabel="草稿" nzValue="draft"></nz-option>
-                <nz-option nzLabel="删除" nzValue="trash" nzDisabled *ngIf="activePost.post.postStatus === 'trash'"></nz-option>
+                <nz-option nzLabel="草稿" nzValue="draft" *ngIf="postType !== 'attachment'"></nz-option>
+                <nz-option nzLabel="删除" nzValue="trash" nzDisabled *ngIf="activePost.post.postStatus === 'trash'">
+                </nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -319,10 +351,14 @@
               [nzErrorTip]="passwordErrorTpl"
             >
               <nz-input-group [nzSuffix]="passwordSuffix">
-                <input nz-input [type]="passwordVisible ? 'text' : 'password'" formControlName="password" placeholder="请输入密码"/>
+                <input nz-input
+                       [type]="passwordVisible ? 'text' : 'password'" formControlName="password"
+                       placeholder="请输入密码"/>
               </nz-input-group>
               <ng-template #passwordSuffix>
-                <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible"></i>
+                <i nz-icon
+                   [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+                   (click)="passwordVisible = !passwordVisible"></i>
               </ng-template>
               <ng-template #passwordErrorTpl>
                 <ng-container *ngIf="postForm.errors?.['password'].required">请输入密码</ng-container>
@@ -369,10 +405,12 @@
               [nzValidateStatus]="postForm.get('source')?.dirty && postForm.errors?.['source'] ? 'error' : 'success'"
               [nzErrorTip]="sourceErrorTpl"
             >
-              <input nz-input type="text" formControlName="source" [maxlength]="maxPostSourceLength" placeholder="请输入来源"/>
+              <input nz-input type="text" formControlName="source" [maxlength]="maxPostSourceLength"
+                     placeholder="请输入来源"/>
               <ng-template #sourceErrorTpl>
                 <ng-container *ngIf="postForm.errors?.['source'].required">请输入来源</ng-container>
-                <ng-container *ngIf="postForm.errors?.['source'].maxlength">来源最大长度为{{maxPostSourceLength}}字符</ng-container>
+                <ng-container *ngIf="postForm.errors?.['source'].maxlength">来源最大长度为{{maxPostSourceLength}}字符
+                </ng-container>
               </ng-template>
             </nz-form-control>
           </nz-form-item>
@@ -384,10 +422,12 @@
               [nzValidateStatus]="postForm.get('author')?.dirty && postForm.errors?.['author'] ? 'error' : 'success'"
               [nzErrorTip]="authorErrorTpl"
             >
-              <input nz-input type="text" formControlName="author" [maxlength]="maxPostAuthorLength" placeholder="请输入作者"/>
+              <input nz-input type="text" formControlName="author" [maxlength]="maxPostAuthorLength"
+                     placeholder="请输入作者"/>
               <ng-template #authorErrorTpl>
                 <ng-container *ngIf="postForm.errors?.['author'].required">请输入作者</ng-container>
-                <ng-container *ngIf="postForm.errors?.['author'].maxlength">作者最大长度为{{maxPostAuthorLength}}字符</ng-container>
+                <ng-container *ngIf="postForm.errors?.['author'].maxlength">作者最大长度为{{maxPostAuthorLength}}字符
+                </ng-container>
               </ng-template>
             </nz-form-control>
           </nz-form-item>
@@ -443,7 +483,7 @@
               <nz-form-label nzRequired>图片描述</nz-form-label>
               <nz-form-control [nzErrorTip]="excerptErrorTpl">
                 <nz-textarea-count [nzMaxCharacterCount]="maxExcerptLength">
-                  <textarea nz-input rows="6" formControlName="excerpt" placeholder="请输入图片描述"></textarea>
+                  <textarea nz-input rows="4" formControlName="excerpt" placeholder="请输入图片描述"></textarea>
                 </nz-textarea-count>
                 <ng-template #excerptErrorTpl let-control>
                   <ng-container *ngIf="control.hasError('required')">请输入图片描述</ng-container>
@@ -463,9 +503,15 @@
 </nz-modal>
 <ng-template #confirmModalContent>
   <div>
-    <p>删除内容的同时，将删除其关联的所有{{postType === 'post'  ? '分类和' : ''}}标签。</p>
-    <p>如果只是不想公开内容，请将内容可见性设为"<span class="confirm-warning">隐藏</span>"即可。</p>
-    <p>确定删除以下 <span class="confirm-warning">{{checkedPosts.length}}</span> 篇内容吗？</p>
+    <ng-container *ngIf="postType !== 'attachment'">
+      <p>删除内容的同时，将删除其关联的所有{{postType === 'post' ? '分类和' : ''}}标签。</p>
+      <p>如果只是不想公开内容，请将内容可见性设为"<span class="confirm-warning">隐藏</span>"即可。</p>
+      <p>确定删除以下 <span class="confirm-warning">{{checkedPosts.length}}</span> 篇内容吗？</p>
+    </ng-container>
+    <ng-container *ngIf="postType === 'attachment'">
+      <p>删除文件只是修改文件的状态，并不进行物理删除，且删除时，将同时删除其关联的所有标签。</p>
+      <p>确定删除以下 <span class="confirm-warning">{{checkedPosts.length}}</span> 个文件吗？</p>
+    </ng-container>
     <nz-list nzSize="small" class="confirm-list">
       <nz-list-item nzNoFlex *ngFor="let post of checkedPosts; let i = index" [title]="post.post.postTitle">
         <span class="confirm-list-index">{{i + 1}}.</span>{{post.post.postTitle}}

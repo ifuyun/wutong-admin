@@ -63,6 +63,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   checkedPosts: Post[] = [];
   tableWidth!: string;
   statusFilter: NzTableFilterList = [];
+  fileStatusFilter: NzTableFilterList = [];
   commentFlagFilter: NzTableFilterList = [];
   trashEnabled = false;
   postDateFilterVisible = false;
@@ -545,6 +546,11 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       value: key,
       byDefault: this.statuses.includes(<PostStatus>key)
     }));
+    this.fileStatusFilter = [PostStatus.PUBLISH, PostStatus.PASSWORD, PostStatus.PRIVATE, PostStatus.TRASH].map((key) => ({
+      text: POST_STATUS[key],
+      value: key,
+      byDefault: this.statuses.includes(<PostStatus>key)
+    }));
     this.commentFlagFilter = Object.keys(COMMENT_FLAG).map((key) => ({
       text: COMMENT_FLAG[key],
       value: key,
@@ -624,7 +630,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }];
         break;
       case PostType.ATTACHMENT:
-        this.tableWidth = '1000px';
+        this.tableWidth = '1180px';
         this.titles.unshift('素材管理');
         pageTitle = '素材列表';
         this.breadcrumbData.list = [{
