@@ -32,7 +32,7 @@ import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionService } from '../../options/option.service';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomies/taxonomy.service';
-import { Post, PostArchiveDate, PostQueryParam, PostSaveParam } from '../post.interface';
+import { Post, PostArchiveDate, PostModel, PostQueryParam, PostSaveParam } from '../post.interface';
 import { PostService } from '../post.service';
 
 @Component({
@@ -51,6 +51,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   readonly maxPostAuthorLength = POST_AUTHOR_LENGTH;
   readonly maxTagSize = POST_TAG_SIZE;
 
+  staticResourceHost!: string;
   postList: Post[] = [];
   page: number = 1;
   total: number = 0;
@@ -213,6 +214,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   ngOnInit(): void {
     this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
+      this.staticResourceHost = options['static_resource_host'];
     });
     this.paramListener = this.route.queryParamMap.subscribe((queryParams) => {
       this.page = Number(queryParams.get('page')) || 1;
@@ -336,9 +338,19 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
 
   previewImage(url: string) {
     const images: NzImage[] = [{
-      src: this.options['static_resource_host'] + url
+      src: this.staticResourceHost + url
     }];
     this.imageService.preview(images);
+  }
+
+  isImage(post: PostModel): boolean {
+    const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/gif'];
+    if (post.postMimeType) {
+      return allowedMimeTypes.includes(post.postMimeType);
+    }
+    const allowedSuffixes = ['png', 'jpg', 'jpeg', 'gif'];
+    const suffix = post.postGuid.split('.')[1] || '';
+    return allowedSuffixes.includes(suffix);
   }
 
   editPost(post: Post) {

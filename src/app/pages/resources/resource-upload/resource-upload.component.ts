@@ -1,17 +1,21 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { differenceWith, isEqual } from 'lodash';
 import { NzImage, NzImageService } from 'ng-zorro-antd/image';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzUploadChangeParam, NzUploadFile, UploadFilter } from 'ng-zorro-antd/upload/interface';
+import { NzUploadFile, UploadFilter } from 'ng-zorro-antd/upload/interface';
 import { Subscription } from 'rxjs';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { ApiUrl } from '../../../config/api-url';
+import { Message } from '../../../config/message.enum';
+import { ResponseCode } from '../../../config/response-code.enum';
 import { BaseComponent } from '../../../core/base.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionService } from '../../options/option.service';
+import { PostService } from '../../posts/post.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -22,10 +26,10 @@ import { OptionService } from '../../options/option.service';
 export class ResourceUploadComponent extends BaseComponent implements OnInit, OnDestroy {
   fileList: NzUploadFile[] = [];
   uploading = false;
-  fileSizeWithMB = 4;
-  fileSizeWithKB = this.fileSizeWithMB * 1024;
-  fileSizeWithByte = this.fileSizeWithMB * 1024 * 1024;
-  fileLimit = 10;
+  fileLimit!: number;
+  fileSizeWithMB!: number;
+  fileSizeWithKB!: number;
+  fileSizeWithByte!: number;
   uploadAction = ApiUrl.UPLOAD_FILES;
   filters: UploadFilter[] = [{
     name: 'fileSize',
@@ -61,6 +65,7 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
     list: []
   };
 
+  private imageTypes: string[] = ['image/jpeg', 'image/png', 'image/gif'];
   private options: OptionEntity = {};
   private optionsListener!: Subscription;
 
@@ -68,9 +73,11 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
     private optionService: OptionService,
+    private postService: PostService,
     private fb: FormBuilder,
     private message: NzMessageService,
-    private imageService: NzImageService
+    private imageService: NzImageService,
+    private router: Router
   ) {
     super();
   }
@@ -78,6 +85,10 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
   ngOnInit(): void {
     this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
+      this.fileLimit = Number(options['upload_max_file_limit']);
+      this.fileSizeWithKB = Number(options['upload_max_file_size']);
+      this.fileSizeWithMB = this.fileSizeWithKB / 1024;
+      this.fileSizeWithByte = this.fileSizeWithKB * 1024;
     });
     this.updatePageInfo();
   }
@@ -86,10 +97,15 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
     this.optionsListener.unsubscribe();
   }
 
-  onChange(info: NzUploadChangeParam) {
-  }
-
   onPreview = async (file: NzUploadFile): Promise<void> => {
+    if (!file.type || !this.imageTypes.includes(file.type)) {
+      this.message.warning('预览只支持jpg、png格式图片');
+      return;
+    }
+    if (file.size && file.size > 3 * 1024 * 1024) {
+      this.message.warning('文件过大，无法预览');
+      return;
+    }
     if (!file.url && !file['preview']) {
       file['preview'] = await this.getBase64(file as any);
     }
@@ -105,11 +121,34 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
   };
 
   upload() {
+    const formData = new FormData();
+    this.fileList.forEach((file: any) => {
+      formData.append('files', file);
+    });
+    formData.append('original', this.uploadForm.value.original ? '1' : '0');
+    formData.append('watermark', this.uploadForm.value.watermark ? '1' : '0');
 
+    this.uploading = true;
+    this.postService.uploadFiles(formData).subscribe((res) => {
+      this.uploading = false;
+      if (res.code === ResponseCode.SUCCESS) {
+        this.message.success(Message.SUCCESS);
+        this.router.navigate(['/resources']);
+      }
+    });
   }
 
   protected updateBreadcrumb(breadcrumbData?: BreadcrumbData): void {
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
+  }
+
+  private getBase64(file: File): Promise<string | ArrayBuffer | null> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
   }
 
   private updatePageInfo() {
@@ -125,14 +164,5 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
     }];
     this.updateTitle();
     this.updateBreadcrumb();
-  }
-
-  private getBase64(file: File): Promise<string | ArrayBuffer | null> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
   }
 }

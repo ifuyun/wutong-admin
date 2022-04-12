@@ -144,7 +144,10 @@
         </a>
       </td>
       <td nzEllipsis [title]="data.post.postGuid">
-        <a (click)="previewImage(data.post.postGuid)">{{ data.post.postGuid }}</a>
+        <a *ngIf="isImage(data.post)" (click)="previewImage(data.post.postGuid)">{{ data.post.postGuid }}</a>
+        <a *ngIf="!isImage(data.post)" [href]="staticResourceHost + data.post.postGuid" target="_blank">
+          {{ data.post.postGuid }}
+        </a>
       </td>
       <td>
         <a [ngClass]="'status-' + data.post.postStatus" routerLink="./" [queryParams]="{status: data.post.postStatus}">

@@ -27,9 +27,21 @@ export class MediaOptionsComponent extends BaseComponent implements OnInit, OnDe
   readonly maxStaticResourceHostLength = STATIC_RESOURCE_HOST_LENGTH;
   readonly maxUploadUrlPrefixLength = UPLOAD_URL_PREFIX_LENGTH;
   readonly maxWatermarkFontPathLength = WATERMARK_FONT_PATH_LENGTH;
+  readonly maxFileLimit = 20;
+  readonly maxFileSize = 8 * 1024;
 
   saveLoading = false;
   optionsForm: FormGroup = this.fb.group({
+    uploadFileLimit: ['', [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(this.maxFileLimit)
+    ]],
+    uploadFileSize: ['', [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(this.maxFileSize)
+    ]],
     uploadPath: ['', [
       Validators.required,
       Validators.maxLength(this.maxUploadPathLength),
@@ -38,7 +50,9 @@ export class MediaOptionsComponent extends BaseComponent implements OnInit, OnDe
     staticResourceHost: ['', [
       Validators.required,
       Validators.maxLength(this.maxStaticResourceHostLength),
-      Validators.pattern(/^https?:\/\/[a-zA-Z0-9]+(?:[\-_][a-zA-Z0-9]+)*(?:\.[a-zA-Z0-9]+(?:[\-_][a-zA-Z0-9]+)*)*$/i)
+      Validators.pattern(
+        /^https?:\/\/[a-zA-Z0-9]+(?:[\-_][a-zA-Z0-9]+)*(?:\.[a-zA-Z0-9]+(?:[\-_][a-zA-Z0-9]+)*)*(?::\d{1,5})?$/i
+      )
     ]],
     uploadUrlPrefix: ['', [
       Validators.required,
@@ -90,6 +104,8 @@ export class MediaOptionsComponent extends BaseComponent implements OnInit, OnDe
     }
     this.saveLoading = true;
     const formData = {
+      uploadFileLimit: Number(value.uploadFileLimit),
+      uploadFileSize: Number(value.uploadFileSize),
       uploadPath: value.uploadPath,
       staticResourceHost: value.staticResourceHost,
       uploadUrlPrefix: value.uploadUrlPrefix,
@@ -109,6 +125,8 @@ export class MediaOptionsComponent extends BaseComponent implements OnInit, OnDe
 
   private initForm() {
     this.optionsForm.setValue({
+      uploadFileLimit: this.options['upload_max_file_limit'],
+      uploadFileSize: this.options['upload_max_file_size'],
       uploadPath: this.options['upload_path'],
       staticResourceHost: this.options['static_resource_host'],
       uploadUrlPrefix: this.options['upload_url_prefix'],

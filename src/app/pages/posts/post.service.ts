@@ -61,4 +61,8 @@ export class PostService {
       postIds
     });
   }
+
+  uploadFiles(data: FormData) {
+    return this.apiService.httpPost(this.apiService.getApiUrl(ApiUrl.UPLOAD_FILES), data);
+  }
 }

@@ -11,12 +11,13 @@ export interface PostEntity {
   postDate: Date;
   postGuid: string;
   postStatus: string;
+  postType?: string;
   commentFlag: string;
   postAuthor?: string;
   postOriginal: number;
   postPassword?: string;
   postParent?: string;
-  postType?: string;
+  postMimeType?: string;
 }
 
 export interface PostModel extends PostEntity {
@@ -26,7 +27,6 @@ export interface PostModel extends PostEntity {
   commentCount?: number;
   author?: UserEntity;
   postName?: string;
-  postMimeType?: string;
 }
 
 export interface Post {

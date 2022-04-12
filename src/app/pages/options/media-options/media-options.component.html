@@ -1,6 +1,40 @@
 <div nz-row>
   <form nz-form nz-col nzSpan="14" [formGroup]="optionsForm">
     <nz-form-item>
+      <nz-form-label nzSpan="6" nzRequired>单次上传文件数量限制</nz-form-label>
+      <nz-form-control [nzErrorTip]="fileLimitErrorTpl">
+        <nz-input-number
+          formControlName="uploadFileLimit"
+          class="input-number"
+          [nzMin]="1"
+          [nzMax]="maxFileLimit"
+          [nzStep]="1"></nz-input-number>
+        <span class="input-desc">（范围：1~{{maxFileLimit}}）</span>
+        <ng-template #fileLimitErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请输入单次上传文件数量限制</ng-container>
+          <ng-container *ngIf="control.hasError('min')">单次上传文件数量限制最小为1</ng-container>
+          <ng-container *ngIf="control.hasError('max')">单次上传文件数量限制最大为{{maxFileLimit}}</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="6" nzRequired>单个上传文件大小限制</nz-form-label>
+      <nz-form-control [nzErrorTip]="fileSizeErrorTpl">
+        <nz-input-number
+          formControlName="uploadFileSize"
+          class="input-number"
+          [nzMin]="100"
+          [nzMax]="maxFileSize"
+          [nzStep]="1"></nz-input-number>
+        <span class="input-desc">（单位：KB，范围：100~{{maxFileSize}} KB）</span>
+        <ng-template #fileSizeErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">请输入单个上传文件大小限制</ng-container>
+          <ng-container *ngIf="control.hasError('min')">单个上传文件大小限制最小为100 KB</ng-container>
+          <ng-container *ngIf="control.hasError('max')">单个上传文件大小限制最大为{{maxFileSize}} KB</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
       <nz-form-label nzSpan="6" nzRequired>文件上传路径</nz-form-label>
       <nz-form-control [nzErrorTip]="uploadPathErrorTpl">
         <input
