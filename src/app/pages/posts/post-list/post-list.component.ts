@@ -17,7 +17,7 @@ import { CommentFlag, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from 
 import {
   COMMENT_FLAG,
   POST_AUTHOR_LENGTH,
-  POST_EXCERPT_LENGTH,
+  POST_EXCERPT_LENGTH, POST_PASSWORD_LENGTH,
   POST_SOURCE_LENGTH,
   POST_STATUS,
   POST_TAG_SIZE,
@@ -47,6 +47,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   readonly maxTitleLength = POST_TITLE_LENGTH;
   readonly maxExcerptLength = POST_EXCERPT_LENGTH;
   readonly maxTaxonomySize = POST_TAXONOMY_SIZE;
+  readonly maxPostPasswordLength = POST_PASSWORD_LENGTH;
   readonly maxPostSourceLength = POST_SOURCE_LENGTH;
   readonly maxPostAuthorLength = POST_AUTHOR_LENGTH;
   readonly maxTagSize = POST_TAG_SIZE;
@@ -141,22 +142,24 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         const original = control.get('original')?.value;
         const source = control.get('source')?.value.trim();
         const author = control.get('author')?.value.trim();
-        const result: ValidationErrors = {};
-        if (original !== 0 || source && author) {
+        if (
+          original !== 0
+          || source && source.length <= this.maxPostSourceLength
+          && author && author.length <= this.maxPostAuthorLength
+        ) {
           return null;
         }
+        const result: ValidationErrors = { source: {}, author: {} };
         if (!source) {
-          result['source'] = { required: true };
+          result['source'].required = true;
         }
         if (source.length > this.maxPostSourceLength) {
-          result['source'] = result['source'] || {};
           result['source'].maxlength = true;
         }
         if (!author) {
-          result['author'] = { required: true };
+          result['author'].required = true;
         }
         if (author.length > this.maxPostAuthorLength) {
-          result['author'] = result['author'] || {};
           result['author'].maxlength = true;
         }
         return result;
@@ -164,7 +167,17 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       (control: AbstractControl): ValidationErrors | null => {
         const status = control.get('status')?.value;
         const password = control.get('password')?.value.trim();
-        return status === PostStatus.PASSWORD && !password ? { password: { required: true } } : null;
+        if (status !== PostStatus.PASSWORD || password && password.length <= this.maxPostPasswordLength) {
+          return null;
+        }
+        const result: ValidationErrors = { password: {} };
+        if (!password) {
+          result['password'].required = true;
+        }
+        if (password.length > this.maxPostPasswordLength) {
+          result['password'].maxlength = true;
+        }
+        return result;
       }
     ]
   });

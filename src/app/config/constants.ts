@@ -6,6 +6,7 @@ export const POST_TAXONOMY_SIZE = 5;
 export const POST_TAG_SIZE = 15;
 export const POST_SOURCE_LENGTH = 100;
 export const POST_AUTHOR_LENGTH = 50;
+export const POST_PASSWORD_LENGTH = 20;
 
 export const COMMENT_LENGTH = 800;
 
