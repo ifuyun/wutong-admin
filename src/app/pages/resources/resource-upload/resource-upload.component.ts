@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -77,7 +78,8 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
     private fb: FormBuilder,
     private message: NzMessageService,
     private imageService: NzImageService,
-    private router: Router
+    private router: Router,
+    @Inject(DOCUMENT) private document: Document
   ) {
     super();
   }
@@ -102,12 +104,8 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
       this.message.warning('预览只支持jpg、png格式图片');
       return;
     }
-    if (file.size && file.size > 3 * 1024 * 1024) {
-      this.message.warning('文件过大，无法预览');
-      return;
-    }
     if (!file.url && !file['preview']) {
-      file['preview'] = await this.getBase64(file as any);
+      file['preview'] = await this.previewImage(file as any);
     }
     const images: NzImage[] = [{
       src: file.url || file['preview']
@@ -142,12 +140,52 @@ export class ResourceUploadComponent extends BaseComponent implements OnInit, On
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
   }
 
-  private getBase64(file: File): Promise<string | ArrayBuffer | null> {
+  private previewImage(file: File | Blob): Promise<string> {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
+      const maxPreviewSize = 1024;
+      const canvas = this.document.createElement('canvas');
+      canvas.width = maxPreviewSize;
+      canvas.height = maxPreviewSize;
+      canvas.style.cssText = `position: fixed; left: 0; top: 0; ` +
+        `width: ${maxPreviewSize}px; height: ${maxPreviewSize}px; z-index: 9999; display: none;`;
+      this.document.body.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.src = objectUrl;
+
+      img.onload = () => {
+        const { width, height } = img;
+
+        let drawWidth = width;
+        let drawHeight = height;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (width < height) {
+          if (height > maxPreviewSize) {
+            drawWidth = width * maxPreviewSize / height;
+            drawHeight = maxPreviewSize;
+          }
+        } else {
+          if (width > maxPreviewSize) {
+            drawWidth = maxPreviewSize;
+            drawHeight = height * maxPreviewSize / width;
+          }
+        }
+
+        canvas.width = drawWidth;
+        canvas.height = drawHeight;
+
+        try {
+          ctx!.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        } catch {}
+        const dataURL = canvas.toDataURL();
+        this.document.body.removeChild(canvas);
+
+        URL.revokeObjectURL(objectUrl);
+        resolve( dataURL);
+      };
     });
   }
 
