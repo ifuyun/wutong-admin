@@ -1,11 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { NgZorroAntdModule } from '../../modules/antd/ng-zorro-antd.module';
 import { HomeRoutingModule } from './home-routing.module';
-import { WelcomeComponent } from './welcome/welcome.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
-  imports: [HomeRoutingModule],
-  declarations: [WelcomeComponent],
-  exports: [WelcomeComponent]
+  declarations: [HomeComponent],
+  imports: [
+    CommonModule,
+    HomeRoutingModule,
+    NgZorroAntdModule
+  ],
+  exports: [HomeComponent]
 })
 export class HomeModule {
 }

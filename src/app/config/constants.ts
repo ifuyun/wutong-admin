@@ -1,4 +1,5 @@
 export const TREE_ROOT_NODE_KEY = 'root';
+export const SERVER_START_AT = '2016-01-24';
 
 export const POST_TITLE_LENGTH = 100;
 export const POST_EXCERPT_LENGTH = 140;

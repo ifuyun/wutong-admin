@@ -49,8 +49,8 @@ export class DiscussionOptionsComponent extends BaseComponent implements OnInit,
     protected title: Title,
     protected breadcrumbService: BreadcrumbService,
     private optionService: OptionService,
-    private fb: FormBuilder,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private fb: FormBuilder
   ) {
     super();
   }

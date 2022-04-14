@@ -1,0 +1,45 @@
+nz-row:not(:last-child) {
+  margin-bottom: 24px;
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex: auto;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid #f0f0f0;
+  border-radius: 2px;
+
+  @head-height: 48px;
+
+  .panel-head {
+    flex: 0 0 @head-height;
+    height: @head-height;
+    padding: 8px 24px;
+    line-height: 32px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #fafafa;
+
+    .panel-title {
+      color: rgba(0, 0, 0, .85);
+      font-size: 15px;
+      font-weight: 500;
+    }
+  }
+
+  .panel-body {
+    display: flex;
+    flex: auto;
+    flex-direction: row;
+    padding: 24px;
+  }
+}
+
+.duration {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}

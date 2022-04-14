@@ -17,7 +17,7 @@ import { ListComponent } from '../../../core/list.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { LoginUserEntity } from '../../../interfaces/user.interface';
 import { OptionService } from '../../options/option.service';
-import { UserService } from '../../../services/user.service';
+import { UserService } from '../../users/user.service';
 import { PostModel } from '../../posts/post.interface';
 import { PostService } from '../../posts/post.service';
 import { CommentModel, CommentQueryParam, CommentSaveParam } from '../comment.interface';

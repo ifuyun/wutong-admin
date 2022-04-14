@@ -1,0 +1,88 @@
+<nz-row [nzGutter]="24">
+  <nz-col [nzSpan]="9">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">网站已上线运行</div>
+      </div>
+      <div class="panel-body">
+        <div class="duration">
+          {{serverDuration.years()}} 年 {{serverDuration.months()}} 个月 {{serverDuration.days()}} 天
+          {{serverDuration.hours()}} 小时 {{serverDuration.minutes()}} 分钟
+        </div>
+      </div>
+    </div>
+  </nz-col>
+  <nz-col [nzSpan]="15">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">文章发布曲线</div>
+      </div>
+      <div class="panel-body">
+      </div>
+    </div>
+  </nz-col>
+</nz-row>
+<nz-row [nzGutter]="24">
+  <nz-col [nzSpan]="9">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">统计数据</div>
+      </div>
+      <div class="panel-body">
+        <div style="width: 100%">
+          <nz-row [nzGutter]="16">
+            <nz-col [nzSpan]="8">
+              <nz-statistic [nzValue]="statData?.['posts']" [nzValueTemplate]="postCount" nzTitle="文章"></nz-statistic>
+              <ng-template #postCount let-count>
+                <a routerLink="/posts">{{count | number}} 篇</a>
+              </ng-template>
+            </nz-col>
+            <nz-col [nzSpan]="8">
+              <nz-statistic [nzValue]="statData?.['pages']" [nzValueTemplate]="pageCount" nzTitle="页面"></nz-statistic>
+              <ng-template #pageCount let-count>
+                <a routerLink="/posts/standalone">{{count | number}} 篇</a>
+              </ng-template>
+            </nz-col>
+            <nz-col [nzSpan]="8">
+              <nz-statistic [nzValue]="statData?.['comments']" [nzValueTemplate]="commentCount"
+                            nzTitle="评论"></nz-statistic>
+              <ng-template #commentCount let-count>
+                <a routerLink="/comments">{{count | number}} 条</a>
+              </ng-template>
+            </nz-col>
+          </nz-row>
+          <nz-row [nzGutter]="16">
+            <nz-col [nzSpan]="8">
+              <nz-statistic [nzValue]="statData?.['tags']" [nzValueTemplate]="tagCount" nzTitle="标签"></nz-statistic>
+              <ng-template #tagCount let-count>
+                <a routerLink="/taxonomies/tags">{{count | number}} 个</a>
+              </ng-template>
+            </nz-col>
+            <nz-col [nzSpan]="8">
+              <nz-statistic [nzValue]="statData?.['categories']" [nzValueTemplate]="categoryCount"
+                            nzTitle="分类"></nz-statistic>
+              <ng-template #categoryCount let-count>
+                <a routerLink="/taxonomies/post-categories">{{count | number}} 个</a>
+              </ng-template>
+            </nz-col>
+            <nz-col [nzSpan]="8">
+              <nz-statistic [nzValue]="statData?.['files']" [nzValueTemplate]="fileCount" nzTitle="文件"></nz-statistic>
+              <ng-template #fileCount let-count>
+                <a routerLink="/resources">{{count | number}} 个</a>
+              </ng-template>
+            </nz-col>
+          </nz-row>
+        </div>
+      </div>
+    </div>
+  </nz-col>
+  <nz-col [nzSpan]="15">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">动态</div>
+      </div>
+      <div class="panel-body">
+      </div>
+    </div>
+  </nz-col>
+</nz-row>

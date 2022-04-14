@@ -20,6 +20,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzStatisticModule } from 'ng-zorro-antd/statistic';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -79,7 +80,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
     // NzSliderModule,
     // NzSpaceModule,
     // NzSpinModule,
-    // NzStatisticModule,
+    NzStatisticModule,
     // NzStepsModule,
     NzSwitchModule,
     // NzTabsModule,

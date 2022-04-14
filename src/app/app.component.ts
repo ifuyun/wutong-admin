@@ -3,9 +3,9 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter, Observable } from 'rxjs';
 import { OptionEntity } from './interfaces/option.interface';
 import { LoginUserEntity } from './interfaces/user.interface';
-import { MenuItem, MenusService } from './services/menus.service';
+import { MenuItem, MenuService } from './core/menu.service';
 import { OptionService } from './pages/options/option.service';
-import { UserService } from './services/user.service';
+import { UserService } from './pages/users/user.service';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   constructor(
     private optionService: OptionService,
     private userService: UserService,
-    private menusService: MenusService,
+    private menusService: MenuService,
     private router: Router
   ) {
     this.options$ = optionService.options$;

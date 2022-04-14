@@ -15,17 +15,17 @@ export interface MenuItem {
 @Injectable({
   providedIn: 'root'
 })
-export class MenusService {
+export class MenuService {
   private menuData: MenuItem[] = [{
-    key: 'home',
-    title: '首页',
+    key: 'dashboard',
+    title: '仪表盘',
     icon: 'home',
     level: 1,
     order: 1,
     children: [{
-      key: 'homeWelcome',
-      title: '仪表盘',
-      url: '/welcome',
+      key: 'home',
+      title: '首页',
+      url: '/home',
       level: 2,
       order: 1
     }]
