@@ -8,7 +8,7 @@ import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.ser
 import { CommentFlag } from '../../../config/common.enum';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
-import { BaseComponent } from '../../../core/base.component';
+import { PageComponent } from '../../../core/page.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionService } from '../option.service';
 
@@ -17,7 +17,7 @@ import { OptionService } from '../option.service';
   templateUrl: './discussion-options.component.html',
   styleUrls: ['../option.less']
 })
-export class DiscussionOptionsComponent extends BaseComponent implements OnInit, OnDestroy {
+export class DiscussionOptionsComponent extends PageComponent implements OnInit, OnDestroy {
   saveLoading = false;
   optionsForm: FormGroup = this.fb.group({
     defaultCommentStatus: [''],

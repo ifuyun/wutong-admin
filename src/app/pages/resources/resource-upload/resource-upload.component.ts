@@ -13,7 +13,7 @@ import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.ser
 import { ApiUrl } from '../../../config/api-url';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
-import { BaseComponent } from '../../../core/base.component';
+import { PageComponent } from '../../../core/page.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionService } from '../../options/option.service';
 import { PostService } from '../../posts/post.service';
@@ -24,7 +24,7 @@ import { PostService } from '../../posts/post.service';
   templateUrl: './resource-upload.component.html',
   styleUrls: ['./resource-upload.component.less']
 })
-export class ResourceUploadComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ResourceUploadComponent extends PageComponent implements OnInit, OnDestroy {
   fileList: NzUploadFile[] = [];
   uploading = false;
   fileLimit!: number;

@@ -5,10 +5,12 @@ import { NgZorroAntdModule } from '../../modules/antd/ng-zorro-antd.module';
 import { PipesModule } from '../../pipes/pipes.module';
 import { CommentListComponent } from './comment-list/comment-list.component';
 import { CommentRoutingModule } from './comment-routing.module';
+import { CommentModalComponent } from './comment-modal/comment-modal.component';
 
 @NgModule({
   declarations: [
-    CommentListComponent
+    CommentListComponent,
+    CommentModalComponent
   ],
   imports: [
     CommonModule,
@@ -17,6 +19,9 @@ import { CommentRoutingModule } from './comment-routing.module';
     PipesModule,
     FormsModule,
     ReactiveFormsModule
+  ],
+  exports: [
+    CommentModalComponent
   ]
 })
 export class CommentModule {

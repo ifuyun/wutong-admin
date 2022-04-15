@@ -29,49 +29,51 @@
         <div class="panel-title">统计数据</div>
       </div>
       <div class="panel-body">
-        <div style="width: 100%">
-          <nz-row [nzGutter]="16">
-            <nz-col [nzSpan]="8">
-              <nz-statistic [nzValue]="statData?.['posts']" [nzValueTemplate]="postCount" nzTitle="文章"></nz-statistic>
-              <ng-template #postCount let-count>
-                <a routerLink="/posts">{{count | number}} 篇</a>
-              </ng-template>
-            </nz-col>
-            <nz-col [nzSpan]="8">
-              <nz-statistic [nzValue]="statData?.['pages']" [nzValueTemplate]="pageCount" nzTitle="页面"></nz-statistic>
-              <ng-template #pageCount let-count>
-                <a routerLink="/posts/standalone">{{count | number}} 篇</a>
-              </ng-template>
-            </nz-col>
-            <nz-col [nzSpan]="8">
-              <nz-statistic [nzValue]="statData?.['comments']" [nzValueTemplate]="commentCount"
-                            nzTitle="评论"></nz-statistic>
-              <ng-template #commentCount let-count>
-                <a routerLink="/comments">{{count | number}} 条</a>
-              </ng-template>
-            </nz-col>
-          </nz-row>
-          <nz-row [nzGutter]="16">
-            <nz-col [nzSpan]="8">
-              <nz-statistic [nzValue]="statData?.['tags']" [nzValueTemplate]="tagCount" nzTitle="标签"></nz-statistic>
-              <ng-template #tagCount let-count>
-                <a routerLink="/taxonomies/tags">{{count | number}} 个</a>
-              </ng-template>
-            </nz-col>
-            <nz-col [nzSpan]="8">
-              <nz-statistic [nzValue]="statData?.['categories']" [nzValueTemplate]="categoryCount"
-                            nzTitle="分类"></nz-statistic>
-              <ng-template #categoryCount let-count>
-                <a routerLink="/taxonomies/post-categories">{{count | number}} 个</a>
-              </ng-template>
-            </nz-col>
-            <nz-col [nzSpan]="8">
-              <nz-statistic [nzValue]="statData?.['files']" [nzValueTemplate]="fileCount" nzTitle="文件"></nz-statistic>
-              <ng-template #fileCount let-count>
-                <a routerLink="/resources">{{count | number}} 个</a>
-              </ng-template>
-            </nz-col>
-          </nz-row>
+        <div class="statistic">
+          <div style="width: 100%">
+            <nz-row [nzGutter]="16">
+              <nz-col [nzSpan]="8">
+                <nz-statistic [nzValue]="statData?.['posts']" [nzValueTemplate]="postCount" nzTitle="文章"></nz-statistic>
+                <ng-template #postCount let-count>
+                  <a routerLink="/posts">{{count | number}} 篇</a>
+                </ng-template>
+              </nz-col>
+              <nz-col [nzSpan]="8">
+                <nz-statistic [nzValue]="statData?.['pages']" [nzValueTemplate]="pageCount" nzTitle="页面"></nz-statistic>
+                <ng-template #pageCount let-count>
+                  <a routerLink="/posts/standalone">{{count | number}} 篇</a>
+                </ng-template>
+              </nz-col>
+              <nz-col [nzSpan]="8">
+                <nz-statistic [nzValue]="statData?.['comments']" [nzValueTemplate]="commentCount"
+                              nzTitle="评论"></nz-statistic>
+                <ng-template #commentCount let-count>
+                  <a routerLink="/comments">{{count | number}} 条</a>
+                </ng-template>
+              </nz-col>
+            </nz-row>
+            <nz-row [nzGutter]="16">
+              <nz-col [nzSpan]="8">
+                <nz-statistic [nzValue]="statData?.['tags']" [nzValueTemplate]="tagCount" nzTitle="标签"></nz-statistic>
+                <ng-template #tagCount let-count>
+                  <a routerLink="/taxonomies/tags">{{count | number}} 个</a>
+                </ng-template>
+              </nz-col>
+              <nz-col [nzSpan]="8">
+                <nz-statistic [nzValue]="statData?.['categories']" [nzValueTemplate]="categoryCount"
+                              nzTitle="分类"></nz-statistic>
+                <ng-template #categoryCount let-count>
+                  <a routerLink="/taxonomies/post-categories">{{count | number}} 个</a>
+                </ng-template>
+              </nz-col>
+              <nz-col [nzSpan]="8">
+                <nz-statistic [nzValue]="statData?.['files']" [nzValueTemplate]="fileCount" nzTitle="文件"></nz-statistic>
+                <ng-template #fileCount let-count>
+                  <a routerLink="/resources">{{count | number}} 个</a>
+                </ng-template>
+              </nz-col>
+            </nz-row>
+          </div>
         </div>
       </div>
     </div>
@@ -82,7 +84,35 @@
         <div class="panel-title">动态</div>
       </div>
       <div class="panel-body">
+        <div class="comment">
+          <div class="comment-item" *ngFor="let comment of comments">
+            <div class="comment-item-meta">{{comment.commentAuthor}} - 《{{comment.post.postTitle}}》</div>
+            <div class="comment-item-content">{{comment.commentContent}}</div>
+            <div class="comment-item-actions">
+              <ng-container *ngIf="comment.commentStatus === 'pending'">
+                <a class="button-normal" (click)="auditComments('normal', comment.commentId)">批准</a>
+                <a class="button-reject" (click)="auditComments('reject', comment.commentId)">驳回</a>
+                <a class="button-spam" (click)="auditComments('spam', comment.commentId)">垃圾评论</a>
+              </ng-container>
+              <ng-container *ngIf="comment.commentStatus === 'normal' || comment.commentStatus === 'pending'">
+                <a (click)="showCommentModal('reply', comment)">回复</a>
+              </ng-container>
+              <a (click)="showCommentModal('edit', comment)">编辑</a>
+              <ng-container *ngIf="comment.commentStatus !== 'trash'">
+                <a (click)="auditComments('trash', comment.commentId)">删除</a>
+              </ng-container>
+              <a (click)="showCommentModal('detail', comment)">查看</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </nz-col>
 </nz-row>
+<i-comment-modal
+  *ngIf="commentModalVisible"
+  [action]="commentAction"
+  [comment]="activeComment"
+  (closeModal)="closeCommentModal()"
+  (onSuccess)="onCommentSave()">
+</i-comment-modal>

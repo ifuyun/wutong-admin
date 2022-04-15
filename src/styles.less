@@ -31,36 +31,40 @@
   }
 }
 
-.status, .table-row-btn {
+.status, .button {
   &-publish, &-normal {
-    color: var(--status-normal-color);
+    &, &:hover {
+      color: var(--status-normal-color);
+    }
   }
 
-  &-password {
+  &-password, &-password:hover {
     color: var(--status-password-color);
   }
 
-  &-private {
+  &-private, &-private:hover {
     color: var(--status-private-color);
   }
 
   &-draft, &-auto-draft {
-    color: var(--status-pending-color);
+    &, &:hover {
+      color: var(--status-pending-color);
+    }
   }
 
-  &-trash {
+  &-trash, &-trash:hover {
     color: var(--status-disabled-color);
   }
 
-  &-pending {
+  &-pending, &-pending:hover {
     color: var(--status-pending-color);
   }
 
-  &-reject {
+  &-reject, &-reject:hover {
     color: var(--status-reject-color);
   }
 
-  &-spam {
+  &-spam, &-spam:hover {
     color: var(--status-spam-color);
   }
 }

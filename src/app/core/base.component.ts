@@ -1,23 +1,6 @@
 import { FormGroup } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
-import { BreadcrumbData } from '../components/breadcrumb/breadcrumb.interface';
-import { BreadcrumbService } from '../components/breadcrumb/breadcrumb.service';
 
-export abstract class BaseComponent {
-  protected abstract titles: string[];
-  protected abstract title: Title;
-
-  protected abstract breadcrumbData: BreadcrumbData;
-  protected abstract breadcrumbService: BreadcrumbService;
-
-  protected abstract updateBreadcrumb(breadcrumbData?: BreadcrumbData): void;
-
-  protected titleSeparator = ' - ';
-
-  protected updateTitle(titles?: string[]): void {
-    this.title.setTitle((titles || this.titles).join(this.titleSeparator));
-  }
-
+export abstract class BaseComponent  {
   protected resetFormStatus(form: FormGroup): void {
     if (!form) {
       return;

@@ -18,7 +18,7 @@ import {
 } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
-import { BaseComponent } from '../../../core/base.component';
+import { PageComponent } from '../../../core/page.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionService } from '../option.service';
 
@@ -27,7 +27,7 @@ import { OptionService } from '../option.service';
   templateUrl: './general-options.component.html',
   styleUrls: ['../option.less']
 })
-export class GeneralOptionsComponent extends BaseComponent implements OnInit, OnDestroy {
+export class GeneralOptionsComponent extends PageComponent implements OnInit, OnDestroy {
   readonly maxTitleLength = SITE_TITLE_LENGTH;
   readonly maxDescLength = SITE_DESCRIPTION_LENGTH;
   readonly maxKeywordsLength = SITE_KEYWORDS_LENGTH;

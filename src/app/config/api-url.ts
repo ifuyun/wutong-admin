@@ -20,6 +20,7 @@ export enum ApiUrl {
   SAVE_LINKS = '/links',
   DELETE_LINKS = '/links',
   GET_COMMENTS = '/comments',
+  GET_RECENT_COMMENTS = '/comments/recent',
   SAVE_COMMENTS = '/comments',
   AUDIT_COMMENTS = '/comments/audit',
   GET_LOGIN_USER = '/users/login-user',

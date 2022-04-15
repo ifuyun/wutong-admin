@@ -10,7 +10,7 @@ import { TaxonomyStatus, TaxonomyType } from '../../../config/common.enum';
 import { POST_FORMAT_LIST } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
-import { BaseComponent } from '../../../core/base.component';
+import { PageComponent } from '../../../core/page.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomies/taxonomy.service';
@@ -21,7 +21,7 @@ import { OptionService } from '../option.service';
   templateUrl: './writing-options.component.html',
   styleUrls: ['../option.less']
 })
-export class WritingOptionsComponent extends BaseComponent implements OnInit, OnDestroy {
+export class WritingOptionsComponent extends PageComponent implements OnInit, OnDestroy {
   saveLoading = false;
   taxonomyTree: NzTreeNodeOptions[] = [];
   postFormats = POST_FORMAT_LIST;

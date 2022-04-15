@@ -13,7 +13,7 @@ import {
 } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
-import { BaseComponent } from '../../../core/base.component';
+import { PageComponent } from '../../../core/page.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionService } from '../option.service';
 
@@ -22,7 +22,7 @@ import { OptionService } from '../option.service';
   templateUrl: './media-options.component.html',
   styleUrls: ['../option.less']
 })
-export class MediaOptionsComponent extends BaseComponent implements OnInit, OnDestroy {
+export class MediaOptionsComponent extends PageComponent implements OnInit, OnDestroy {
   readonly maxUploadPathLength = UPLOAD_PATH_LENGTH;
   readonly maxStaticResourceHostLength = STATIC_RESOURCE_HOST_LENGTH;
   readonly maxUploadUrlPrefixLength = UPLOAD_URL_PREFIX_LENGTH;

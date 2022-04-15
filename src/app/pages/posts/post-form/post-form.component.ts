@@ -27,7 +27,7 @@ import {
 } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
-import { BaseComponent } from '../../../core/base.component';
+import { PageComponent } from '../../../core/page.component';
 import { OptionEntity } from '../../../interfaces/option.interface';
 import { OptionService } from '../../options/option.service';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
@@ -42,7 +42,7 @@ declare type ToolbarMode = 'floating' | 'sliding' | 'scrolling' | 'wrap';
   templateUrl: './post-form.component.html',
   styleUrls: ['./post-form.component.less']
 })
-export class PostFormComponent extends BaseComponent implements OnInit, OnDestroy {
+export class PostFormComponent extends PageComponent implements OnInit, OnDestroy {
   @Input() postType!: PostType;
 
   readonly maxTitleLength = POST_TITLE_LENGTH;

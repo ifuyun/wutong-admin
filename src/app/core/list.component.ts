@@ -1,6 +1,6 @@
-import { BaseComponent } from './base.component';
+import { PageComponent } from './page.component';
 
-export abstract class ListComponent extends BaseComponent {
+export abstract class ListComponent extends PageComponent {
   abstract page: number;
   abstract total: number;
   abstract pageSize: number;

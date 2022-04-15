@@ -43,7 +43,7 @@ export enum CommentStatus {
   TRASH = 'trash'
 }
 
-export enum CommentOperation {
+export enum CommentAction {
   EDIT = 'edit',
   REPLY = 'reply',
   DETAIL = 'detail'
