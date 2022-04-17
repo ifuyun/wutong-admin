@@ -33,15 +33,28 @@ nz-row:not(:last-child) {
     flex: auto;
     flex-direction: row;
     padding: 24px;
+
+    > div {
+      width: 100%;
+    }
   }
 }
 
 .duration {
   display: flex;
-  width: 100%;
   justify-content: center;
   align-items: center;
   font-size: 24px;
+}
+
+.post-chart-btns {
+  margin-bottom: 16px;
+  text-align: right;
+}
+
+.post-chart-box {
+  width: 100%;
+  min-height: 200px;
 }
 
 .statistic {

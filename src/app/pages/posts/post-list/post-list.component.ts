@@ -194,7 +194,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   private month: string = '';
   private statuses!: PostStatus[];
   private commentFlags!: CommentFlag[];
-  private postDateList!: PostArchiveDate[];
+  private archiveList!: PostArchiveDate[];
   private taxonomies!: TaxonomyModel[];
   private initialized = false;
   private orders: string[][] = [];
@@ -307,7 +307,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
 
   onPostDateYearChange(year: string, month?: string) {
     this.postDateMonth = month || '';
-    this.postDateMonthList = this.postDateList.filter((item) => item.dateText.split('/')[0] === year)
+    this.postDateMonthList = this.archiveList.filter((item) => item.dateText.split('/')[0] === year)
       .map((item) => item.dateText.split('/')[1])
       .sort((a, b) => a < b ? 1 : -1)
       .map((item) => ({ label: `${item}月`, value: item }));
@@ -527,7 +527,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   }
 
   private fetchArchiveDates() {
-    if (this.postDateList) {
+    if (this.archiveList) {
       this.initPostDateFilter();
       return;
     }
@@ -537,9 +537,9 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       postType: this.postType,
       fa: 1
     }).subscribe((res) => {
-      this.postDateList = res;
+      this.archiveList = res;
       this.postDateYearList = uniq(
-        this.postDateList.map((item) => item.dateText.split('/')[0])
+        this.archiveList.map((item) => item.dateText.split('/')[0])
       )
         .sort((a, b) => a < b ? 1 : -1)
         .map((item) => ({ label: `${item}年`, value: item }));

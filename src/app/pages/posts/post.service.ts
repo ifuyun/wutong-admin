@@ -6,7 +6,14 @@ import { ApiUrl } from '../../config/api-url';
 import { PostType } from '../../config/common.enum';
 import { ApiService } from '../../core/api.service';
 import { HttpResponseEntity } from '../../interfaces/http-response';
-import { Post, PostArchiveDate, PostArchiveDatesQueryParam, PostList, PostQueryParam, PostSaveParam } from './post.interface';
+import {
+  Post,
+  PostArchiveDate,
+  PostArchiveDatesQueryParam,
+  PostList,
+  PostQueryParam,
+  PostSaveParam
+} from './post.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +39,7 @@ export class PostService {
   }
 
   getPostArchiveDates(param: PostArchiveDatesQueryParam): Observable<PostArchiveDate[]> {
-    const {showCount, status, fa} = param;
+    const { showCount, status, fa } = param;
     let { postType, limit } = param;
     if (limit === null || limit === undefined) {
       limit = 10;

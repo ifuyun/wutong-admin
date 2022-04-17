@@ -18,6 +18,15 @@
         <div class="panel-title">文章发布曲线</div>
       </div>
       <div class="panel-body">
+        <div>
+          <div class="post-chart-btns">
+            <nz-radio-group [(ngModel)]="chartDimension" (ngModelChange)="updateChartData()">
+              <label nz-radio-button nzValue="month">按月</label>
+              <label nz-radio-button nzValue="year">按年</label>
+            </nz-radio-group>
+          </div>
+          <div id="countChart" class="post-chart-box"></div>
+        </div>
       </div>
     </div>
   </nz-col>
