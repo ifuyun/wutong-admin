@@ -23,12 +23,12 @@ export class TaxonomyService {
 
   generateTaxonomyTree(taxonomies: TaxonomyModel[], bySlug = false) {
     const nodes: NzTreeNodeOptions[] = taxonomies.map((item) => ({
-      key: bySlug ? item.slug : item.taxonomyId,
-      title: item.name,
+      key: bySlug ? item.taxonomySlug : item.taxonomyId,
+      title: item.taxonomyName,
       taxonomyId: item.taxonomyId,
-      parentId: item.parentId,
-      status: item.status,
-      isDeleted: item.status === TaxonomyStatus.TRASH
+      parentId: item.taxonomyParent,
+      status: item.taxonomyStatus,
+      isDeleted: item.taxonomyStatus === TaxonomyStatus.TRASH
     }));
     return nodes.filter((father) => {
       father.children = nodes.filter((child) => father['taxonomyId'] === child['parentId']);
@@ -39,7 +39,7 @@ export class TaxonomyService {
   }
 
   getTaxonomyIdBySlug(taxonomies: TaxonomyModel[], slug: string): string {
-    const result = taxonomies.filter((item) => item.slug === slug);
+    const result = taxonomies.filter((item) => item.taxonomySlug === slug);
     if (result.length > 0) {
       return result[0].taxonomyId;
     }
@@ -55,8 +55,8 @@ export class TaxonomyService {
       taxonomyList.forEach((item) => {
         if (item.taxonomyId === parentId) {
           parentNodes.push(item);
-          if (item.parentId) {
-            iterator(item.parentId);
+          if (item.taxonomyParent) {
+            iterator(item.taxonomyParent);
           }
         }
       });
@@ -113,7 +113,7 @@ export class TaxonomyService {
 
   deleteTaxonomies(type: TaxonomyType, taxonomyIds: string[]): Observable<HttpResponseEntity> {
     return this.apiService.httpDelete(this.apiService.getApiUrl(ApiUrl.DELETE_TAXONOMIES), {
-      type,
+      taxonomyType: type,
       taxonomyIds
     });
   }

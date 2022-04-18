@@ -9,7 +9,7 @@ import { HttpResponseEntity } from '../../interfaces/http-response';
 import {
   Post,
   PostArchiveDate,
-  PostArchiveDatesQueryParam,
+  PostArchivesQueryParam,
   PostList,
   PostQueryParam,
   PostSaveParam
@@ -38,7 +38,7 @@ export class PostService {
     );
   }
 
-  getPostArchiveDates(param: PostArchiveDatesQueryParam): Observable<PostArchiveDate[]> {
+  getPostArchives(param: PostArchivesQueryParam): Observable<PostArchiveDate[]> {
     const { showCount, status, fa } = param;
     let { postType, limit } = param;
     if (limit === null || limit === undefined) {
@@ -54,7 +54,7 @@ export class PostService {
     if (status && status.length > 0) {
       reqParam.status = status;
     }
-    return this.apiService.httpGet(this.apiService.getApiUrl(ApiUrl.GET_POST_ARCHIVE_DATES), reqParam).pipe(
+    return this.apiService.httpGet(this.apiService.getApiUrl(ApiUrl.GET_POST_ARCHIVES), reqParam).pipe(
       map((res) => res?.data || [])
     );
   }

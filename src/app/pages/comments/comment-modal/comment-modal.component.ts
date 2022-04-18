@@ -81,7 +81,7 @@ export class CommentModalComponent extends BaseComponent implements OnInit, OnDe
       };
     } else {
       commentData = {
-        parentId: this.comment.commentId,
+        commentParent: this.comment.commentId,
         postId: this.comment.post.postId,
         commentContent: value.commentContent,
         commentStatus: CommentStatus.NORMAL,

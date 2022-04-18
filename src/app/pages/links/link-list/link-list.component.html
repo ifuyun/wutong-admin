@@ -62,8 +62,8 @@
       <a routerLink="./" [queryParams]="{target: data.linkTarget}">{{ data.linkTarget | linkTarget }}</a>
     </td>
     <td>{{ data.linkOrder }}</td>
-    <td nzEllipsis [title]="data.taxonomies?.[0]?.name">
-      <a routerLink="./" [queryParams]="{taxonomy: data.taxonomies?.[0]?.taxonomyId}">{{ data.taxonomies?.[0]?.name }}</a>
+    <td nzEllipsis [title]="data.taxonomies?.[0]?.taxonomyName">
+      <a routerLink="./" [queryParams]="{taxonomy: data.taxonomies?.[0]?.taxonomyId}">{{ data.taxonomies?.[0]?.taxonomyName }}</a>
     </td>
     <td nzEllipsis [title]="data.modified | date:'yyyy-MM-dd HH:mm'">{{ data.modified | date:'yy-MM-dd HH:mm' }}</td>
     <td nzEllipsis [title]="data.created | date:'yyyy-MM-dd HH:mm'">{{ data.created | date:'yy-MM-dd HH:mm' }}</td>

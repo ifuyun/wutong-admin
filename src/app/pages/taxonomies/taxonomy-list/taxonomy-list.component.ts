@@ -185,26 +185,26 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   editTaxonomy(taxonomy?: TaxonomyModel | string) {
     if (!taxonomy || typeof taxonomy === 'string') {
       taxonomy = {
-        name: '',
-        slug: '',
-        description: '',
+        taxonomyName: '',
+        taxonomySlug: '',
+        taxonomyDescription: '',
         taxonomyId: '',
-        parentId: taxonomy,
-        status: TaxonomyStatus.PUBLISH,
-        isRequired: 0
+        taxonomyParent: taxonomy,
+        taxonomyStatus: TaxonomyStatus.PUBLISH,
+        taxonomyIsRequired: 0
       };
     }
     if (this.taxonomyType === TaxonomyType.TAG) {
-      taxonomy.termOrder = 0;
+      taxonomy.taxonomyOrder = 0;
     }
     this.activeTaxonomy = taxonomy;
     this.taxonomyForm.setValue({
-      name: taxonomy.name,
-      slug: taxonomy.slug,
-      description: taxonomy.description,
-      parent: taxonomy.parentId || TREE_ROOT_NODE_KEY,
-      order: typeof taxonomy.termOrder === 'number' ? taxonomy.termOrder : '',
-      status: taxonomy.status
+      name: taxonomy.taxonomyName,
+      slug: taxonomy.taxonomySlug,
+      description: taxonomy.taxonomyDescription,
+      parent: taxonomy.taxonomyParent || TREE_ROOT_NODE_KEY,
+      order: typeof taxonomy.taxonomyOrder === 'number' ? taxonomy.taxonomyOrder : '',
+      status: taxonomy.taxonomyStatus
     });
     this.refreshTaxonomyTreeStatus(this.activeTaxonomy.taxonomyId);
     this.resetFormStatus(this.taxonomyForm);
@@ -224,13 +224,13 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
       this.saveLoading = true;
       const formData: TaxonomySaveParam = {
         taxonomyId: this.activeTaxonomy.taxonomyId,
-        type: this.taxonomyType,
-        name: value.name,
-        slug: this.taxonomyType === TaxonomyType.TAG ? value.name : value.slug,
-        description: this.taxonomyType === TaxonomyType.TAG ? value.name : value.description,
-        parentId: !value.parent || value.parent === TREE_ROOT_NODE_KEY ? '' : value.parent,
-        termOrder: value.order,
-        status: value.status
+        taxonomyType: this.taxonomyType,
+        taxonomyName: value.name,
+        taxonomySlug: this.taxonomyType === TaxonomyType.TAG ? value.name : value.slug,
+        taxonomyDescription: this.taxonomyType === TaxonomyType.TAG ? value.name : value.description,
+        taxonomyParent: !value.parent || value.parent === TREE_ROOT_NODE_KEY ? '' : value.parent,
+        taxonomyOrder: value.order,
+        taxonomyStatus: value.status
       };
       this.taxonomyService.saveTaxonomy(formData).subscribe((res) => {
         this.saveLoading = false;
@@ -242,7 +242,11 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
         }
       });
     };
-    if (this.taxonomyType === TaxonomyType.TAG || !this.activeTaxonomy.taxonomyId || value.status === this.activeTaxonomy.status) {
+    if (
+      this.taxonomyType === TaxonomyType.TAG
+      || !this.activeTaxonomy.taxonomyId
+      || value.status === this.activeTaxonomy.taxonomyStatus
+    ) {
       saveFn();
     } else {
       let modalContent: string;
@@ -254,7 +258,7 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
           modalContent = `将分类设为${TAXONOMY_STATUS[TaxonomyStatus.PRIVATE]}，` +
             `其所有${TAXONOMY_STATUS[TaxonomyStatus.PUBLISH]}的后代分类和${TAXONOMY_STATUS[TaxonomyStatus.TRASH]}的祖先分类` +
             `也将同步变更为${TAXONOMY_STATUS[TaxonomyStatus.PRIVATE]}。`;
-          if (this.activeTaxonomy.status === TaxonomyStatus.PUBLISH) {
+          if (this.activeTaxonomy.taxonomyStatus === TaxonomyStatus.PUBLISH) {
             modalContent += `且，将影响其和所有后代分类关联的${this.taxonomyType === TaxonomyType.POST ? '文章' : '链接'}的公开状态。`;
           }
           break;
@@ -271,8 +275,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
   }
 
   deleteTaxonomies(taxonomy?: TaxonomyModel) {
-    if (taxonomy?.isRequired) {
-      this.message.error(`分类"${taxonomy.name}"为基础数据，不允许删除`);
+    if (taxonomy?.taxonomyIsRequired) {
+      this.message.error(`分类"${taxonomy.taxonomyName}"为基础数据，不允许删除`);
       return;
     }
     const checkedIds: string[] = taxonomy ? [taxonomy.taxonomyId]
@@ -427,7 +431,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
 
   private refreshCheckedStatus() {
     this.allChecked = this.taxonomyList.every((item) => this.checkedMap[item.taxonomyId]) || false;
-    this.indeterminate = this.taxonomyList.some((item) => this.checkedMap[item.taxonomyId]) && !this.allChecked || false;
+    this.indeterminate = this.taxonomyList.some((item) =>
+      this.checkedMap[item.taxonomyId]) && !this.allChecked || false;
   }
 
   private resetCheckedStatus() {
@@ -441,7 +446,8 @@ export class TaxonomyListComponent extends ListComponent implements OnInit, OnDe
     const checkedList = this.taxonomyList.filter((item) => this.checkedMap[item.taxonomyId]);
     if (checkedList.length > 0) {
       this.trashEnabled = checkedList.every(
-        (item) => this.checkedMap[item.taxonomyId] && item.status !== TaxonomyStatus.TRASH && !item.isRequired);
+        (item) => this.checkedMap[item.taxonomyId]
+          && item.taxonomyStatus !== TaxonomyStatus.TRASH && !item.taxonomyIsRequired);
     } else {
       this.trashEnabled = false;
     }

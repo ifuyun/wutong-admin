@@ -1,5 +1,7 @@
 <nz-modal
+  nzCentered
   [nzVisible]="true"
+  [nzWidth]="action === 'detail' ? 600 : 520"
   [nzTitle]="commentModalTitle"
   [nzContent]="commentModalContent"
   [nzFooter]="commentModalFooter"
@@ -34,7 +36,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5">评论时间</nz-form-label>
             <nz-form-control>
-              <nz-form-text>{{ comment.created | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+              <nz-form-text>{{ comment.commentCreated | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>

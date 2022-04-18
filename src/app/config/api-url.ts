@@ -4,7 +4,7 @@ export enum ApiUrl {
   SAVE_POSTS = '/posts',
   DELETE_POSTS = '/posts',
   GET_POST = '/posts/:postId',
-  GET_POST_ARCHIVE_DATES = '/posts/archive-dates',
+  GET_POST_ARCHIVES = '/posts/archives',
   GET_OPTIONS = '/options',
   SAVE_OPTIONS_GENERAL = '/options/general',
   SAVE_OPTIONS_WRITING = '/options/writing',

@@ -100,13 +100,13 @@
       </td>
       <td [title]="data.post.postDate | date: 'yyyy-MM-dd'">{{ data.post.postDate | date: 'yy-MM-dd' }}</td>
       <td nzEllipsis *ngIf="postType === 'post'">
-        <a routerLink="./" [queryParams]="{category: cat.slug}" *ngFor="let cat of data.categories">
-          <nz-tag nzColor="blue">{{cat.name}}</nz-tag>
+        <a routerLink="./" [queryParams]="{category: cat.taxonomySlug}" *ngFor="let cat of data.categories">
+          <nz-tag nzColor="blue">{{cat.taxonomyName}}</nz-tag>
         </a>
       </td>
       <td nzEllipsis>
-        <a routerLink="./" [queryParams]="{tag: tag.slug}" *ngFor="let tag of data.tags">
-          <nz-tag nzColor="blue">{{tag.name}}</nz-tag>
+        <a routerLink="./" [queryParams]="{tag: tag.taxonomySlug}" *ngFor="let tag of data.tags">
+          <nz-tag nzColor="blue">{{tag.taxonomyName}}</nz-tag>
         </a>
       </td>
       <td nzAlign="right">{{ data.post.postViewCount }}</td>
@@ -139,8 +139,8 @@
     <ng-container *ngIf="postType === 'attachment'">
       <td nzEllipsis [title]="data.post.postTitle">{{ data.post.postTitle }}</td>
       <td nzEllipsis>
-        <a routerLink="./" [queryParams]="{tag: tag.slug}" *ngFor="let tag of data.tags">
-          <nz-tag nzColor="blue">{{tag.name}}</nz-tag>
+        <a routerLink="./" [queryParams]="{tag: tag.taxonomySlug}" *ngFor="let tag of data.tags">
+          <nz-tag nzColor="blue">{{tag.taxonomyName}}</nz-tag>
         </a>
       </td>
       <td nzEllipsis [title]="data.post.postGuid">
@@ -251,6 +251,23 @@
         </div>
       </div>
       <ng-container *ngIf="postType !== 'attachment'">
+        <div nz-row [nzGutter]="postFormRowGutter">
+          <div nz-col [nzSpan]="24">
+            <nz-form-item>
+              <nz-form-label [nzRequired]="postType === 'page'">别名</nz-form-label>
+              <nz-form-control [nzErrorTip]="postNameErrorTpl">
+                <input nz-input type="text" formControlName="name" [maxlength]="maxNameLength" placeholder="请输入别名"/>
+                <ng-template #postNameErrorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">请输入别名</ng-container>
+                  <ng-container *ngIf="control.hasError('maxlength')">别名最大长度为{{maxNameLength}}字符</ng-container>
+                  <ng-container *ngIf="control.hasError('pattern')">
+                    别名由字母、数字和特殊字符（~@$%&*\-_=+;:,）组成，且以字母或数字开头和结尾
+                  </ng-container>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
         <div nz-row [nzGutter]="postFormRowGutter">
           <div nz-col [nzSpan]="12">
             <nz-form-item>

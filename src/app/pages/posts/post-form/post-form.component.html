@@ -55,11 +55,17 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item class="vertical">
-        <div [ngClass]="{'form-label': true, required: postType === 'page'}"><label>URL</label></div>
+        <div [ngClass]="{'form-label': true, required: postType === 'page'}">
+          <label>别名（由字母、数字、特殊字符[~@$%&*\-_=+;:,.]组成，且以字母或数字开头和结尾）</label>
+        </div>
         <nz-form-control [nzErrorTip]="guidErrorTpl">
-          <input nz-input type="text" formControlName="guid" placeholder="请输入URL"/>
+          <input nz-input type="text" formControlName="name" [maxlength]="maxNameLength" placeholder="请输入别名"/>
           <ng-template #guidErrorTpl let-control>
-            <ng-container *ngIf="control.hasError('required')">请输入URL</ng-container>
+            <ng-container *ngIf="control.hasError('required')">请输入别名</ng-container>
+            <ng-container *ngIf="control.hasError('maxlength')">别名最大长度为{{maxNameLength}}字符</ng-container>
+            <ng-container *ngIf="control.hasError('pattern')">
+              别名由字母、数字和特殊字符（~@$%&*\-_=+;:,）组成，且以字母或数字开头和结尾
+            </ng-container>
           </ng-template>
         </nz-form-control>
       </nz-form-item>
@@ -79,8 +85,8 @@
     </div>
     <div class="form-right">
       <nz-form-item class="form-btns">
-        <button nz-button nzSize="large">保存草稿</button>
-        <button nz-button nzSize="large">预览</button>
+        <button nz-button nzSize="large" nzType="link">存草稿</button>
+        <button nz-button nzSize="large" nzType="link">预览</button>
         <button nz-button nzSize="large" nzType="primary" class="form-btn-primary" (click)="savePost()">发布</button>
       </nz-form-item>
       <nz-form-item>

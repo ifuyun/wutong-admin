@@ -9,7 +9,7 @@ export interface PostEntity {
   postContent: string;
   postExcerpt: string;
   postDate: Date;
-  postGuid: string;
+  postName?: string;
   postStatus: string;
   postType?: string;
   commentFlag: string;
@@ -21,12 +21,12 @@ export interface PostEntity {
 }
 
 export interface PostModel extends PostEntity {
+  postGuid: string;
   postCreated?: Date;
   postModified?: Date;
   postViewCount?: number;
   commentCount?: number;
   author?: UserEntity;
-  postName?: string;
 }
 
 export interface Post {
@@ -65,7 +65,7 @@ export interface PostQueryParam {
   orders?: string[][];
 }
 
-export interface PostArchiveDatesQueryParam {
+export interface PostArchivesQueryParam {
   postType?: PostType;
   status?: PostStatus[];
   showCount: boolean;

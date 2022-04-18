@@ -19,6 +19,7 @@ import {
 import {
   POST_AUTHOR_LENGTH,
   POST_EXCERPT_LENGTH,
+  POST_NAME_LENGTH,
   POST_PASSWORD_LENGTH,
   POST_SOURCE_LENGTH,
   POST_TAG_SIZE,
@@ -46,6 +47,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
   @Input() postType!: PostType;
 
   readonly maxTitleLength = POST_TITLE_LENGTH;
+  readonly maxNameLength = POST_NAME_LENGTH;
   readonly maxExcerptLength = POST_EXCERPT_LENGTH;
   readonly maxTaxonomySize = POST_TAXONOMY_SIZE;
   readonly maxPostPasswordLength = POST_PASSWORD_LENGTH;
@@ -76,9 +78,11 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
       (control: AbstractControl): ValidationErrors | null =>
         control.value.length > this.maxTagSize ? { maxsize: true } : null
     ]],
-    guid: ['', [
+    name: ['', [
       (control: AbstractControl): ValidationErrors | null =>
-        !control.value.trim() && this.postType === PostType.PAGE ? { required: true } : null
+        !control.value.trim() && this.postType === PostType.PAGE ? { required: true } : null,
+      Validators.maxLength(this.maxNameLength),
+      Validators.pattern(/^[a-zA-Z0-9]+(?:[~@$%&*\-_=+;:,]+[a-zA-Z0-9]+)*$/i)
     ]],
     status: ['', [Validators.required]],
     password: [''],
@@ -217,7 +221,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
       postContent: value.content,
       postExcerpt: value.excerpt,
       postDate: value.postDate,
-      postGuid: value.guid,
+      postName: value.name,
       postStatus: value.status,
       commentFlag: value.commentFlag,
       postAuthor: value.author,
@@ -254,6 +258,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
           postContent: '',
           postExcerpt: '',
           postDate: new Date(),
+          postName: '',
           postGuid: '',
           postStatus: PostStatus.PUBLISH,
           postOriginal: PostOriginal.YES,
@@ -300,8 +305,8 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
       excerpt: this.activePost.post.postExcerpt,
       postDate: this.activePost.post.postDate,
       category: this.activePost.categories.map((item) => item.taxonomyId),
-      tag: this.activePost.tags.map((item) => item.name),
-      guid: this.activePost.post.postGuid,
+      tag: this.activePost.tags.map((item) => item.taxonomyName),
+      name: this.activePost.post.postName,
       status: this.activePost.post.postStatus,
       password: this.activePost.post.postPassword || '',
       commentFlag: this.activePost.post.commentFlag,

@@ -17,7 +17,7 @@ import { CommentFlag, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from 
 import {
   COMMENT_FLAG,
   POST_AUTHOR_LENGTH,
-  POST_EXCERPT_LENGTH, POST_PASSWORD_LENGTH,
+  POST_EXCERPT_LENGTH, POST_NAME_LENGTH, POST_PASSWORD_LENGTH,
   POST_SOURCE_LENGTH,
   POST_STATUS,
   POST_TAG_SIZE,
@@ -45,6 +45,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   @ViewChild('confirmModalContent') confirmModalContent!: TemplateRef<any>;
 
   readonly maxTitleLength = POST_TITLE_LENGTH;
+  readonly maxNameLength = POST_NAME_LENGTH;
   readonly maxExcerptLength = POST_EXCERPT_LENGTH;
   readonly maxTaxonomySize = POST_TAXONOMY_SIZE;
   readonly maxPostPasswordLength = POST_PASSWORD_LENGTH;
@@ -98,6 +99,12 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     tag: [[], [
       (control: AbstractControl): ValidationErrors | null =>
         control.value.length > this.maxTagSize ? { maxsize: true } : null
+    ]],
+    name: ['', [
+      (control: AbstractControl): ValidationErrors | null =>
+        !control.value.trim() && this.postType === PostType.PAGE ? { required: true } : null,
+      Validators.maxLength(this.maxNameLength),
+      Validators.pattern(/^[a-zA-Z0-9]+(?:[~@$%&*\-_=+;:,]+[a-zA-Z0-9]+)*$/i)
     ]],
     status: ['', [Validators.required]],
     password: [''],
@@ -372,7 +379,8 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       title: post.post.postTitle,
       postDate: new Date(post.post.postDate),
       category: post.categories.map((item) => item.taxonomyId),
-      tag: post.tags.map((item) => item.name),
+      tag: post.tags.map((item) => item.taxonomyName),
+      name: post.post.postName,
       status: post.post.postStatus,
       password: post.post.postPassword || '',
       commentFlag: post.post.commentFlag,
@@ -424,7 +432,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       postContent: this.activePost.post.postContent,
       postExcerpt: value.excerpt,
       postDate: value.postDate,
-      postGuid: this.activePost.post.postGuid,
+      postName: value.name,
       postStatus: value.status,
       commentFlag: value.commentFlag,
       postAuthor: value.author,
@@ -531,7 +539,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.initPostDateFilter();
       return;
     }
-    this.archiveListener = this.postService.getPostArchiveDates({
+    this.archiveListener = this.postService.getPostArchives({
       showCount: false,
       limit: 0,
       postType: this.postType,
@@ -595,7 +603,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     if (this.activeCategory) {
       const curId = this.taxonomyService.getTaxonomyIdBySlug(this.taxonomies, this.activeCategory);
       const parents = this.taxonomyService.getParentTaxonomies(this.taxonomies, curId)
-        .map((item) => item.slug);
+        .map((item) => item.taxonomySlug);
       this.categoryFilterExpanded = this.categoryFilterExpanded.concat(parents);
     }
   }

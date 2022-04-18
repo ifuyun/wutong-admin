@@ -165,7 +165,7 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
   }
 
   private fetchArchiveData() {
-    this.archiveListener = this.postService.getPostArchiveDates({
+    this.archiveListener = this.postService.getPostArchives({
       showCount: true,
       limit: 0,
       postType: PostType.POST,

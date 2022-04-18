@@ -52,32 +52,32 @@
   <tr *ngFor="let data of taxonomyList">
     <td [nzChecked]="checkedMap[data.taxonomyId] || false"
         (nzCheckedChange)="onItemChecked(data.taxonomyId, $event)"></td>
-    <td nzEllipsis [title]="data.name">{{ data.name }}</td>
+    <td nzEllipsis [title]="data.taxonomyName">{{ data.taxonomyName }}</td>
     <ng-container *ngIf="taxonomyType !== 'tag'">
-      <td nzEllipsis [title]="data.slug">{{ data.slug }}</td>
-      <td [title]="data.description">{{ data.description }}</td>
-      <td nzEllipsis nzAlign="right" [title]="data.termOrder">{{ data.termOrder }}</td>
-      <td [title]="data.isRequired ? '是' : '否'">{{ data.isRequired ? '是' : '否' }}</td>
+      <td nzEllipsis [title]="data.taxonomySlug">{{ data.taxonomySlug }}</td>
+      <td [title]="data.taxonomyDescription">{{ data.taxonomyDescription }}</td>
+      <td nzEllipsis nzAlign="right" [title]="data.taxonomyOrder">{{ data.taxonomyOrder }}</td>
+      <td [title]="data.taxonomyIsRequired ? '是' : '否'">{{ data.taxonomyIsRequired ? '是' : '否' }}</td>
     </ng-container>
-    <td nzEllipsis [title]="data.status">
-      <a [ngClass]="'status-' + data.status"
-         routerLink="./" [queryParams]="{status: data.status}">{{ data.status | taxonomyStatus }}</a>
+    <td nzEllipsis [title]="data.taxonomyStatus">
+      <a [ngClass]="'status-' + data.taxonomyStatus"
+         routerLink="./" [queryParams]="{status: data.taxonomyStatus}">{{ data.taxonomyStatus | taxonomyStatus }}</a>
     </td>
     <td nzAlign="right">
-      <a *ngIf="taxonomyType === 'post'" routerLink="/posts" [queryParams]="{category: data.slug}">{{ data.count }}</a>
-      <a *ngIf="taxonomyType === 'tag'" routerLink="/posts" [queryParams]="{tag: data.slug}">{{ data.count }}</a>
+      <a *ngIf="taxonomyType === 'post'" routerLink="/posts" [queryParams]="{category: data.taxonomySlug}">{{ data.objectCount }}</a>
+      <a *ngIf="taxonomyType === 'tag'" routerLink="/posts" [queryParams]="{tag: data.taxonomySlug}">{{ data.objectCount }}</a>
       <a *ngIf="taxonomyType === 'link'" routerLink="/links"
-         [queryParams]="{taxonomy: data.taxonomyId}">{{ data.count }}</a>
+         [queryParams]="{taxonomy: data.taxonomyId}">{{ data.objectCount }}</a>
     </td>
     <td nzRight>
-      <ng-container *ngIf="taxonomyType !== 'tag' && data.status === 'publish'">
+      <ng-container *ngIf="taxonomyType !== 'tag' && data.taxonomyStatus === 'publish'">
         <a (click)="editTaxonomy(data.taxonomyId)">新增子分类</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>
       <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'post'">编辑</a>
       <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'tag'">编辑</a>
       <a (click)="editTaxonomy(data)" *ngIf="taxonomyType=== 'link'">编辑</a>
-      <ng-container *ngIf="data.status !== 'trash' && data.isRequired !== 1">
+      <ng-container *ngIf="data.taxonomyStatus !== 'trash' && data.taxonomyIsRequired !== 1">
         <nz-divider nzType="vertical"></nz-divider>
         <a (click)="deleteTaxonomies(data)">删除</a>
       </ng-container>
@@ -89,6 +89,7 @@
   当前：第 <span style="color: red">{{ range[0] }}-{{ range[1] }}</span> 条，共：<span style="color: red">{{ total }}</span> 条
 </ng-template>
 <nz-modal
+  nzCentered
   [(nzVisible)]="editModalVisible"
   [nzTitle]="editModalTitle"
   [nzContent]="editModalContent"
@@ -145,7 +146,7 @@
               nzShowSearch
               formControlName="parent"
               nzPlaceHolder="请选择分类"
-              [nzDisabled]="!!activeTaxonomy.isRequired"
+              [nzDisabled]="!!activeTaxonomy.taxonomyIsRequired"
               [nzNodes]="taxonomyTree"
               [nzDropdownStyle]="{'max-height': '400px'}"
               [nzTreeTemplate]="treeTemplate"
