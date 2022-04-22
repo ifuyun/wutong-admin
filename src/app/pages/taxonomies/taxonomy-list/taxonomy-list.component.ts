@@ -23,7 +23,7 @@ import {
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { OptionEntity } from '../../options/option.interface';
 import { OptionService } from '../../options/option.service';
 import { TaxonomyModel, TaxonomyQueryParam, TaxonomySaveParam } from '../taxonomy.interface';
 import { TaxonomyService } from '../taxonomy.service';

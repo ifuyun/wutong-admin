@@ -5,7 +5,7 @@ import { BreadcrumbEntity } from '../../components/breadcrumb/breadcrumb.interfa
 import { ApiUrl } from '../../config/api-url';
 import { PostType } from '../../config/common.enum';
 import { ApiService } from '../../core/api.service';
-import { HttpResponseEntity } from '../../interfaces/http-response';
+import { HttpResponseEntity } from '../../core/http-response.interface';
 import {
   Post,
   PostArchiveDate,

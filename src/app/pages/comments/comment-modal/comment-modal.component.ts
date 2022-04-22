@@ -7,7 +7,7 @@ import { COMMENT_LENGTH, COMMENT_STATUS_LIST } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { BaseComponent } from '../../../core/base.component';
-import { LoginUserEntity } from '../../../interfaces/user.interface';
+import { LoginUserEntity } from '../../users/user.interface';
 import { UserService } from '../../users/user.service';
 import { CommentModel, CommentSaveParam } from '../comment.interface';
 import { CommentService } from '../comment.service';

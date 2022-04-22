@@ -13,7 +13,7 @@ import { COMMENT_STATUS } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { OptionEntity } from '../../options/option.interface';
 import { OptionService } from '../../options/option.service';
 import { PostModel } from '../../posts/post.interface';
 import { PostService } from '../../posts/post.service';

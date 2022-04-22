@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { ApiUrl } from '../../config/api-url';
 import { TaxonomyStatus, TaxonomyType } from '../../config/common.enum';
 import { ApiService } from '../../core/api.service';
-import { HttpResponseEntity } from '../../interfaces/http-response';
+import { HttpResponseEntity } from '../../core/http-response.interface';
 import { TaxonomyList, TaxonomyModel, TaxonomyQueryParam, TaxonomySaveParam } from './taxonomy.interface';
 
 @Injectable({

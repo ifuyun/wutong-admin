@@ -14,7 +14,7 @@ import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { CommonService } from '../../../core/common.service';
 import { PageComponent } from '../../../core/page.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { OptionEntity } from '../../options/option.interface';
 import { CommentModel } from '../../comments/comment.interface';
 import { CommentService } from '../../comments/comment.service';
 import { OptionService } from '../../options/option.service';

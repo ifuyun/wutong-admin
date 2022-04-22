@@ -19,7 +19,7 @@ import {
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { PageComponent } from '../../../core/page.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { OptionEntity } from '../option.interface';
 import { OptionService } from '../option.service';
 
 @Component({
@@ -50,7 +50,7 @@ export class GeneralOptionsComponent extends PageComponent implements OnInit, On
     slogan: ['', [Validators.required, Validators.maxLength(this.maxSloganLength)]],
     url: ['', [Validators.required, Validators.maxLength(this.maxUrlLength)]],
     copyright: ['', [Validators.required, Validators.maxLength(this.maxCopyrightLength)]],
-    icpNum: ['', [Validators.required, Validators.maxLength(this.maxIcpNumLength)]],
+    icpCode: ['', [Validators.required, Validators.maxLength(this.maxIcpNumLength)]],
     adminEmail: ['', [Validators.required, Validators.email, Validators.maxLength(this.maxAdminEmailLength)]]
   });
 
@@ -103,7 +103,7 @@ export class GeneralOptionsComponent extends PageComponent implements OnInit, On
       siteSlogan: value.slogan,
       siteUrl: value.url,
       copyNotice: value.copyright,
-      icpNum: value.icpNum,
+      icpCode: value.icpCode,
       adminEmail: value.adminEmail
     };
     this.optionService.saveGeneralOptions(formData).subscribe((res) => {
@@ -126,7 +126,7 @@ export class GeneralOptionsComponent extends PageComponent implements OnInit, On
       slogan: this.options['site_slogan'],
       url: this.options['site_url'],
       copyright: this.options['copyright_notice'],
-      icpNum: this.options['icp_num'],
+      icpCode: this.options['icp_code'],
       adminEmail: this.options['admin_email']
     });
   }

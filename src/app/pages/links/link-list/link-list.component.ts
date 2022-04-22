@@ -22,7 +22,7 @@ import {
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { ListComponent } from '../../../core/list.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { OptionEntity } from '../../options/option.interface';
 import { OptionService } from '../../options/option.service';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomies/taxonomy.service';
@@ -65,7 +65,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
     scope: ['', [Validators.required]],
     status: [''],
     target: ['', [Validators.required]],
-    order: ['', [Validators.required, Validators.pattern(/^\s*(\d|([1-9]\d{1,2}))\s*$/i)]],
+    rating: ['', [Validators.required, Validators.pattern(/^\s*(\d|([1-9]\d{1,2}))\s*$/i)]],
     taxonomy: ['', [Validators.required]]
   });
   taxonomyTree: NzTreeNodeOptions[] = [];
@@ -147,7 +147,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
       }
     });
     filter.forEach((item) => {
-      if (item.key === 'visible') {
+      if (item.key === 'scope') {
         this.scopes = item.value;
       } else if (item.key === 'status') {
         this.statuses = item.value;
@@ -191,7 +191,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
         linkScope: LinkScope.HOMEPAGE,
         linkStatus: LinkStatus.NORMAL,
         linkTarget: LinkTarget.BLANK,
-        linkOrder: 0
+        linkRating: 0
       };
     }
     this.activeLink = link;
@@ -203,7 +203,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
       scope: link.linkScope,
       status: link.linkStatus,
       target: link.linkTarget,
-      order: link.linkOrder,
+      rating: link.linkRating,
       taxonomy: taxonomy?.[0] || ''
     });
 
@@ -229,7 +229,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
       linkScope: value.scope,
       linkStatus: value.status,
       linkTarget: value.target,
-      linkOrder: value.order,
+      linkRating: value.rating,
       linkTaxonomy: value.taxonomy,
     };
     this.linkService.saveLink(formData).subscribe((res) => {
@@ -281,7 +281,7 @@ export class LinkListComponent extends ListComponent implements OnInit, OnDestro
       orders: this.orders,
     };
     if (this.scopes && this.scopes.length > 0) {
-      param.visible = this.scopes;
+      param.scope = this.scopes;
     }
     if (this.statuses && this.statuses.length > 0) {
       param.status = this.statuses;

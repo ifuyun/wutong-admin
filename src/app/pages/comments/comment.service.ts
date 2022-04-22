@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiUrl } from '../../config/api-url';
 import { ApiService } from '../../core/api.service';
-import { HttpResponseEntity } from '../../interfaces/http-response';
+import { HttpResponseEntity } from '../../core/http-response.interface';
 import { CommentAuditParam, CommentList, CommentModel, CommentQueryParam, CommentSaveParam } from './comment.interface';
 
 @Injectable({

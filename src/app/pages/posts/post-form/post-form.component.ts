@@ -29,7 +29,9 @@ import {
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { PageComponent } from '../../../core/page.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { UrlInfo } from '../../../core/url.interface';
+import { UrlService } from '../../../core/url.service';
+import { OptionEntity } from '../../options/option.interface';
 import { OptionService } from '../../options/option.service';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomies/taxonomy.service';
@@ -150,6 +152,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
     list: []
   };
 
+  private referer!: UrlInfo;
   private editorPath = '/admin/assets/editor';
   private userDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
   private editorTheme = this.userDarkMode ? 'dark' : 'default';
@@ -160,6 +163,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
   private postListener!: Subscription;
   private taxonomyListener!: Subscription;
   private tagListener!: Subscription;
+  private urlListener!: Subscription;
 
   constructor(
     protected title: Title,
@@ -167,6 +171,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
     private optionService: OptionService,
     private postService: PostService,
     private taxonomyService: TaxonomyService,
+    private urlService: UrlService,
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
@@ -176,6 +181,9 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
   }
 
   ngOnInit(): void {
+    this.urlListener = this.urlService.urlInfo$.subscribe((url) => {
+      this.referer = this.urlService.parseUrl(url.previous);
+    });
     this.optionsListener = this.optionService.options$.subscribe((options) => {
       this.options = options;
     });
@@ -194,6 +202,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
     this.postListener?.unsubscribe();
     this.taxonomyListener.unsubscribe();
     this.tagListener.unsubscribe();
+    this.urlListener.unsubscribe();
   }
 
   onTagSearch(keyword: string) {
@@ -240,7 +249,11 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
       this.saveLoading = false;
       if (res.code === ResponseCode.SUCCESS) {
         this.message.success(Message.SUCCESS);
-        this.router.navigate([this.postType === PostType.POST ? '/posts' : '/posts/standalone']);
+        if (this.referer && this.referer.path) {
+          this.router.navigate([this.referer.path], { queryParams: this.referer.params });
+        } else {
+          this.router.navigate([this.postType === PostType.POST ? '/posts' : '/posts/standalone']);
+        }
       }
     });
   }

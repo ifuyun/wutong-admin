@@ -74,7 +74,7 @@
     <nz-form-item>
       <nz-form-label nzSpan="6" nzRequired>ICP备案号</nz-form-label>
       <nz-form-control [nzErrorTip]="icpErrorTpl">
-        <input nz-input type="text" formControlName="icpNum" [maxlength]="maxIcpNumLength" placeholder="请输入ICP备案号"/>
+        <input nz-input type="text" formControlName="icpCode" [maxlength]="maxIcpNumLength" placeholder="请输入ICP备案号"/>
         <ng-template #icpErrorTpl let-control>
           <ng-container *ngIf="control.hasError('required')">请输入ICP备案号</ng-container>
           <ng-container *ngIf="control.hasError('maxlength')">ICP备案号最大长度为{{maxIcpNumLength}}字符</ng-container>

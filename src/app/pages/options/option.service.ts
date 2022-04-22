@@ -3,8 +3,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ApiUrl } from '../../config/api-url';
 import { ApiService } from '../../core/api.service';
-import { HttpResponseEntity } from '../../interfaces/http-response';
-import { OptionEntity } from '../../interfaces/option.interface';
+import { HttpResponseEntity } from '../../core/http-response.interface';
+import { OptionEntity } from './option.interface';
 
 @Injectable({
   providedIn: 'root'

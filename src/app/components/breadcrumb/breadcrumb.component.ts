@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { OptionEntity } from '../../interfaces/option.interface';
+import { OptionEntity } from '../../pages/options/option.interface';
 import { OptionService } from '../../pages/options/option.service';
 import { BreadcrumbData } from './breadcrumb.interface';
 import { BreadcrumbService } from './breadcrumb.service';

@@ -474,15 +474,12 @@
               <nz-form-label nzRequired>插入名片</nz-form-label>
               <nz-form-control>
                 <nz-radio-group formControlName="wechatCardFlag" nzName="wechatCardFlag">
-                  <label nz-radio [nzValue]="1">带分隔线</label>
-                  <label nz-radio [nzValue]="2">仅名片</label>
+                  <label nz-radio [nzValue]="1">是</label>
                   <label nz-radio [nzValue]="0">否</label>
                 </nz-radio-group>
               </nz-form-control>
             </nz-form-item>
           </div>
-        </div>
-        <div nz-row [nzGutter]="postFormRowGutter">
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label nzRequired>更新时间</nz-form-label>

@@ -38,10 +38,10 @@
     <th nzWidth="80px" nzColumnKey="scope" [nzFilters]="scopeFilter" [nzFilterFn]="true">可见性</th>
     <th nzWidth="80px" nzColumnKey="status" [nzFilters]="statusFilter" [nzFilterFn]="true">状态</th>
     <th nzWidth="100px" nzColumnKey="target" [nzFilters]="targetFilter" [nzFilterFn]="true">打开方式</th>
-    <th nzWidth="70px" nzColumnKey="order" [nzSortFn]="true" [nzSortPriority]="true">排序</th>
-    <th nzWidth="100px" nzColumnKey="taxoomy">分类</th>
-    <th nzWidth="130px" nzColumnKey="modified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
-    <th nzWidth="130px" nzColumnKey="created" [nzSortFn]="true" [nzSortPriority]="true">添加时间</th>
+    <th nzWidth="70px" nzColumnKey="linkRating" [nzSortFn]="true" [nzSortPriority]="true">评分</th>
+    <th nzWidth="100px" nzColumnKey="category">分类</th>
+    <th nzWidth="130px" nzColumnKey="linkModified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
+    <th nzWidth="130px" nzColumnKey="linkCreated" [nzSortFn]="true" [nzSortPriority]="true">添加时间</th>
     <th nzWidth="110px" nzRight>操作</th>
   </tr>
   </thead>
@@ -52,7 +52,7 @@
     <td nzEllipsis [title]="data.linkUrl">{{ data.linkUrl }}</td>
     <td nzEllipsis [title]="data.linkDescription">{{ data.linkDescription }}</td>
     <td>
-      <a routerLink="./" [queryParams]="{visible: data.linkScope}">{{ data.linkScope | linkScope }}</a>
+      <a routerLink="./" [queryParams]="{scope: data.linkScope}">{{ data.linkScope | linkScope }}</a>
     </td>
     <td>
       <a [ngClass]="'status-' + data.linkStatus"
@@ -61,12 +61,12 @@
     <td>
       <a routerLink="./" [queryParams]="{target: data.linkTarget}">{{ data.linkTarget | linkTarget }}</a>
     </td>
-    <td>{{ data.linkOrder }}</td>
+    <td>{{ data.linkRating }}</td>
     <td nzEllipsis [title]="data.taxonomies?.[0]?.taxonomyName">
       <a routerLink="./" [queryParams]="{taxonomy: data.taxonomies?.[0]?.taxonomyId}">{{ data.taxonomies?.[0]?.taxonomyName }}</a>
     </td>
-    <td nzEllipsis [title]="data.modified | date:'yyyy-MM-dd HH:mm'">{{ data.modified | date:'yy-MM-dd HH:mm' }}</td>
-    <td nzEllipsis [title]="data.created | date:'yyyy-MM-dd HH:mm'">{{ data.created | date:'yy-MM-dd HH:mm' }}</td>
+    <td nzEllipsis [title]="data.linkModified | date:'yyyy-MM-dd HH:mm'">{{ data.linkModified | date:'yy-MM-dd HH:mm' }}</td>
+    <td nzEllipsis [title]="data.linkCreated | date:'yyyy-MM-dd HH:mm'">{{ data.linkCreated | date:'yy-MM-dd HH:mm' }}</td>
     <td nzRight>
       <a (click)="editLink(data)">编辑</a>
       <ng-container *ngIf="data.linkStatus !== 'trash'">
@@ -146,12 +146,12 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-label nzRequired [nzSpan]="4">排序</nz-form-label>
+        <nz-form-label nzRequired [nzSpan]="4">评分</nz-form-label>
         <nz-form-control [nzErrorTip]="orderErrorTpl">
-          <input nz-input type="text" formControlName="order" [maxlength]="3" placeholder="请输入排序"/>
+          <input nz-input type="text" formControlName="rating" [maxlength]="3" placeholder="请输入评分"/>
           <ng-template #orderErrorTpl let-control>
-            <ng-container *ngIf="control.hasError('required')">请输入排序</ng-container>
-            <ng-container *ngIf="control.hasError('pattern')">排序值范围为 0~999</ng-container>
+            <ng-container *ngIf="control.hasError('required')">请输入评分</ng-container>
+            <ng-container *ngIf="control.hasError('pattern')">评分范围为 0~999</ng-container>
           </ng-template>
         </nz-form-control>
       </nz-form-item>

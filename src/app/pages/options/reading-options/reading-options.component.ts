@@ -8,7 +8,7 @@ import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.ser
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { PageComponent } from '../../../core/page.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { OptionEntity } from '../option.interface';
 import { OptionService } from '../option.service';
 
 @Component({

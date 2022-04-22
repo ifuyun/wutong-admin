@@ -11,7 +11,7 @@ import { POST_FORMAT_LIST } from '../../../config/constants';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { PageComponent } from '../../../core/page.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { OptionEntity } from '../option.interface';
 import { TaxonomyModel } from '../../taxonomies/taxonomy.interface';
 import { TaxonomyService } from '../../taxonomies/taxonomy.service';
 import { OptionService } from '../option.service';

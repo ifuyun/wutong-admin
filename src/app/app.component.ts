@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Observable } from 'rxjs';
-import { OptionEntity } from './interfaces/option.interface';
-import { LoginUserEntity } from './interfaces/user.interface';
+import { UrlService } from './core/url.service';
+import { OptionEntity } from './pages/options/option.interface';
+import { LoginUserEntity } from './pages/users/user.interface';
 import { MenuItem, MenuService } from './core/menu.service';
 import { OptionService } from './pages/options/option.service';
 import { UserService } from './pages/users/user.service';
@@ -21,10 +22,13 @@ export class AppComponent implements OnInit {
   loginUser!: LoginUserEntity;
   isLoggedIn = false;
 
+  private currentUrl: string = '';
+
   constructor(
     private optionService: OptionService,
     private userService: UserService,
     private menusService: MenuService,
+    private urlService: UrlService,
     private router: Router
   ) {
     this.options$ = optionService.options$;
@@ -38,8 +42,13 @@ export class AppComponent implements OnInit {
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd)
     ).subscribe((event) => {
-      const curUrl = (event as NavigationEnd).url.split('?');
-      const checkedMenuKey = this.getMenuKeyByUrl(curUrl[0]);
+      this.urlService.updatePreviousUrl({
+        previous: this.currentUrl,
+        current: (event as NavigationEnd).url
+      });
+      this.currentUrl = (event as NavigationEnd).url;
+
+      const checkedMenuKey = this.getMenuKeyByUrl(this.currentUrl.split('?')[0]);
       this.resetMenuStatus();
       checkedMenuKey.rootMenuKey && (this.openMap[checkedMenuKey.rootMenuKey] = true);
       checkedMenuKey.childMenuKey && (this.selectedMap[checkedMenuKey.childMenuKey] = true);

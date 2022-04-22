@@ -9,15 +9,15 @@ export interface LinkEntity {
   linkScope: LinkScope;
   linkStatus: LinkStatus;
   linkTarget: LinkTarget;
-  linkOrder: number;
+  linkRating: number;
   linkImage?: string;
 }
 
 export interface LinkModel extends LinkEntity {
   linkOwner?: string;
   linkRss?: string;
-  created?: Date;
-  modified?: Date;
+  linkCreated?: Date;
+  linkModified?: Date;
   taxonomies?: TaxonomyModel[];
 }
 
@@ -33,7 +33,7 @@ export interface LinkQueryParam {
   keyword?: string;
   taxonomyId?: string;
   target?: LinkTarget | LinkTarget[];
-  visible?: LinkScope | LinkScope[];
+  scope?: LinkScope | LinkScope[];
   status?: LinkStatus | LinkStatus[];
   orders?: string[][];
 }

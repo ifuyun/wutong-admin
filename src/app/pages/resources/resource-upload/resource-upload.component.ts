@@ -14,7 +14,7 @@ import { ApiUrl } from '../../../config/api-url';
 import { Message } from '../../../config/message.enum';
 import { ResponseCode } from '../../../config/response-code.enum';
 import { PageComponent } from '../../../core/page.component';
-import { OptionEntity } from '../../../interfaces/option.interface';
+import { OptionEntity } from '../../options/option.interface';
 import { OptionService } from '../../options/option.service';
 import { PostService } from '../../posts/post.service';
 
