@@ -345,7 +345,24 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
       image_caption: true,
       menubar: false,
       // todo: image
-      contextmenu: 'link table',
+      contextmenu: 'link lists table image imagetools',
+      codesample_languages: [
+        {text: 'TypeScript', value: 'typescript'},
+        {text: 'JavaScript', value: 'javascript'},
+        {text: 'HTML/XML', value: 'xml'},
+        {text: 'LESS', value: 'less'},
+        {text: 'CSS', value: 'css'},
+        {text: 'SCSS', value: 'scss'},
+        {text: 'JSON', value: 'json'},
+        {text: 'Bash', value: 'bash'},
+        {text: 'Java', value: 'java'},
+        {text: 'PHP', value: 'php'},
+        {text: 'Python', value: 'python'},
+        {text: 'Ruby', value: 'ruby'},
+        {text: 'SQL', value: 'sql'},
+        {text: 'Nginx', value: 'nginx'},
+        {text: 'ini', value: 'ini'}
+      ],
       toolbar_sticky: true,
       toolbar_mode: <ToolbarMode>'sliding',
       toolbar: 'undo redo | fontsizeselect formatselect | forecolor backcolor removeformat | ' +
@@ -353,7 +370,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
         'bold italic underline strikethrough | numlist bullist | alignleft aligncenter alignright alignjustify | ' +
         'outdent indent | superscript subscript charmap | hr pagebreak | link anchor template image media',
       quickbars_selection_toolbar: 'bold italic underline | forecolor backcolor | ' +
-        'quicklink h2 h3 blockquote | superscript subscript',
+        'h2 h3 codesample blockquote quicklink | superscript subscript',
       plugins: 'preview print paste searchreplace autolink directionality code visualblocks visualchars ' +
         'fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor ' +
         'insertdatetime advlist lists wordcount help charmap quickbars'
