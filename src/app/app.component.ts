@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Observable } from 'rxjs';
 import { UrlService } from './core/url.service';
@@ -13,7 +13,7 @@ import { UserService } from './pages/users/user.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   isCollapsed = false;
   menus: MenuItem[];
   openMap: Record<string, boolean> = {};
@@ -47,7 +47,10 @@ export class AppComponent implements OnInit {
         current: (event as NavigationEnd).url
       });
       this.currentUrl = (event as NavigationEnd).url;
-
+      /* Warning:
+       * if setting in RouterEvent(includes NavigationStart, NavigationEnd, etc.)'s callback,
+       * it will be a bug(ng-zorro),
+       * but if it is outside, the menus' statuses will not be updated. */
       const checkedMenuKey = this.getMenuKeyByUrl(this.currentUrl.split('?')[0]);
       this.resetMenuStatus();
       checkedMenuKey.rootMenuKey && (this.openMap[checkedMenuKey.rootMenuKey] = true);
@@ -60,12 +63,23 @@ export class AppComponent implements OnInit {
     });
   }
 
-  openHandler(value: string): void {
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.isCollapsed = localStorage.getItem('collapsed') === '1';
+    }, 0);
+  }
+
+  onMenuOpen(value: string): void {
     for (const key in this.openMap) {
       if (key !== value) {
         this.openMap[key] = false;
       }
     }
+  }
+
+  onCollapsedChange() {
+    this.isCollapsed = !this.isCollapsed;
+    localStorage.setItem('collapsed', this.isCollapsed ? '1' : '0');
   }
 
   private getMenuKeyByUrl(url: string): { childMenuKey: string, rootMenuKey: string } {

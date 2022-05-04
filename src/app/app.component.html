@@ -1,9 +1,9 @@
 <nz-layout class="app-layout">
-  <nz-sider class="menu-sidebar"
-            nzCollapsible
+  <nz-sider nzCollapsible
+            class="sider"
             nzWidth="200px"
-            [nzCollapsedWidth]="48"
             nzBreakpoint="md"
+            [nzCollapsedWidth]="48"
             [(nzCollapsed)]="isCollapsed"
             [nzTrigger]="null">
     <div class="sidebar-logo">
@@ -12,29 +12,32 @@
         <h1>{{(options$ | async)?.['site_name']}}</h1>
       </a>
     </div>
-    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+    <ul nz-menu nzTheme="dark" nzMode="inline">
       <ng-template #menuItemTpl let-menu>
         <i *ngIf="menu.icon" nz-icon [nzType]="menu.icon"></i>
         <span *ngIf="!menu.url">{{ menu.title }}</span>
         <a *ngIf="menu.url" [routerLink]="menu.url">{{ menu.title }}</a>
       </ng-template>
       <ng-container *ngFor="let menu of menus">
-        <li *ngIf="menu.children"
-            nz-submenu
+        <li nz-submenu
+            *ngIf="menu.children"
             [nzTitle]="menu.title"
             [nzIcon]="menu.icon || ''"
+            [nzPaddingLeft]="isCollapsed ? 16 : menu.level * 24"
             [(nzOpen)]="openMap[menu.key]"
-            (nzOpenChange)="openHandler(menu.key)">
+            (nzOpenChange)="onMenuOpen(menu.key)">
           <ul>
-            <li *ngFor="let subMenu of menu.children"
-                nz-menu-item
+            <li nz-menu-item
+                *ngFor="let subMenu of menu.children"
+                [nzPaddingLeft]="isCollapsed ? 16 : subMenu.level * 24"
                 [nzSelected]="selectedMap[subMenu.key]">
               <ng-container *ngTemplateOutlet="menuItemTpl; context: { $implicit: subMenu }"></ng-container>
             </li>
           </ul>
         </li>
-        <li *ngIf="!menu.children"
-            nz-menu-item
+        <li nz-menu-item
+            *ngIf="!menu.children"
+            [nzPaddingLeft]="isCollapsed ? 16 : menu.level * 24"
             [nzSelected]="selectedMap[menu.key]">
           <ng-container *ngTemplateOutlet="menuItemTpl; context: { $implicit: menu }"></ng-container>
         </li>
@@ -44,11 +47,8 @@
   <nz-layout>
     <nz-header>
       <div class="app-header">
-        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-            <i class="trigger"
-               nz-icon
-               [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-            ></i>
+        <span class="header-trigger" (click)="onCollapsedChange()">
+            <i nz-icon class="trigger" [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
         </span>
         <span class="header-user" *ngIf="isLoggedIn">欢迎，{{loginUser?.userName}}</span>
       </div>
