@@ -18,9 +18,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build && gulp compress",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "compress": "gulp compress"
   },
   "dependencies": {
     "@angular/animations": "~13.3.5",
@@ -49,6 +50,8 @@
     "@types/jasmine": "~3.10.6",
     "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.30",
+    "gulp": "^4.0.2",
+    "gulp-gzip": "^1.4.2",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.19",
     "karma-chrome-launcher": "~3.1.1",
