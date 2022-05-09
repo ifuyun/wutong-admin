@@ -485,6 +485,10 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     });
   }
 
+  onCopied() {
+    this.message.success('已复制');
+  }
+
   protected updateBreadcrumb(): void {
     this.breadcrumbService.updateCrumb(this.breadcrumbData);
   }
@@ -654,11 +658,11 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         pageTitle = '页面列表';
         this.breadcrumbData.list = [{
           label: '内容管理',
-          url: 'post',
+          url: 'posts',
           tooltip: '内容管理'
         }, {
           label: pageTitle,
-          url: 'post/standalone',
+          url: 'posts/standalone',
           tooltip: pageTitle
         }];
         break;
@@ -682,11 +686,11 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         pageTitle = '文章列表';
         this.breadcrumbData.list = [{
           label: '内容管理',
-          url: 'post',
+          url: 'posts',
           tooltip: '内容管理'
         }, {
           label: pageTitle,
-          url: 'post',
+          url: 'posts',
           tooltip: pageTitle
         }];
     }

@@ -18,10 +18,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && gulp compress",
+    "build": "ng build",
+    "build:prod": "npm run build && npm run compress",
+    "compress": "gulp compress",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "compress": "gulp compress"
+    "test": "ng test"
   },
   "dependencies": {
     "@angular/animations": "~13.3.5",
@@ -37,6 +38,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
     "ng-zorro-antd": "^13.2.1",
+    "ngx-clipboard": "^15.1.0",
     "ngx-cookie-service": "^13.2.0",
     "rxjs": "~7.5.5",
     "tinymce": "^5.10.4",

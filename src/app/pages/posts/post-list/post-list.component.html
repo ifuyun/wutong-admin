@@ -74,7 +74,7 @@
     <ng-container *ngIf="postType === 'attachment'">
       <th nzWidth="180px" nzColumnKey="postTitle">标题</th>
       <th nzColumnKey="tag">标签</th>
-      <th nzWidth="300px" nzColumnKey="postGuid">文件路径</th>
+      <th nzWidth="340px" nzColumnKey="postGuid">文件路径</th>
       <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="fileStatusFilter" [nzFilterFn]="true">可见性</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true" nzCustomFilter>
         上传时间
@@ -143,11 +143,17 @@
           <nz-tag nzColor="blue">{{tag.taxonomyName}}</nz-tag>
         </a>
       </td>
-      <td nzEllipsis [title]="data.post.postGuid">
+      <td [title]="data.post.postGuid">
         <a *ngIf="isImage(data.post)" (click)="previewImage(data.post.postGuid)">{{ data.post.postGuid }}</a>
         <a *ngIf="!isImage(data.post)" [href]="staticResourceHost + data.post.postGuid" target="_blank">
           {{ data.post.postGuid }}
         </a>
+        <span ngxClipboard
+              class="btn-copy"
+              [cbContent]="staticResourceHost + data.post.postGuid"
+              (cbOnSuccess)="onCopied()">
+          <i nz-icon nzType="copy"></i>
+        </span>
       </td>
       <td>
         <a [ngClass]="'status-' + data.post.postStatus" routerLink="./" [queryParams]="{status: data.post.postStatus}">
@@ -354,8 +360,8 @@
             <nz-form-control>
               <nz-select formControlName="status">
                 <nz-option nzLabel="公开" nzValue="publish"></nz-option>
-                <nz-option nzLabel="加密" nzValue="password"></nz-option>
                 <nz-option nzLabel="隐藏" nzValue="private"></nz-option>
+                <nz-option nzLabel="加密" nzValue="password"></nz-option>
                 <nz-option nzLabel="草稿" nzValue="draft" *ngIf="postType !== 'attachment'"></nz-option>
                 <nz-option nzLabel="删除" nzValue="trash" nzDisabled *ngIf="activePost.post.postStatus === 'trash'">
                 </nz-option>
