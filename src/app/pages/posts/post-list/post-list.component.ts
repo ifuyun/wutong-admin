@@ -369,7 +369,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       return allowedMimeTypes.includes(post.postMimeType);
     }
     const allowedSuffixes = ['png', 'jpg', 'jpeg', 'gif'];
-    const suffix = post.postGuid.split('.')[1] || '';
+    const suffix = post.postGuid.split('.').pop() || '';
     return allowedSuffixes.includes(suffix);
   }
 

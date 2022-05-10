@@ -18,8 +18,8 @@
     .form-btns {
       justify-content: space-between;
 
-      .form-btn-primary {
-        flex-grow: 1;
+      [nz-button] {
+        flex-basis: ((@form-right-width - 12px) / 2);
       }
 
       [nz-button]:not(:last-child) {
