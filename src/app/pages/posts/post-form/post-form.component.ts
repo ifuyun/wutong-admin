@@ -266,6 +266,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
     if (!this.postId) {
       this.activePost = {
         post: {
+          postType: this.postType,
           postId: '',
           postTitle: '',
           postContent: '',

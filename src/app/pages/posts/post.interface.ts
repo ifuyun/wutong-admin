@@ -11,7 +11,7 @@ export interface PostEntity {
   postDate: Date;
   postName?: string;
   postStatus: string;
-  postType?: string;
+  postType: PostType;
   commentFlag: string;
   postAuthor?: string;
   postOriginal: number;
@@ -50,7 +50,7 @@ export interface PostArchiveDate {
 }
 
 export interface PostQueryParam {
-  type: PostType;
+  type: PostType | 'all';
   page: number;
   pageSize?: number;
   fa?: 0 | 1;
@@ -67,7 +67,7 @@ export interface PostQueryParam {
 }
 
 export interface PostArchivesQueryParam {
-  postType?: PostType;
+  postType?: PostType | 'all';
   status?: PostStatus[];
   showCount: boolean;
   limit?: number;

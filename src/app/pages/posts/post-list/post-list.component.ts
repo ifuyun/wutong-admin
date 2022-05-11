@@ -17,7 +17,9 @@ import { CommentFlag, PostStatus, PostType, TaxonomyStatus, TaxonomyType } from 
 import {
   COMMENT_FLAG,
   POST_AUTHOR_LENGTH,
-  POST_EXCERPT_LENGTH, POST_NAME_LENGTH, POST_PASSWORD_LENGTH,
+  POST_EXCERPT_LENGTH,
+  POST_NAME_LENGTH,
+  POST_PASSWORD_LENGTH,
   POST_SOURCE_LENGTH,
   POST_STATUS,
   POST_TAG_SIZE,
@@ -41,7 +43,7 @@ import { PostService } from '../post.service';
   styleUrls: ['./post-list.component.less']
 })
 export class PostListComponent extends ListComponent implements OnInit, OnDestroy {
-  @Input() postType!: PostType;
+  @Input() postType: PostType | 'all' = 'all';
   @ViewChild('confirmModalContent') confirmModalContent!: TemplateRef<any>;
 
   readonly maxTitleLength = POST_TITLE_LENGTH;
@@ -444,7 +446,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       postOriginal: value.original,
       postPassword: value.password,
       postParent: this.activePost.post.postParent,
-      postType: this.postType,
+      postType: this.activePost.post.postType,
       postSource: value.source,
       postTaxonomies: value.category,
       postTags: value.tag,
@@ -669,8 +671,22 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     this.titles = [this.options['site_name']];
     let pageTitle = '';
     switch (this.postType) {
+      case PostType.POST:
+        this.tableWidth = '1760px';
+        this.titles.unshift('内容管理');
+        pageTitle = '文章列表';
+        this.breadcrumbData.list = [{
+          label: '内容管理',
+          url: '/posts',
+          tooltip: '内容管理'
+        }, {
+          label: pageTitle,
+          url: '/posts/articles',
+          tooltip: pageTitle
+        }];
+        break;
       case PostType.PAGE:
-        this.tableWidth = '1570px';
+        this.tableWidth = '1640px';
         this.titles.unshift('内容管理');
         pageTitle = '页面列表';
         this.breadcrumbData.list = [{
@@ -698,16 +714,16 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }];
         break;
       default:
-        this.tableWidth = '1760px';
+        this.tableWidth = '1650px';
         this.titles.unshift('内容管理');
-        pageTitle = '文章列表';
+        pageTitle = '内容列表';
         this.breadcrumbData.list = [{
           label: '内容管理',
           url: '/posts',
           tooltip: '内容管理'
         }, {
           label: pageTitle,
-          url: '/posts/articles',
+          url: '/posts',
           tooltip: pageTitle
         }];
     }

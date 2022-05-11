@@ -1,8 +1,10 @@
 <div class="table-operations">
-  <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('normal')">批准</button>
-  <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('reject')">驳回</button>
-  <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('spam')">垃圾评论</button>
-  <button nz-button [disabled]="!trashEnabled" (click)="auditComments('trash')">删除</button>
+  <div>
+    <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('normal')">批准</button>
+    <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('reject')">驳回</button>
+    <button nz-button [disabled]="!pendingEnabled" (click)="auditComments('spam')">垃圾评论</button>
+    <button nz-button [disabled]="!trashEnabled" (click)="auditComments('trash')">删除</button>
+  </div>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
       <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..."/>

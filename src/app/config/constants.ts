@@ -49,6 +49,12 @@ export const POST_FORMAT_LIST = Object.freeze(Object.keys(POST_FORMAT).map((item
   label: POST_FORMAT[item]
 })));
 
+export const POST_TYPE: Record<string, string> = Object.freeze({
+  ...POST_FORMAT,
+  page: '页面',
+  attachment: '文件'
+});
+
 export const POST_STATUS: Record<string, string> = Object.freeze({
   publish: '公开',
   password: '加密',

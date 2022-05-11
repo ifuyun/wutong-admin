@@ -1,10 +1,10 @@
 <div class="table-operations">
-  <button nz-button nzType="primary" (click)="editTaxonomy()">{{taxonomyType === 'tag' ? '新增标签' : '新增一级分类'}}</button>
-  <button nz-button [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
-  <button nz-button [disabled]="!trashEnabled" (click)="deleteTaxonomies()">删除</button>
-  <button nz-button (click)="updateAllCount(taxonomyType)">
-    更新{{taxonomyType === 'link' ? '链接' : '内容'}}数量
-  </button>
+  <div>
+    <button nz-button nzType="primary" (click)="editTaxonomy()">{{taxonomyType === 'tag' ? '新增标签' : '新增一级分类'}}</button>
+    <button nz-button [disabled]="!allChecked && !indeterminate" [nzLoading]="false">编辑</button>
+    <button nz-button [disabled]="!trashEnabled" (click)="deleteTaxonomies()">删除</button>
+    <button nz-button (click)="updateAllCount(taxonomyType)">更新{{taxonomyType === 'link' ? '链接' : '内容'}}数量</button>
+  </div>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
       <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..."/>

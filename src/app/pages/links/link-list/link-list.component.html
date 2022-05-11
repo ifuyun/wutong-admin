@@ -1,8 +1,10 @@
 <div class="table-operations">
-  <a nz-button nzType="primary" routerLink="/taxonomies/link-categories">管理链接分类</a>
-  <button nz-button nzType="primary" (click)="editLink()">新增</button>
-  <button nz-button [disabled]="!allChecked && !indeterminate">编辑</button>
-  <button nz-button [disabled]="!trashEnabled" (click)="deleteLinks()">删除</button>
+  <div>
+    <a nz-button nzType="primary" routerLink="/taxonomies/link-categories">管理链接分类</a>
+    <button nz-button nzType="primary" (click)="editLink()">新增</button>
+    <button nz-button [disabled]="!allChecked && !indeterminate">编辑</button>
+    <button nz-button [disabled]="!trashEnabled" (click)="deleteLinks()">删除</button>
+  </div>
   <div class="table-search">
     <nz-input-group nzSearch [nzAddOnAfter]="searchBtn">
       <input type="text" nz-input [(ngModel)]="keyword" (keyup)="onSearch($event)" placeholder="Search..."/>
