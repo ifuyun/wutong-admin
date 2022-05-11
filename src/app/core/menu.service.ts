@@ -38,25 +38,25 @@ export class MenuService {
     children: [{
       key: 'postList',
       title: '文章列表',
-      url: '/posts',
+      url: '/posts/articles',
       level: 2,
       order: 1
     }, {
       key: 'postForm',
       title: '写文章',
-      url: '/posts/edit',
+      url: '/posts/edit-article',
       level: 2,
       order: 2
     }, {
-      key: 'postStandalone',
+      key: 'pageList',
       title: '页面列表',
-      url: '/posts/standalone',
+      url: '/posts/pages',
       level: 2,
       order: 3
     }, {
-      key: 'postFormStandalone',
+      key: 'pageForm',
       title: '新建页面',
-      url: '/posts/edit-standalone',
+      url: '/posts/edit-page',
       level: 2,
       order: 4
     }]

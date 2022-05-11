@@ -56,7 +56,7 @@ export class ResourceUploadComponent extends PageComponent implements OnInit, On
     }
   }];
   uploadForm: FormGroup = this.fb.group({
-    watermark: [false],
+    watermark: [true],
     original: [true]
   });
 

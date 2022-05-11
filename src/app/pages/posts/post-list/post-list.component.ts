@@ -68,6 +68,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   statusFilter: NzTableFilterList = [];
   fileStatusFilter: NzTableFilterList = [];
   commentFlagFilter: NzTableFilterList = [];
+  originalFilter: NzTableFilterList = [];
   trashEnabled = false;
   postDateFilterVisible = false;
   postDateYear!: string;
@@ -201,6 +202,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
   private month: string = '';
   private statuses!: PostStatus[];
   private commentFlags!: CommentFlag[];
+  private original!: string[];
   private archiveList!: PostArchiveDate[];
   private taxonomies!: TaxonomyModel[];
   private initialized = false;
@@ -246,6 +248,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       this.keyword = queryParams.get('keyword')?.trim() || '';
       this.statuses = <PostStatus[]>(queryParams.getAll('status') || []);
       this.commentFlags = <CommentFlag[]>(queryParams.getAll('commentFlag') || []);
+      this.original = (queryParams.getAll('original') || []);
       this.initialized = false;
       this.updatePageInfo();
       this.initFilter();
@@ -284,6 +287,8 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         this.statuses = item.value;
       } else if (item.key === 'commentFlag') {
         this.commentFlags = item.value;
+      } else if (item.key === 'postOriginal') {
+        this.original = item.value;
       }
     });
     this.fetchData();
@@ -522,6 +527,9 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     if (this.commentFlags && this.commentFlags.length > 0) {
       param.commentFlag = this.commentFlags;
     }
+    if (this.original) {
+      param.original = this.original;
+    }
     const latestParam = JSON.stringify(param);
     if (latestParam === this.lastParam && !force) {
       return;
@@ -593,6 +601,15 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
       value: key,
       byDefault: this.commentFlags.includes(<CommentFlag>key)
     }));
+    this.originalFilter = [{
+      text: '是',
+      value: '1',
+      byDefault: this.original.includes('1')
+    }, {
+      text: '否',
+      value: '0',
+      byDefault: this.original.includes('0')
+    }];
   }
 
   private initPostDateFilter() {
@@ -658,11 +675,11 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         pageTitle = '页面列表';
         this.breadcrumbData.list = [{
           label: '内容管理',
-          url: 'posts',
+          url: '/posts',
           tooltip: '内容管理'
         }, {
           label: pageTitle,
-          url: 'posts/standalone',
+          url: '/posts/pages',
           tooltip: pageTitle
         }];
         break;
@@ -672,25 +689,25 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         pageTitle = '素材列表';
         this.breadcrumbData.list = [{
           label: '素材管理',
-          url: 'resource',
+          url: '/resources',
           tooltip: '素材管理'
         }, {
           label: pageTitle,
-          url: 'resource',
+          url: '/resources',
           tooltip: pageTitle
         }];
         break;
       default:
-        this.tableWidth = '1690px';
+        this.tableWidth = '1760px';
         this.titles.unshift('内容管理');
         pageTitle = '文章列表';
         this.breadcrumbData.list = [{
           label: '内容管理',
-          url: 'posts',
+          url: '/posts',
           tooltip: '内容管理'
         }, {
           label: pageTitle,
-          url: 'posts',
+          url: '/posts/articles',
           tooltip: pageTitle
         }];
     }

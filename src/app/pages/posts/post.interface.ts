@@ -61,6 +61,7 @@ export interface PostQueryParam {
   month?: string;
   status?: PostStatus[];
   commentFlag?: CommentFlag[];
+  original?: string[];
   author?: string;
   orders?: string[][];
 }

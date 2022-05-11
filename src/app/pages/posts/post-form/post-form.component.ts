@@ -252,7 +252,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
         if (this.referer && this.referer.path) {
           this.router.navigate([this.referer.path], { queryParams: this.referer.params });
         } else {
-          this.router.navigate([this.postType === PostType.POST ? '/posts' : '/posts/standalone']);
+          this.router.navigate([this.postType === PostType.POST ? '/posts/articles' : '/posts/pages']);
         }
       }
     });
@@ -398,7 +398,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
         pageTitle = this.postId ? '编辑页面' : '新建页面';
         this.breadcrumbData.list = [{
           label: '内容管理',
-          url: '/posts',
+          url: '/posts/articles',
           tooltip: '内容管理'
         }, {
           label: pageTitle,
@@ -411,7 +411,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
         pageTitle = this.postId ? '编辑文章' : '写文章';
         this.breadcrumbData.list = [{
           label: '内容管理',
-          url: '/posts',
+          url: '/posts/articles',
           tooltip: '内容管理'
         }, {
           label: pageTitle,

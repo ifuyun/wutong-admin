@@ -1,9 +1,9 @@
 <div class="table-operations" [ngSwitch]="postType">
   <ng-container *ngSwitchCase="'post'">
-    <a nz-button nzType="primary" routerLink="/posts/edit">写文章</a>
+    <a nz-button nzType="primary" routerLink="/posts/edit-article">写文章</a>
   </ng-container>
   <ng-container *ngSwitchCase="'page'">
-    <a nz-button nzType="primary" routerLink="/posts/edit-standalone">创建新页面</a>
+    <a nz-button nzType="primary" routerLink="/posts/edit-page">创建新页面</a>
   </ng-container>
   <ng-container *ngSwitchCase="'attachment'">
     <a nz-button nzType="primary" routerLink="/resources/upload">上传文件</a>
@@ -63,8 +63,10 @@
       <th nzColumnKey="tag">标签</th>
       <th nzWidth="80px" nzColumnKey="postViewCount" [nzSortFn]="true" [nzSortPriority]="true">访问</th>
       <th nzWidth="60px" nzColumnKey="commentCount" [nzSortFn]="true" [nzSortPriority]="true">评论</th>
-      <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="statusFilter" [nzFilterFn]="true">可见性</th>
       <th nzWidth="100px" nzColumnKey="commentFlag" [nzFilters]="commentFlagFilter" [nzFilterFn]="true">评论状态</th>
+      <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="statusFilter" [nzFilterFn]="true">可见性</th>
+      <th nzWidth="70px" nzColumnKey="postOriginal"
+          *ngIf="postType === 'post'" [nzFilters]="originalFilter" [nzFilterFn]="true">原创</th>
       <th nzWidth="140px" nzColumnKey="postModified" [nzSortFn]="true" [nzSortPriority]="true">修改时间</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true">创建时间</th>
       <th nzWidth="80px" nzColumnKey="author">作者</th>
@@ -76,6 +78,7 @@
       <th nzColumnKey="tag">标签</th>
       <th nzWidth="340px" nzColumnKey="postGuid">文件路径</th>
       <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="fileStatusFilter" [nzFilterFn]="true">可见性</th>
+      <th nzWidth="70px" nzColumnKey="postOriginal" [nzFilters]="originalFilter" [nzFilterFn]="true">原创</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true" nzCustomFilter>
         上传时间
         <nz-filter-trigger
@@ -114,15 +117,20 @@
         <a routerLink="/comments" [queryParams]="{postId: data.post.postId}">{{ data.post.commentCount || 0 }}</a>
       </td>
       <td>
-        <a [ngClass]="'status-' + data.post.postStatus" routerLink="./" [queryParams]="{status: data.post.postStatus}">
-          {{ data.post.postStatus | postStatus }}
-        </a>
-      </td>
-      <td>
         <a [ngClass]="'comment-flag-' + data.post.commentFlag"
            routerLink="./"
            [queryParams]="{commentFlag: data.post.commentFlag}">
           {{ data.post.commentFlag | commentFlag }}
+        </a>
+      </td>
+      <td>
+        <a [ngClass]="'status-' + data.post.postStatus" routerLink="./" [queryParams]="{status: data.post.postStatus}">
+          {{ data.post.postStatus | postStatus }}
+        </a>
+      </td>
+      <td *ngIf="postType === 'post'">
+        <a routerLink="./" [queryParams]="{original: data.post.postOriginal}">
+          {{ data.post.postOriginal === 1 ? '是' : '否' }}
         </a>
       </td>
       <td [title]="data.post.postModified | date:'yyyy-MM-dd HH:mm'">
@@ -160,6 +168,11 @@
           {{ data.post.postStatus | postStatus }}
         </a>
       </td>
+      <td>
+        <a routerLink="./" [queryParams]="{original: data.post.postOriginal}">
+          {{ data.post.postOriginal === 1 ? '是' : '否' }}
+        </a>
+      </td>
       <td [title]="data.post.postCreated | date:'yyyy-MM-dd HH:mm'">
         {{ data.post.postCreated | date:'yy-MM-dd HH:mm' }}
       </td>
@@ -168,7 +181,7 @@
       <a (click)="editPost(data)">快速编辑</a>
       <nz-divider nzType="vertical"></nz-divider>
       <ng-container *ngIf="postType !== 'attachment'">
-        <a [routerLink]="postType === 'post' ? './edit' : '/posts/edit-standalone'"
+        <a [routerLink]="postType === 'post' ? '/posts/edit-article' : '/posts/edit-page'"
            [queryParams]="{postId: data.post.postId}">编辑</a>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-container>

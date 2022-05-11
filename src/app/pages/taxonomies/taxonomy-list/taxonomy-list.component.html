@@ -64,7 +64,8 @@
          routerLink="./" [queryParams]="{status: data.taxonomyStatus}">{{ data.taxonomyStatus | taxonomyStatus }}</a>
     </td>
     <td nzAlign="right">
-      <a *ngIf="taxonomyType === 'post'" routerLink="/posts" [queryParams]="{category: data.taxonomySlug}">{{ data.objectCount }}</a>
+      <a *ngIf="taxonomyType === 'post'" routerLink="/posts/articles" [queryParams]="{category: data.taxonomySlug}">
+        {{ data.objectCount }}</a>
       <a *ngIf="taxonomyType === 'tag'" routerLink="/posts" [queryParams]="{tag: data.taxonomySlug}">{{ data.objectCount }}</a>
       <a *ngIf="taxonomyType === 'link'" routerLink="/links"
          [queryParams]="{taxonomy: data.taxonomyId}">{{ data.objectCount }}</a>

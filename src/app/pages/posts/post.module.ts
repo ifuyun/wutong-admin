@@ -10,8 +10,8 @@ import { ArticleListComponent } from './article-list/article-list.component';
 import { PostFormComponent } from './post-form/post-form.component';
 import { PostListComponent } from './post-list/post-list.component';
 import { PostRoutingModule } from './post-routing.module';
-import { StandaloneEditComponent } from './standalone-edit/standalone-edit.component';
-import { StandaloneListComponent } from './standalone-list/standalone-list.component';
+import { PageEditComponent } from './page-edit/page-edit.component';
+import { PageListComponent } from './page-list/page-list.component';
 
 @NgModule({
   declarations: [
@@ -19,8 +19,8 @@ import { StandaloneListComponent } from './standalone-list/standalone-list.compo
     PostFormComponent,
     ArticleListComponent,
     ArticleEditComponent,
-    StandaloneListComponent,
-    StandaloneEditComponent
+    PageListComponent,
+    PageEditComponent
   ],
   imports: [
     CommonModule,

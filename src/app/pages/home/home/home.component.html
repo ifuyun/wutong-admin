@@ -44,13 +44,13 @@
               <nz-col [nzSpan]="8">
                 <nz-statistic [nzValue]="statData?.['posts']" [nzValueTemplate]="postCount" nzTitle="文章"></nz-statistic>
                 <ng-template #postCount let-count>
-                  <a routerLink="/posts">{{count | number}} 篇</a>
+                  <a routerLink="/posts/articles">{{count | number}} 篇</a>
                 </ng-template>
               </nz-col>
               <nz-col [nzSpan]="8">
                 <nz-statistic [nzValue]="statData?.['pages']" [nzValueTemplate]="pageCount" nzTitle="页面"></nz-statistic>
                 <ng-template #pageCount let-count>
-                  <a routerLink="/posts/standalone">{{count | number}} 篇</a>
+                  <a routerLink="/posts/pages">{{count | number}} 篇</a>
                 </ng-template>
               </nz-col>
               <nz-col [nzSpan]="8">
