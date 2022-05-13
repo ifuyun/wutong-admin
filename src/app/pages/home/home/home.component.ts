@@ -5,7 +5,8 @@ import * as moment from 'moment';
 import { Duration } from 'moment';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { BreadcrumbData } from '../../../components/breadcrumb/breadcrumb.interface';
 import { BreadcrumbService } from '../../../components/breadcrumb/breadcrumb.service';
 import { CommentAction, CommentAuditAction, PostType } from '../../../config/common.enum';
@@ -49,6 +50,7 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
   private optionsListener!: Subscription;
   private archiveListener!: Subscription;
   private statListener!: Subscription;
+  private chartResizeListener!: Subscription;
   private serverTimer!: any;
 
   constructor(
@@ -78,15 +80,24 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
     this.serverTimer = setInterval(() => this.updateDuration(), 60000);
   }
 
+  ngAfterViewInit() {
+    this.showChart();
+    this.chartResizeListener = this.resizeObservable(<HTMLElement>document.getElementById('countChart'))
+      .pipe(debounceTime(200))
+      .subscribe((entries: ResizeObserverEntry[]) => {
+        if (entries.length > 0) {
+          const cr = entries[0].contentRect;
+          this.postChart && this.postChart.changeSize(cr.width, cr.height);
+        }
+      });
+  }
+
   ngOnDestroy(): void {
     this.optionsListener.unsubscribe();
     this.archiveListener.unsubscribe();
     this.statListener.unsubscribe();
     clearInterval(this.serverTimer);
-  }
-
-  ngAfterViewInit() {
-    this.showChart();
+    this.chartResizeListener.unsubscribe();
   }
 
   updateChartData() {
@@ -207,6 +218,14 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
     });
     this.postChart.line().position('date*count');
     this.postChart.render();
+  }
+
+  private resizeObservable(ele: HTMLElement): Observable<ResizeObserverEntry[]> {
+    return new Observable((subscriber) => {
+      const observer = new ResizeObserver((entries) => subscriber.next(entries));
+      observer.observe(ele);
+      return () => observer.unobserve(ele);
+    });
   }
 
   private fetchComments() {

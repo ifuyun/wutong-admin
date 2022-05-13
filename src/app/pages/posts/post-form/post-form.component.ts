@@ -181,7 +181,7 @@ export class PostFormComponent extends PageComponent implements OnInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.urlListener = this.urlService.urlInfo$.subscribe((url) => {
+    this.urlListener = this.urlService.urlHistory$.subscribe((url) => {
       this.referer = this.urlService.parseUrl(url.previous);
     });
     this.optionsListener = this.optionService.options$.subscribe((options) => {

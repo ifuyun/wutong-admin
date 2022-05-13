@@ -7,11 +7,11 @@ import { UrlInfo, UrlHistory } from './url.interface';
   providedIn: 'root'
 })
 export class UrlService {
-  private urlInfo: BehaviorSubject<UrlHistory> = new BehaviorSubject<UrlHistory>({ previous: '', current: '' });
-  public urlInfo$: Observable<UrlHistory> = this.urlInfo.asObservable();
+  private urlHistory: BehaviorSubject<UrlHistory> = new BehaviorSubject<UrlHistory>({ previous: '', current: '' });
+  public urlHistory$: Observable<UrlHistory> = this.urlHistory.asObservable();
 
-  updatePreviousUrl(urlInfo: UrlHistory) {
-    this.urlInfo.next(urlInfo);
+  updateUrlHistory(urlHistory: UrlHistory) {
+    this.urlHistory.next(urlHistory);
   }
 
   parseUrl(url: string): UrlInfo {

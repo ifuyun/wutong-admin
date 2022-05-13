@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Observable } from 'rxjs';
+import { MenuItem, MenuService } from './core/menu.service';
 import { UrlService } from './core/url.service';
 import { OptionEntity } from './pages/options/option.interface';
-import { LoginUserEntity } from './pages/users/user.interface';
-import { MenuItem, MenuService } from './core/menu.service';
 import { OptionService } from './pages/options/option.service';
+import { LoginUserEntity } from './pages/users/user.interface';
 import { UserService } from './pages/users/user.service';
 
 @Component({
@@ -42,7 +42,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd)
     ).subscribe((event) => {
-      this.urlService.updatePreviousUrl({
+      this.urlService.updateUrlHistory({
         previous: this.currentUrl,
         current: (event as NavigationEnd).url
       });
