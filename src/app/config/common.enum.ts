@@ -56,6 +56,11 @@ export enum CommentAuditAction {
   TRASH = 'trash'
 }
 
+export enum VoteType {
+  POST = 'post',
+  COMMENT = 'comment'
+}
+
 export enum TaxonomyType {
   POST = 'post',
   LINK = 'link',

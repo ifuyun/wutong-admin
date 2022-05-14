@@ -1,10 +1,12 @@
 export enum ApiUrl {
   API_URL_PREFIX = '/api',
+  GET_LOGIN_USER = '/users/login-user',
   GET_POSTS = '/posts',
   SAVE_POSTS = '/posts',
   DELETE_POSTS = '/posts',
   GET_POST = '/posts/:postId',
   GET_POST_ARCHIVES = '/posts/archives',
+  UPLOAD_FILES = '/posts/upload',
   GET_OPTIONS = '/options',
   SAVE_OPTIONS_GENERAL = '/options/general',
   SAVE_OPTIONS_WRITING = '/options/writing',
@@ -23,7 +25,6 @@ export enum ApiUrl {
   GET_RECENT_COMMENTS = '/comments/recent',
   SAVE_COMMENTS = '/comments',
   AUDIT_COMMENTS = '/comments/audit',
-  GET_LOGIN_USER = '/users/login-user',
-  UPLOAD_FILES = '/posts/upload',
+  GET_VOTES = '/votes',
   GET_STATISTICS = '/statistics'
 }

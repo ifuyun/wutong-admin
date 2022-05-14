@@ -16,6 +16,7 @@
   --status-spam-color: #531dab;
   --status-private-color: #faad14;
   --status-password-color: #d4380d;
+  --body-min-width: 1200px;
 }
 
 .table-operations {
@@ -57,7 +58,7 @@
     color: var(--status-disabled-color);
   }
 
-  &-pending, &-pending:hover {
+  &-pending, &-pending:hover, &-emphasis, &-emphasis:hover {
     color: var(--status-pending-color);
   }
 
@@ -103,5 +104,32 @@
 
   [nz-icon] {
     margin-right: 8px;
+  }
+}
+
+.modal-detail {
+  .row {
+    display: flex;
+
+    &:not(:last-child) {
+      margin-bottom: 16px;
+    }
+  }
+
+  .label {
+    display: inline-block;
+    flex: 0 0 100px;
+    text-align: right;
+
+    &:after {
+      position: relative;
+      top: -0.5px;
+      margin: 0 8px 0 2px;
+      content: ':';
+    }
+  }
+
+  .content {
+    flex: 1 1 0;
   }
 }

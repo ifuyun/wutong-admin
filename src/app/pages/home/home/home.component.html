@@ -1,5 +1,5 @@
-<nz-row [nzGutter]="24">
-  <nz-col [nzSpan]="9">
+<div class="dashboard">
+  <div class="column column-left">
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">网站已上线运行</div>
@@ -11,28 +11,6 @@
         </div>
       </div>
     </div>
-  </nz-col>
-  <nz-col [nzSpan]="15">
-    <div class="panel">
-      <div class="panel-head">
-        <div class="panel-title">文章发布曲线</div>
-      </div>
-      <div class="panel-body">
-        <div>
-          <div class="post-chart-btns">
-            <nz-radio-group [(ngModel)]="chartDimension" (ngModelChange)="updateChartData()">
-              <label nz-radio-button nzValue="month">按月</label>
-              <label nz-radio-button nzValue="year">按年</label>
-            </nz-radio-group>
-          </div>
-          <div id="countChart" class="post-chart-box"></div>
-        </div>
-      </div>
-    </div>
-  </nz-col>
-</nz-row>
-<nz-row [nzGutter]="24">
-  <nz-col [nzSpan]="9">
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">统计数据</div>
@@ -86,11 +64,45 @@
         </div>
       </div>
     </div>
-  </nz-col>
-  <nz-col [nzSpan]="15">
     <div class="panel">
       <div class="panel-head">
-        <div class="panel-title">动态</div>
+        <div class="panel-title">互动</div>
+      </div>
+      <div class="panel-body">
+        <div class="interaction">
+          <div class="item" *ngFor="let vote of votes">
+            <span class="item-ip">{{vote.userIp}}</span>
+            <span>于</span>
+            <span class="item-time">{{vote.voteCreated | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+            <span>点赞{{vote.objectType === 'post' ? '文章' : '评论'}}：</span>
+            <a *ngIf="vote.objectType === 'post'" (click)="showPostModal(vote)">{{vote.post?.postTitle}}</a>
+            <a *ngIf="vote.objectType === 'comment'"
+               (click)="showCommentModal('detail', vote.comment)">{{vote.comment?.commentContent}}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column column-right">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">文章发布曲线</div>
+      </div>
+      <div class="panel-body">
+        <div class="chart">
+          <div class="post-chart-btns">
+            <nz-radio-group [(ngModel)]="chartDimension" (ngModelChange)="updateChartData()">
+              <label nz-radio-button nzValue="month">按月</label>
+              <label nz-radio-button nzValue="year">按年</label>
+            </nz-radio-group>
+          </div>
+          <div id="countChart" class="post-chart-box"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">最新评论</div>
       </div>
       <div class="panel-body">
         <div class="comment">
@@ -116,8 +128,8 @@
         </div>
       </div>
     </div>
-  </nz-col>
-</nz-row>
+  </div>
+</div>
 <i-comment-modal
   *ngIf="commentModalVisible"
   [action]="commentAction"
@@ -125,3 +137,47 @@
   (closeModal)="closeCommentModal()"
   (onSuccess)="onCommentSave()">
 </i-comment-modal>
+<nz-modal
+  nzCentered
+  [nzVisible]="postModalVisible"
+  [nzWidth]="600"
+  [nzTitle]="'文章概况'"
+  [nzContent]="commentModalContent"
+  [nzFooter]="commentModalFooter"
+  (nzOnCancel)="closePostModal()"
+  [nzMaskClosable]="true"
+>
+  <ng-template #commentModalContent>
+    <div class="modal-detail">
+      <div class="row">
+        <span class="label">标题</span>
+        <span class="content">
+          <a [href]="activePost.post.postGuid" target="_blank">{{ activePost.post.postTitle }}</a>
+        </span>
+      </div>
+      <div class="row">
+        <span class="label">日期</span>
+        <span class="content">{{activePost.post.postDate | date:'yyyy-MM-dd'}}</span>
+      </div>
+      <div class="row">
+        <span class="label">发布时间</span>
+        <span class="content">{{activePost.post.postCreated | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+      </div>
+      <div class="row">
+        <span class="label">摘要</span>
+        <span class="content">{{activePost.post.postExcerpt}}</span>
+      </div>
+      <div class="row">
+        <span class="label">阅读数</span>
+        <span class="content">{{activePost.post.postViewCount}}</span>
+      </div>
+      <div class="row">
+        <span class="label">点赞数</span>
+        <span class="content">{{activePost.postMeta['post_vote']}}</span>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #commentModalFooter>
+    <button nz-button nzType="primary" (click)="closePostModal()">确定</button>
+  </ng-template>
+</nz-modal>

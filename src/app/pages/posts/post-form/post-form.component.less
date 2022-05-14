@@ -12,18 +12,22 @@
 
   .form-right {
     @form-right-width: 290px;
+    @form-btn-padding: 6px;
     flex: 0 0 @form-right-width;
     width: @form-right-width;
 
     .form-btns {
       justify-content: space-between;
+      margin-left: -@form-btn-padding;
+      margin-right: -@form-btn-padding;
 
-      [nz-button] {
-        flex-basis: ((@form-right-width - 12px) / 2);
+      > span {
+        width: 50%;
+        padding: 0 @form-btn-padding;
       }
 
-      [nz-button]:not(:last-child) {
-        margin-right: 8px;
+      button {
+        width: 100%;
       }
     }
 

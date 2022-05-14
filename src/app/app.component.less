@@ -7,61 +7,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.sider {
-  position: relative;
-  z-index: 10;
-  min-height: 100vh;
-  box-shadow: 2px 0 6px rgba(0, 21, 41, .35);
-}
-
-.header-trigger {
-  height: @header-height;
-  padding: 12px 16px;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all .3s, padding 0s;
-}
-
-.trigger:hover {
-  color: #1890ff;
-}
-
-.header-user {
-  float: right;
-  margin-right: 24px;
-}
-
-.sidebar-logo {
-  position: relative;
-  height: @header-height;
-  padding-left: 16px;
-  overflow: hidden;
-  line-height: @header-height;
-  background: #001529;
-  transition: all .3s;
-}
-
 nz-sider.ant-layout-sider-collapsed {
   .sidebar-logo {
     padding-left: 8px;
   }
-}
-
-.sidebar-logo img {
-  display: inline-block;
-  height: 32px;
-  width: 32px;
-  vertical-align: middle;
-}
-
-.sidebar-logo h1 {
-  display: inline-block;
-  margin: 0 0 0 20px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 14px;
-  font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
-  vertical-align: middle;
 }
 
 nz-header {
@@ -72,19 +21,74 @@ nz-header {
   z-index: 2;
 }
 
+nz-content {
+  margin-top: 8px;
+}
+
+.app-layout {
+  min-width: var(--body-min-width);
+}
+
+.app-sider {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  box-shadow: 2px 0 6px rgba(0, 21, 41, .35);
+
+  .sidebar-logo {
+    position: relative;
+    height: @header-height;
+    padding-left: 16px;
+    overflow: hidden;
+    line-height: @header-height;
+    background: #001529;
+    transition: all .3s;
+
+    img {
+      display: inline-block;
+      height: 32px;
+      width: 32px;
+      vertical-align: middle;
+    }
+
+    h1 {
+      display: inline-block;
+      margin: 0 0 0 20px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+      vertical-align: middle;
+    }
+  }
+}
+
 .app-header {
   position: relative;
   height: @header-height;
   padding: 0;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+
+  .header-trigger {
+    height: @header-height;
+    padding: 12px 16px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all .3s, padding 0s;
+  }
+
+  .trigger:hover {
+    color: #1890ff;
+  }
+
+  .header-user {
+    float: right;
+    margin-right: 24px;
+  }
 }
 
-nz-content {
-  margin-top: 8px;
-}
-
-.inner-content {
+.app-content {
   padding: 24px;
   background: #fff;
   height: 100%;

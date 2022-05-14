@@ -42,7 +42,7 @@
       <th nzWidth="80px" nzColumnKey="isRequired">基础数据</th>
     </ng-container>
     <th nzWidth="100px" nzColumnKey="status" [nzFilters]="statusFilter" [nzFilterFn]="true">状态</th>
-    <th nzWidth="100px" nzColumnKey="count" [nzSortFn]="true" [nzSortPriority]="true">
+    <th nzWidth="100px" nzColumnKey="objectCount" [nzSortFn]="true" [nzSortPriority]="true">
       {{taxonomyType === 'link' ? '链接数量' : '内容数量'}}
     </th>
     <th nzWidth="200px" nzRight>操作</th>

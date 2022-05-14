@@ -145,7 +145,8 @@
         </a>
       </td>
       <td>
-        <a routerLink="./" [queryParams]="{original: data.post.postOriginal}">
+        <a [ngClass]="{'status-emphasis': data.post.postOriginal === 1}"
+           routerLink="./" [queryParams]="{original: data.post.postOriginal}">
           {{ data.post.postOriginal === 1 ? '是' : '否' }}
         </a>
       </td>
@@ -185,7 +186,8 @@
         </a>
       </td>
       <td>
-        <a routerLink="./" [queryParams]="{original: data.post.postOriginal}">
+        <a [ngClass]="{'status-emphasis': data.post.postOriginal === 1}"
+           routerLink="./" [queryParams]="{original: data.post.postOriginal}">
           {{ data.post.postOriginal === 1 ? '是' : '否' }}
         </a>
       </td>

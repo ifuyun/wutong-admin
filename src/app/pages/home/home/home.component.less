@@ -1,17 +1,34 @@
-nz-row:not(:last-child) {
-  margin-bottom: 24px;
+@panel-padding: 12px;
+@panel-left-width: 40%;
+.dashboard {
+  display: flex;
+  margin: 0 -@panel-padding;
+
+  .column {
+    padding: 0 @panel-padding;
+
+    &-left {
+      width: @panel-left-width;
+    }
+
+    &-right {
+      width: 100 - @panel-left-width;
+    }
+  }
 }
 
 .panel {
+  @head-height: 48px;
   position: relative;
   display: flex;
   flex: auto;
   flex-direction: column;
-  height: 100%;
   border: 1px solid #f0f0f0;
   border-radius: 2px;
 
-  @head-height: 48px;
+  &:not(:last-child) {
+    margin-bottom: 2 * @panel-padding;
+  }
 
   .panel-head {
     flex: 0 0 @head-height;
@@ -47,14 +64,16 @@ nz-row:not(:last-child) {
   font-size: 24px;
 }
 
-.post-chart-btns {
-  margin-bottom: 16px;
-  text-align: right;
-}
+.chart {
+  .post-chart-btns {
+    margin-bottom: 16px;
+    text-align: right;
+  }
 
-.post-chart-box {
-  width: 100%;
-  min-height: 200px;
+  .post-chart-box {
+    width: 100%;
+    min-height: 200px;
+  }
 }
 
 .statistic {
@@ -62,6 +81,10 @@ nz-row:not(:last-child) {
   width: 100%;
   justify-content: center;
   align-items: center;
+
+  nz-row:not(:last-child) {
+    margin-bottom: 16px;
+  }
 }
 
 .comment {
@@ -92,6 +115,26 @@ nz-row:not(:last-child) {
         content: '|';
         color: rgba(0, 0, 0, .45);
       }
+    }
+  }
+}
+
+.interaction {
+  .item {
+    &:not(:last-child) {
+      margin-bottom: 12px;
+    }
+
+    > span:not(:last-child) {
+      margin-right: 4px;
+    }
+
+    &-ip {
+      color: var(--status-normal-color);
+    }
+
+    &-time {
+      color: var(--status-pending-color);
     }
   }
 }

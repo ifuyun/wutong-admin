@@ -16,7 +16,40 @@
     </ng-container>
   </ng-template>
   <ng-template #commentModalContent>
-    <form nz-form [formGroup]="commentForm">
+    <div class="modal-detail" *ngIf="action === 'detail'">
+      <div class="row">
+        <span class="label">评论文章</span>
+        <span class="content">
+            <a [href]="comment.post?.postGuid" target="_blank">{{ comment.post?.postTitle }}</a>
+        </span>
+      </div>
+      <div class="row">
+        <span class="label">评论内容</span>
+        <span class="content">{{comment.commentContent}}</span>
+      </div>
+      <div class="row">
+        <span class="label">评论时间</span>
+        <span class="content">{{comment.commentCreated | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+      </div>
+      <div class="row">
+        <span class="label">点赞数</span>
+        <span class="content">{{comment.commentVote}}</span>
+      </div>
+      <div class="row">
+        <span class="label">评论状态</span>
+        <span class="content" [ngClass]="'status-' + comment.commentStatus">
+          {{comment.commentStatus | commentStatus}}</span>
+      </div>
+      <div class="row">
+        <span class="label">评论用户</span>
+        <span class="content">{{comment.commentAuthor}}</span>
+      </div>
+      <div class="row">
+        <span class="label">评论邮箱</span>
+        <span class="content">{{comment.commentAuthorEmail}}</span>
+      </div>
+    </div>
+    <form nz-form [formGroup]="commentForm" *ngIf="action !== 'detail'">
       <nz-form-item>
         <nz-form-label [nzSpan]="5">评论文章</nz-form-label>
         <nz-form-control>
@@ -26,44 +59,6 @@
         </nz-form-control>
       </nz-form-item>
       <ng-container [ngSwitch]="action">
-        <ng-container *ngSwitchCase="'detail'">
-          <nz-form-item>
-            <nz-form-label [nzSpan]="5">评论内容</nz-form-label>
-            <nz-form-control>
-              <nz-form-text>{{ comment.commentContent }}</nz-form-text>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSpan]="5">评论时间</nz-form-label>
-            <nz-form-control>
-              <nz-form-text>{{ comment.commentCreated | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSpan]="5">点赞数</nz-form-label>
-            <nz-form-control>
-              <nz-form-text>{{ comment.commentVote }}</nz-form-text>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSpan]="5">评论状态</nz-form-label>
-            <nz-form-control>
-              <nz-form-text [ngClass]="'status-' + comment.commentStatus">{{ comment.commentStatus | commentStatus }}</nz-form-text>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSpan]="5">评论用户</nz-form-label>
-            <nz-form-control>
-              <nz-form-text>{{ comment.commentAuthor }}</nz-form-text>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item>
-            <nz-form-label [nzSpan]="5">评论邮箱</nz-form-label>
-            <nz-form-control>
-              <nz-form-text>{{ comment.commentAuthorEmail }}</nz-form-text>
-            </nz-form-control>
-          </nz-form-item>
-        </ng-container>
         <ng-container *ngSwitchCase="'edit'">
           <nz-form-item>
             <nz-form-label nzRequired [nzSpan]="5">评论内容</nz-form-label>

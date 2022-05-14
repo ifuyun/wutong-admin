@@ -19,8 +19,10 @@ import { OptionEntity } from '../../options/option.interface';
 import { CommentModel } from '../../comments/comment.interface';
 import { CommentService } from '../../comments/comment.service';
 import { OptionService } from '../../options/option.service';
-import { PostArchiveDate } from '../../posts/post.interface';
+import { PostArchiveDate, PostModel } from '../../posts/post.interface';
 import { PostService } from '../../posts/post.service';
+import { VoteModel } from '../../votes/vote.interface';
+import { VoteService } from '../../votes/vote.service';
 
 @Component({
   selector: 'app-home',
@@ -31,10 +33,13 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
   serverDuration!: Duration;
   chartDimension: 'month' | 'year' = 'month';
   statData!: Record<string, number>;
-  comments!: CommentModel[];
+  comments: CommentModel[] = [];
   commentModalVisible = false;
+  postModalVisible = false;
   commentAction!: CommentAction;
   activeComment!: CommentModel;
+  activePost!: { post: PostModel, postMeta: Record<string, string> };
+  votes: VoteModel[] = [];
 
   protected titles: string[] = [];
   protected breadcrumbData: BreadcrumbData = {
@@ -51,6 +56,8 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
   private archiveListener!: Subscription;
   private statListener!: Subscription;
   private chartResizeListener!: Subscription;
+  private commentsListener!: Subscription;
+  private votesListener!: Subscription;
   private serverTimer!: any;
 
   constructor(
@@ -60,6 +67,7 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
     private postService: PostService,
     private commonService: CommonService,
     private commentService: CommentService,
+    private voteService: VoteService,
     private message: NzMessageService,
     private modal: NzModalService
   ) {
@@ -77,6 +85,7 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
       this.statData = res;
     });
     this.fetchComments();
+    this.fetchVotes();
     this.serverTimer = setInterval(() => this.updateDuration(), 60000);
   }
 
@@ -96,6 +105,8 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
     this.optionsListener.unsubscribe();
     this.archiveListener.unsubscribe();
     this.statListener.unsubscribe();
+    this.commentsListener.unsubscribe();
+    this.votesListener.unsubscribe();
     clearInterval(this.serverTimer);
     this.chartResizeListener.unsubscribe();
   }
@@ -125,6 +136,15 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
 
   onCommentSave() {
     this.fetchComments();
+  }
+
+  showPostModal(vote: VoteModel) {
+    this.activePost = { post: vote.post, postMeta: vote.postMeta };
+    this.postModalVisible = true;
+  }
+
+  closePostModal() {
+    this.postModalVisible = false;
   }
 
   auditComments(action: string, commentId: string) {
@@ -229,9 +249,14 @@ export class HomeComponent extends PageComponent implements OnInit, OnDestroy, A
   }
 
   private fetchComments() {
-    this.commentService.getRecentComments(2).subscribe((res) => {
-      this.comments = res;
-    });
+    this.commentsListener = this.commentService.getRecentComments(5).subscribe((res) => this.comments = res);
+  }
+
+  private fetchVotes() {
+    this.votesListener = this.voteService.getVotes({
+      page: 1,
+      pageSize: 10
+    }).subscribe((res) => this.votes = res.votes || []);
   }
 
   private updatePageInfo() {
