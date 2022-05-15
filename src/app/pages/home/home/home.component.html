@@ -69,11 +69,10 @@
         <div class="panel-title">互动</div>
       </div>
       <div class="panel-body">
-        <div class="interaction">
-          <div class="item" *ngFor="let vote of votes">
-            <span class="item-ip">{{vote.userIp}}</span>
-            <span>于</span>
-            <span class="item-time">{{vote.voteCreated | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+        <div class="vote">
+          <div class="vote-item" *ngFor="let vote of votes">
+            <span class="vote-item-time">{{vote.voteCreated | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+            <span class="vote-item-ip">{{vote.userIp}}</span>
             <span>点赞{{vote.objectType === 'post' ? '文章' : '评论'}}：</span>
             <a *ngIf="vote.objectType === 'post'" (click)="showPostModal(vote)">{{vote.post?.postTitle}}</a>
             <a *ngIf="vote.objectType === 'comment'"
@@ -107,7 +106,11 @@
       <div class="panel-body">
         <div class="comment">
           <div class="comment-item" *ngFor="let comment of comments">
-            <div class="comment-item-meta">{{comment.commentAuthor}} - 《{{comment.post.postTitle}}》</div>
+            <div class="comment-item-meta">
+              <span>{{comment.commentCreated | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+              <span>{{comment.commentAuthor}}</span>
+              <span>《{{comment.post.postTitle}}》</span>
+            </div>
             <div class="comment-item-content">{{comment.commentContent}}</div>
             <div class="comment-item-actions">
               <ng-container *ngIf="comment.commentStatus === 'pending'">
