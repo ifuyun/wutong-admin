@@ -53,7 +53,7 @@ export class AppComponent implements OnInit, AfterViewInit {
        * but if it is outside, the menus' statuses will not be updated. */
       const checkedMenuKey = this.getMenuKeyByUrl(this.currentUrl.split('?')[0]);
       this.resetMenuStatus();
-      checkedMenuKey.rootMenuKey && (this.openMap[checkedMenuKey.rootMenuKey] = true);
+      !this.isCollapsed && checkedMenuKey.rootMenuKey && (this.openMap[checkedMenuKey.rootMenuKey] = true);
       checkedMenuKey.childMenuKey && (this.selectedMap[checkedMenuKey.childMenuKey] = true);
     });
     this.optionService.getOptions().subscribe();
