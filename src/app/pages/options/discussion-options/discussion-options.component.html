@@ -15,7 +15,7 @@
             <nz-select class="select-small" formControlName="threadCommentsDepth" nzPlaceHolder="嵌套层数">
               <nz-option *ngFor="let v of counter(9); let i = index" [nzLabel]="i + 2" nzValue="{{i + 2}}"></nz-option>
             </nz-select>
-            层
+            <label class="label-text-right">层</label>
           </span>
         </div>
         <div class="check-item">
@@ -27,24 +27,24 @@
               [nzMin]="1"
               [nzMax]="100"
               [nzStep]="1"></nz-input-number>
-            条评论，默认显示
+            <label class="label-text">条评论，默认显示</label>
           </label>
           <span>
             <nz-select class="select-small" formControlName="defaultCommentsPage" nzPlaceHolder="显示顺序">
               <nz-option nzLabel="最后" nzValue="newest"></nz-option>
               <nz-option nzLabel="最前" nzValue="oldest"></nz-option>
             </nz-select>
-            一页
+            <label class="label-text-right">一页</label>
           </span>
         </div>
         <div class="check-item">
-          <label>在每个页面顶部显示</label>
+          <label class="label-text-left">在每个页面顶部显示</label>
           <span>
             <nz-select class="select-small" formControlName="commentOrder" nzPlaceHolder="评论排序">
               <nz-option nzLabel="旧的" nzValue="asc"></nz-option>
               <nz-option nzLabel="新的" nzValue="desc"></nz-option>
             </nz-select>
-            评论
+            <label class="label-text-right">评论</label>
           </span>
         </div>
       </div>

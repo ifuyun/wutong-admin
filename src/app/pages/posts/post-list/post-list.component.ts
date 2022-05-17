@@ -672,7 +672,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
     let pageTitle = '';
     switch (this.postType) {
       case PostType.POST:
-        this.tableWidth = '1760px';
+        this.tableWidth = '1840px';
         this.titles.unshift('内容管理');
         pageTitle = '文章列表';
         this.breadcrumbData.list = [{
@@ -686,7 +686,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }];
         break;
       case PostType.PAGE:
-        this.tableWidth = '1640px';
+        this.tableWidth = '1720px';
         this.titles.unshift('内容管理');
         pageTitle = '页面列表';
         this.breadcrumbData.list = [{
@@ -700,7 +700,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }];
         break;
       case PostType.ATTACHMENT:
-        this.tableWidth = '1180px';
+        this.tableWidth = '1190px';
         this.titles.unshift('素材管理');
         pageTitle = '素材列表';
         this.breadcrumbData.list = [{
@@ -714,7 +714,7 @@ export class PostListComponent extends ListComponent implements OnInit, OnDestro
         }];
         break;
       default:
-        this.tableWidth = '1650px';
+        this.tableWidth = '1730px';
         this.titles.unshift('内容管理');
         pageTitle = '内容列表';
         this.breadcrumbData.list = [{

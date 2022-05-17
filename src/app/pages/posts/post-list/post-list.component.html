@@ -44,7 +44,7 @@
         (nzCheckedChange)="onAllChecked($event)"></th>
     <ng-container *ngIf="postType !== 'attachment'">
       <th *ngIf="postType === 'all'" nzWidth="100px" nzColumnKey="postType">类型</th>
-      <th nzWidth="220px" nzColumnKey="postTitle">标题</th>
+      <th nzWidth="300px" nzColumnKey="postTitle">标题</th>
       <th nzWidth="90px" nzColumnKey="postDate" [nzSortFn]="true" [nzSortPriority]="true" nzCustomFilter>
         日期
         <nz-filter-trigger
@@ -78,9 +78,9 @@
       <th *ngIf="postType !== 'all'" nzWidth="170px" nzRight>操作</th>
     </ng-container>
     <ng-container *ngIf="postType === 'attachment'">
-      <th nzWidth="180px" nzColumnKey="postTitle">标题</th>
+      <th nzWidth="200px" nzColumnKey="postTitle">标题</th>
       <th nzColumnKey="tag">标签</th>
-      <th nzWidth="340px" nzColumnKey="postGuid">文件路径</th>
+      <th nzWidth="330px" nzColumnKey="postGuid">文件路径</th>
       <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="fileStatusFilter" [nzFilterFn]="true">可见性</th>
       <th nzWidth="70px" nzColumnKey="postOriginal" [nzFilters]="originalFilter" [nzFilterFn]="true">原创</th>
       <th nzWidth="140px" nzColumnKey="postCreated" [nzSortFn]="true" [nzSortPriority]="true" nzCustomFilter>

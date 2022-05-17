@@ -1,8 +1,8 @@
 <div nz-row>
-  <form nz-form nz-col nzSpan="14" [formGroup]="optionsForm">
+  <form nz-form nz-col nzSpan="12" [formGroup]="optionsForm">
     <nz-form-item>
-      <nz-form-label nzSpan="6" nzRequired>博客页面每页显示</nz-form-label>
-      <nz-form-control [nzErrorTip]="pageSizeErrorTpl">
+      <nz-form-label nzSpan="8" nzRequired>博客页面每页显示</nz-form-label>
+      <nz-form-control nzSpan="10" [nzErrorTip]="pageSizeErrorTpl">
         <nz-input-number [nzMin]="1" [nzMax]="20" [nzStep]="1" formControlName="postsPerPage"></nz-input-number>
         <span class="form-label-suffix">篇文章</span>
         <ng-template #pageSizeErrorTpl let-control>
@@ -11,8 +11,8 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-      <nz-form-label nzSpan="6" nzRequired>Feed中显示最近</nz-form-label>
-      <nz-form-control [nzErrorTip]="rssSizeErrorTpl">
+      <nz-form-label nzSpan="8" nzRequired>Feed中显示最近</nz-form-label>
+      <nz-form-control nzSpan="10" [nzErrorTip]="rssSizeErrorTpl">
         <nz-input-number [nzMin]="1" [nzMax]="20" [nzStep]="1" formControlName="postsPerRss"></nz-input-number>
         <span class="form-label-suffix">个项目</span>
         <ng-template #rssSizeErrorTpl let-control>
@@ -21,8 +21,8 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-      <nz-form-label nzSpan="6" nzRequired>Feed中的每篇文章显示</nz-form-label>
-      <nz-form-control [nzErrorTip]="useExcerptErrorTpl">
+      <nz-form-label nzSpan="8" nzRequired>Feed中的每篇文章显示</nz-form-label>
+      <nz-form-control nzSpan="10" [nzErrorTip]="useExcerptErrorTpl">
         <nz-radio-group formControlName="rssUseExcerpt" nzName="rssUseExcerpt">
           <label nz-radio nzValue="0">全文</label>
           <label nz-radio nzValue="1">摘要</label>
@@ -33,7 +33,7 @@
       </nz-form-control>
     </nz-form-item>
     <div nz-row class="form-btns">
-      <div nz-col nzSpan="16">
+      <div nz-col nzSpan="18">
         <button nz-button nzType="primary" (click)="saveOptions()" [nzLoading]="saveLoading">保存更改</button>
       </div>
     </div>
