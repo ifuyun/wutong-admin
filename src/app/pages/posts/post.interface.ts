@@ -26,6 +26,7 @@ export interface PostModel extends PostEntity {
   postModified?: Date;
   postViewCount?: number;
   commentCount?: number;
+  postLikes?: number;
   author?: UserEntity;
 }
 

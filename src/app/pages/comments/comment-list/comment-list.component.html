@@ -38,7 +38,7 @@
     <th nzWidth="180px" nzColumnKey="postTitle">文章</th>
     <th nzWidth="130px" nzColumnKey="commentCreated" [nzSortFn]="true" [nzSortPriority]="true">时间</th>
     <th nzWidth="80px" [nzFilters]="statusFilter" [nzFilterFn]="true" nzColumnKey="status">状态</th>
-    <th nzWidth="60px" nzColumnKey="commentVote" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
+    <th nzWidth="60px" nzColumnKey="commentLikes" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
     <th nzWidth="100px" nzColumnKey="user">评论用户</th>
     <th nzWidth="140px" nzColumnKey="email">评论邮箱</th>
     <th nzRight>操作</th>
@@ -59,9 +59,9 @@
       <a [ngClass]="'status-' + data.commentStatus" routerLink="./"
          [queryParams]="{status: data.commentStatus}">{{ data.commentStatus | commentStatus }}</a>
     </td>
-    <td nzAlign="right" [title]="data.commentVote">{{ data.commentVote }}</td>
-    <td nzEllipsis [title]="data.commentAuthor">{{ data.commentAuthor }}</td>
-    <td nzEllipsis [title]="data.commentAuthorEmail">{{ data.commentAuthorEmail }}</td>
+    <td nzAlign="right" [title]="data.commentLikes">{{ data.commentLikes }}</td>
+    <td nzEllipsis [title]="data.authorName">{{ data.authorName }}</td>
+    <td nzEllipsis [title]="data.authorEmail">{{ data.authorEmail }}</td>
     <td nzRight>
       <ng-container *ngIf="data.commentStatus === 'pending'">
         <a class="button-normal" (click)="auditComments('normal', data.commentId)">批准</a>

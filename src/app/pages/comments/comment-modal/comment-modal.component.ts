@@ -76,8 +76,8 @@ export class CommentModalComponent extends BaseComponent implements OnInit, OnDe
         postId: this.comment.post.postId,
         commentContent: value.commentContent,
         commentStatus: value.commentStatus,
-        commentAuthor: this.user.userName || '',
-        commentAuthorEmail: this.user.userEmail || ''
+        authorName: this.user.userName || '',
+        authorEmail: this.user.userEmail || ''
       };
     } else {
       commentData = {
@@ -85,10 +85,11 @@ export class CommentModalComponent extends BaseComponent implements OnInit, OnDe
         postId: this.comment.post.postId,
         commentContent: value.commentContent,
         commentStatus: CommentStatus.NORMAL,
-        commentAuthor: this.user.userName || '',
-        commentAuthorEmail: this.user.userEmail || ''
+        authorName: this.user.userName || '',
+        authorEmail: this.user.userEmail || ''
       };
     }
+    commentData.fa = true;
     this.commentService.saveComment(commentData).subscribe((res) => {
       this.saveLoading = false;
       if (res.code === ResponseCode.SUCCESS) {

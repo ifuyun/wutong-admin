@@ -4,8 +4,9 @@ import { PostModel } from '../posts/post.interface';
 export interface CommentEntity {
   postId: string;
   commentParent?: string;
-  commentAuthor: string;
-  commentAuthorEmail: string;
+  commentTop?: string;
+  authorName: string;
+  authorEmail: string;
   commentContent: string;
   captchaCode?: string;
 }
@@ -15,17 +16,23 @@ export interface CommentModel extends CommentEntity {
   commentStatus: string;
   commentCreated: Date;
   commentModified: Date;
-  commentVote: number;
-  commentAuthorLink: string;
-  commentIp: string;
-  commentAgent: string;
+  authorEmailHash?: string;
+  authorLink: string;
+  authorIp: string;
+  authorUserAgent: string;
   commentParent: string;
   userId: string;
+  commentLikes: number;
+  commentDislikes: number;
   post: PostModel;
 }
 
+export interface Comment extends CommentModel {
+  children: CommentModel[];
+}
+
 export interface CommentList {
-  comments?: CommentModel[];
+  comments?: Comment[];
   page?: number;
   total?: number;
 }
@@ -46,11 +53,13 @@ export interface CommentAuditParam {
 }
 
 export interface CommentSaveParam {
-  commentId?: string;
   postId: string;
-  commentParent?: string;
+  commentId?: string;
   commentContent: string;
+  commentParent?: string;
+  commentTop?: string;
   commentStatus?: CommentStatus;
-  commentAuthor: string;
-  commentAuthorEmail: string;
+  authorName: string;
+  authorEmail: string;
+  fa?: boolean;
 }

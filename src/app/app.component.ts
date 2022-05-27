@@ -80,6 +80,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   onCollapsedChange() {
     this.isCollapsed = !this.isCollapsed;
     localStorage.setItem('collapsed', this.isCollapsed ? '1' : '0');
+
+    const opened = Object.keys(this.openMap).filter((key) => this.openMap[key]);
+    if (!this.isCollapsed && opened.length < 1) {
+      const checkedMenuKey = this.getMenuKeyByUrl(this.currentUrl.split('?')[0]);
+      checkedMenuKey.rootMenuKey && (this.openMap[checkedMenuKey.rootMenuKey] = true);
+    }
   }
 
   private getMenuKeyByUrl(url: string): { childMenuKey: string, rootMenuKey: string } {

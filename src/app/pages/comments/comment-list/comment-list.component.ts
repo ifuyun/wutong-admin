@@ -17,7 +17,7 @@ import { OptionEntity } from '../../options/option.interface';
 import { OptionService } from '../../options/option.service';
 import { PostModel } from '../../posts/post.interface';
 import { PostService } from '../../posts/post.service';
-import { CommentModel, CommentQueryParam } from '../comment.interface';
+import { Comment, CommentModel, CommentQueryParam } from '../comment.interface';
 import { CommentService } from '../comment.service';
 
 @Component({
@@ -28,7 +28,7 @@ import { CommentService } from '../comment.service';
 export class CommentListComponent extends ListComponent implements OnInit, OnDestroy {
   @ViewChild('confirmModalContent') confirmModalContent!: TemplateRef<any>;
 
-  commentList: CommentModel[] = [];
+  commentList: Comment[] = [];
   post!: PostModel | null;
   page: number = 1;
   total: number = 0;

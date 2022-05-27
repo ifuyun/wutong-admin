@@ -108,11 +108,12 @@
           <div class="comment-item" *ngFor="let comment of comments">
             <div class="comment-item-meta">
               <span>{{comment.commentCreated | date:'yyyy-MM-dd HH:mm:ss'}}</span>
-              <span>{{comment.commentAuthor}}</span>
+              <span>{{comment.authorName}}</span>
               <span>《{{comment.post.postTitle}}》</span>
             </div>
             <div class="comment-item-content">{{comment.commentContent}}</div>
             <div class="comment-item-actions">
+              <a (click)="showCommentModal('detail', comment)">查看</a>
               <ng-container *ngIf="comment.commentStatus === 'pending'">
                 <a class="button-normal" (click)="auditComments('normal', comment.commentId)">批准</a>
                 <a class="button-reject" (click)="auditComments('reject', comment.commentId)">驳回</a>
@@ -125,7 +126,6 @@
               <ng-container *ngIf="comment.commentStatus !== 'trash'">
                 <a (click)="auditComments('trash', comment.commentId)">删除</a>
               </ng-container>
-              <a (click)="showCommentModal('detail', comment)">查看</a>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@
       </div>
       <div class="row">
         <span class="label">点赞数</span>
-        <span class="content">{{activePost.postMeta['post_vote']}}</span>
+        <span class="content">{{activePost.post.postLikes}}</span>
       </div>
     </div>
   </ng-template>

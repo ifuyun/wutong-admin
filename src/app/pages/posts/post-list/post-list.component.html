@@ -67,6 +67,7 @@
       </th>
       <th nzColumnKey="tag">标签</th>
       <th nzWidth="80px" nzColumnKey="postViewCount" [nzSortFn]="true" [nzSortPriority]="true">访问</th>
+      <th nzWidth="60px" nzColumnKey="postLikes" [nzSortFn]="true" [nzSortPriority]="true">点赞</th>
       <th nzWidth="60px" nzColumnKey="commentCount" [nzSortFn]="true" [nzSortPriority]="true">评论</th>
       <th nzWidth="100px" nzColumnKey="commentFlag" [nzFilters]="commentFlagFilter" [nzFilterFn]="true">评论状态</th>
       <th nzWidth="80px" nzColumnKey="postStatus" [nzFilters]="statusFilter" [nzFilterFn]="true">可见性</th>
@@ -127,6 +128,7 @@
         </a>
       </td>
       <td nzAlign="right">{{ data.post.postType === 'attachment' ? '-' : data.post.postViewCount }}</td>
+      <td nzAlign="right">{{ data.post.postType === 'attachment' ? '-' : data.post.postLikes }}</td>
       <td nzAlign="right">
         <a *ngIf="data.post.postType !== 'attachment'" routerLink="/comments"
            [queryParams]="{postId: data.post.postId}">{{ data.post.commentCount || 0 }}</a>

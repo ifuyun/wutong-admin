@@ -33,7 +33,7 @@
       </div>
       <div class="row">
         <span class="label">点赞数</span>
-        <span class="content">{{comment.commentVote}}</span>
+        <span class="content">{{comment.commentLikes}}</span>
       </div>
       <div class="row">
         <span class="label">评论状态</span>
@@ -42,11 +42,11 @@
       </div>
       <div class="row">
         <span class="label">评论用户</span>
-        <span class="content">{{comment.commentAuthor}}</span>
+        <span class="content">{{comment.authorName}}</span>
       </div>
       <div class="row">
         <span class="label">评论邮箱</span>
-        <span class="content">{{comment.commentAuthorEmail}}</span>
+        <span class="content">{{comment.authorEmail}}</span>
       </div>
     </div>
     <form nz-form [formGroup]="commentForm" *ngIf="action !== 'detail'">
